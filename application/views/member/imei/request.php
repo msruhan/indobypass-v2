@@ -1,5 +1,5 @@
 <style>
-    @media screen and (max-width: 767px) {
+   @media screen and (max-width: 767px) {
     .main-panel .page-header .breadcrumbs {
         margin-left: 0;
         padding-top: 5px;
@@ -9,10 +9,14 @@
     }
 
     #autoExpandTextarea {
-            border: none;
-            resize: none;
-        }
+        border: none;
+        resize: none;
+        width: 100%; /* Lebar textarea 100% dari container */
+        padding: 10px; /* Tambahkan padding agar teks tidak terlalu menempel */
+        box-sizing: border-box; /* Agar padding diperhitungkan dalam lebar total */
+    }
 }
+
 </style>
 <div class="page-header">
     <div class="d-flex justify-content-between">
@@ -120,15 +124,6 @@
     </div>
     <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12">
         <div class="card">
-            <div class="card-header">
-                <div class="card-title">Description</div>
-            </div>
-            <div class="card-body pb-0">
-                <div id="load-field-text"><i class="text-muted" id="desc_service">Description for service selected!</i></div>
-                <div class="separator-dashed"></div>
-            </div>
-        </div>
-        <div class="card">
             <div class="card-body pb-0">
                 <div class="mb-5">
                     <p class="card-title mb-2">IMEI History</p>
@@ -150,6 +145,17 @@
                             Canceled <i class="fas fa-times-circle"></i> </button>
                     </div>
                 </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-8 col-lg-8 col-md-12 col-sm-12">
+        <div class="card">
+            <div class="card-header">
+                <div class="card-title">Description</div>
+            </div>
+            <div class="card-body pb-0">
+                <div id="load-field-text"><i class="text-muted" id="desc_service">Description for service selected!</i></div>
+                <div class="separator-dashed"></div>
             </div>
         </div>
     </div>
@@ -292,6 +298,7 @@ $(document).ready(function() {
                                     textarea.style.overflow = 'hidden';
                                     textarea.style.resize = 'none';
                                     textarea.style.border = 'none';
+                                    textarea.style.width = '100%';
                                 }
 
                                 const longText = data.description;
