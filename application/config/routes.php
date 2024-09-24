@@ -39,7 +39,7 @@
 */
 $route['login'] = 'user/login';
 $route['forgot_password'] = 'user/forgot_password';
-$route['register'] = 'user/register';
+// $route['register'] = 'user/register';
 $route['services_list'] = 'user/services_list';
 $route['logout'] = 'user/logout';
 $route['api/index.php'] = 'api';
