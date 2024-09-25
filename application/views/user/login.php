@@ -25,13 +25,13 @@
 </head>
 <body class="login">
     <div class="wrapper wrapper-login wrapper-login-full p-0">
-        <div class="login-aside w-50 d-flex flex-column align-items-center justify-content-center text-center bg-secondary-gradient">
+        <div class="login-aside w-50 d-flex flex-column align-items-center justify-content-center text-center bg-primary-gradient">
             <img src="<?= site_url() ?>img/indobypass_logo_new.png" width="60%" alt="Indobypass Logo" />
             <p class="subtitle text-white op-7">SEAMLESS BYPASS SOLUTION</p>
         </div>
         <div class="login-aside w-50 d-flex align-items-center justify-content-center bg-white">
             <div class="container container-login container-transparent animated fadeIn">
-                <h3 class="text-center">Sign In To Indobypass</h3>
+                <h3 class="text-center">Sign In</h3>
                 <div class="login-form">
                     <?= $this->session->flashdata('message') ?>
 
@@ -55,7 +55,7 @@
                             <input type="checkbox" class="form-check-input" id="rememberme">
                             <label class="custom-control-label m-0" for="rememberme">Remember Me</label>
                         </div>
-                        <button type="submit" class="btn btn-secondary col-md-5 float-end mt-3 mt-sm-0 fw-bold"><?php echo $this->lang->line('login_btn_login') ?></button>
+                        <button type="submit" class="btn btn-primary col-md-5 float-end mt-3 mt-sm-0 fw-bold"><?php echo $this->lang->line('login_btn_login') ?></button>
                     </div>
                     <?php echo form_close(); ?>
 

@@ -25,7 +25,7 @@
 </head>
 <body class="login">
     <div class="wrapper wrapper-login wrapper-login-full p-0">
-        <div class="login-aside w-50 d-flex flex-column align-items-center justify-content-center text-center bg-secondary-gradient">
+        <div class="login-aside w-50 d-flex flex-column align-items-center justify-content-center text-center bg-primary-gradient">
             <img src="<?= site_url() ?>img/indobypass_logo_new.png" width="60%" alt="Indobypass Logo" />
             <p class="subtitle text-white op-7">SEAMLESS BYPASS SOLUTION</p>
         </div>
@@ -42,7 +42,7 @@
                         <input type="email" id="Email" name="Email" class="form-control" value="" placeholder="<?php echo $this->lang->line('forgot_password_lb_email') ?>" required>
                     </div>
                     <div class="form-group form-action-d-flex mb-3">
-                        <button type="submit" class="btn btn-secondary col-md-5 float-end mt-3 mt-sm-0 fw-bold"><?php echo $this->lang->line('forgot_password_btn_submit') ?></button>
+                        <button type="submit" class="btn btn-primary col-md-5 float-end mt-3 mt-sm-0 fw-bold"><?php echo $this->lang->line('forgot_password_btn_submit') ?></button>
                     </div>
                     <?php echo form_close(); ?>
 
