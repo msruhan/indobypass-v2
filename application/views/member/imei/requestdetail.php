@@ -43,15 +43,14 @@
     <div class="col-xl-8 col-lg-8 col-md-12 col-sm-12">
         <div class="card">
             <div class="card-header">
-                <div class="card-title">
-                    Description
-                    <h6><b><?= $data[0]['Title'] ?></b></h6>
-                </div>
+            <div class="card-title">
+                <h6 style="font-size: 22;"><b><?= $data[0]['Title'] ?></b></h6>
+            </div>
             </div>
             <div class="card-body">
+                <div class="card-title" style="color: black; font-size: 16px;">Description :</div>
                 <div class="row">
-                    <textarea id="autoExpandTextarea"></textarea>
-
+                    <textarea id="autoExpandTextarea" readonly></textarea>
                 </div>
             </div>
         </div>
@@ -59,23 +58,23 @@
     <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12">
         <div class="card">
             <div class="card-header">
-                <div class="card-title">Price</div>
+                <div class="card-title" style="color: red; font-size: 20px;">Price</div>
             </div>
             <div class="card-body pb-0">
-                <p><?= format_currency($data[0]['Price']) ?></p>
+                <p style="color: red; font-size: 16px;"><?= format_currency($data[0]['Price']) ?></p>
             </div>
         </div>
         <div class="card">
             <div class="card-header">
-                <div class="card-title">Information</div>
+                <div class="card-title" style="color: darkgreen; font-size: 20px;">Information</div>
             </div>
             <div class="card-body">
                 <div class="row">
                     <div id="payee_account" class="form-bg1 recevier-det">
                         <ul>
-                            <li class="mt-2">Delivery Time : <b><?= $data[0]['DeliveryTime'] ?></b> </li>
-                            <li class="mt-2">Order Type :
-                                <b>
+                            <li class="mt-2">Delivery Time : <b style="color: darkgreen;"><?= $data[0]['DeliveryTime'] ?></b></li>
+                            <li class="mt-2">Order Type : 
+                                <b style="color: green;">
                                     <?php if ($data[0]['FieldType'] == '1') echo 'IMEI' ?>
                                     <?php if ($data[0]['FieldType'] == '2') echo 'Serial Number' ?>
                                     <?php if ($data[0]['FieldType'] == '3') echo 'Universal' ?>
