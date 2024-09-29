@@ -59,7 +59,7 @@
 </div>
 
 <div class="row">
-    <div class="col-xl-8 col-lg-8 col-md-12 col-sm-12">
+    <div class="col-12">
         <?= $this->session->flashdata('message') ?>
         <?= form_error('IMEI', '<div class="alert alert-danger alert-dismissible fade show" role="alert">', '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>'); ?>
         <?= form_error('MethodID', '<div class="alert alert-danger alert-dismissible fade show" role="alert">', '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>'); ?>
@@ -122,6 +122,17 @@
             </div>
         </div>
     </div>
+    <div class="col-xl-8 col-lg-8 col-md-12 col-sm-12">
+        <div class="card">
+            <div class="card-header">
+                <div class="card-title">Description</div>
+            </div>
+            <div class="card-body pb-0">
+                <div id="load-field-text"><i class="text-muted" id="desc_service">Description for service selected!</i></div>
+                <div class="separator-dashed"></div>
+            </div>
+        </div>
+    </div>
     <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12">
         <div class="card">
             <div class="card-body pb-0">
@@ -148,17 +159,7 @@
             </div>
         </div>
     </div>
-    <div class="col-xl-8 col-lg-8 col-md-12 col-sm-12">
-        <div class="card">
-            <div class="card-header">
-                <div class="card-title">Description</div>
-            </div>
-            <div class="card-body pb-0">
-                <div id="load-field-text"><i class="text-muted" id="desc_service">Description for service selected!</i></div>
-                <div class="separator-dashed"></div>
-            </div>
-        </div>
-    </div>
+ 
 </div>
 
 <!-- modal for datatable imei history -->
@@ -253,12 +254,12 @@ $(document).ready(function() {
                 success: function(data) {
                     $("#load-field-text").html('');
                     var html = '';
-                    if (data.price) {
+                    if (data.Price) {
                         // set html if data exist
                         html +=
                             '<div class="form-group">' +
                             '<label class="col-sm-3 control-label"><?php echo $this->lang->line('imei_fields_price') ?></label>' +
-                            '<div class="col-sm-9 text">' + data.price +
+                            '<div class="col-sm-9 text">' + data.Price +
                             ' <?php echo $this->lang->line('header_credits') ?></div>' +
                             '</div>'
                     }
@@ -299,6 +300,7 @@ $(document).ready(function() {
                                     textarea.style.resize = 'none';
                                     textarea.style.border = 'none';
                                     textarea.style.width = '100%';
+                                    textarea.readOnly = true;
                                 }
 
                                 const longText = data.description;
