@@ -15,11 +15,11 @@ class Midtrans extends FSD_Controller
         var_dump($res);die();
         
         // Validasi data
-        // if (!isset($res['order_id']) || !isset($res['status_code'])) {
-        //     http_response_code(400);
-        //     echo json_encode(['error' => 'Invalid data']);
-        //     exit;
-        // }
+        if (!isset($res['order_id']) || !isset($res['status_code'])) {
+            http_response_code(400);
+            echo json_encode(['error' => 'Invalid data']);
+            exit;
+        }
 
         if($res['status_code'] == 201 || $res['status_code'] == 200) {
             if($res['transaction_status'] == 'settlement') {
