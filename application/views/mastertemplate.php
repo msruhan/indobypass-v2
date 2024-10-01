@@ -219,7 +219,7 @@
                             </li>
                             <li class="nav-item topbar-user dropdown hidden-caret">
                                 <p class="opacity-100" style="color:dark-blue">
-                                    <!-- <marquee behavior="scroll" direction="left">iCloud MEID / GSM BYPASS WITH SIGNAL SERVICE ON, iCloud MEID / GSM BYPASS WITH SIGNAL SERVICE ON</marquee> -->
+                                    <marquee behavior="scroll" direction="left">iCloud MEID / GSM BYPASS WITH SIGNAL SERVICE ON, iCloud MEID / GSM BYPASS WITH SIGNAL SERVICE ON</marquee>
                                     <marquee behavior="scroll" direction="left"><?= $key['push_headline'] ?></marquee>
 
                                 </p>
