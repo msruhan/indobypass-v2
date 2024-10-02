@@ -32,7 +32,7 @@
                             class="control-label"><?php echo $this->lang->line('credit_fields_payment_type'); ?></label>
                         <div class="col-8">
                             <select name="payment_type" id="payment_type" class="form-control" required onchange="changePaymentType()">
-                                <option value="midtrans">Midtrans</option>
+                                <option value="midtrans">Indonesia Payment</option>
                                 <option value="paypal">PayPal</option>
                             </select>
                         </div>
