@@ -40,6 +40,9 @@ class Midtrans extends FSD_Controller
                 
                 // Ambil nilai bank dari va_numbers
                 $bank = isset($res['va_numbers'][0]['bank']) ? strtoupper($res['va_numbers'][0]['bank']) : 'UNKNOWN';
+                if ($bank === 'UNKNOWN' && isset($res['acquirer'])) {
+                    $bank = strtoupper($res['acquirer']); // Gunakan acquirer jika bank tidak ditemukan
+                }
             
                 $ins['MemberID']          = $explode[1];
                 $ins['TransactionCode']   = CASH_PAYMENT_RECEIVED;
