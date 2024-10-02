@@ -41,7 +41,7 @@ class Midtrans extends FSD_Controller
                 $ins['MemberID']          = $explode[1];
                 $ins['TransactionCode']   = CASH_PAYMENT_RECEIVED;
                 $ins['TransactionID']     = $transaction_id;
-                $ins['Description']       = "Added By Midtrans";
+                $ins['Description']       = "Added By Midtransx";
                 $ins['Amount']            = $res['gross_amount'] / $idr;
                 $ins['CreatedDateTime']   = date("Y-m-d H:i:s");
                 $result_insert = $this->db->insert('gsm_credits', $ins);
@@ -60,7 +60,7 @@ class Midtrans extends FSD_Controller
                 $ins['MemberID']          = $explode[1];
                 $ins['TransactionCode']   = CASH_PAYMENT_RECEIVED;
                 $ins['OrderID']           = $res['order_id'];
-                $ins['Description']       = "Added By Midtrans";
+                $ins['Description']       = "Added By Midtransz";
                 $ins['Amount']            = $res['gross_amount'];
                 $ins['CreatedDateTime']   = date("Y-m-d H:i:s");
                 $ins['TransactionStatus'] = $res['transaction_status'];
