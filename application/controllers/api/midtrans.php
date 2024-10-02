@@ -50,6 +50,13 @@ class Midtrans extends FSD_Controller
                         $bank = strtoupper($res['payment_type']);
                     }
                 }
+                
+                // Cek kondisi untuk mengganti nilai $bank
+                if ($bank === 'ECHANNEL') {
+                    $bank = 'Mandiri';
+                } elseif ($bank === 'BANK_TRANSFER') {
+                    $bank = 'Permata';
+                }
             
                 $ins['MemberID']          = $explode[1];
                 $ins['TransactionCode']   = CASH_PAYMENT_RECEIVED;
