@@ -55,7 +55,7 @@ class Midtrans extends FSD_Controller
                 $ins['TransactionCode']   = CASH_PAYMENT_RECEIVED;
                 $ins['TransactionID']     = $transaction_id;
                 $ins['Description']       = "Added By Midtrans - Method: " . $bank; // Deskripsi dengan bank
-                $ins['Amount']            = $res['gross_amount'] / $idr;
+                $ins['Amount']            = $res['gross_amount'];
                 $ins['CreatedDateTime']   = date("Y-m-d H:i:s");
                 $result_insert = $this->db->insert('gsm_credits', $ins);
             
