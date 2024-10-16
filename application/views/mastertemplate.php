@@ -23,7 +23,7 @@
     <title>INDOBYPASS | <?= $Title ?></title>
     <meta content="width=device-width, initial-scale=1.0, shrink-to-fit=no" name="viewport" />
     <link rel="shortcut icon" href="<?= base_url() ?>img/indobypass_icon_new.png">
-    <script type="text/javascript" src="https://app.sandbox.midtrans.com/snap/snap.js"
+    <script type="text/javascript" src="https://app.midtrans.com/snap/snap.js"
       data-client-key="<?= $this->config->item('midtransClientKey') ?>"></script>
     <!-- Fonts and icons -->
     <script src="<?= site_url() ?>assets/assets_members/js/plugin/webfont/webfont.min.js"></script>
