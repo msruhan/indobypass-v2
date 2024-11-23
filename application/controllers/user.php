@@ -234,7 +234,7 @@ class User extends FSD_Controller
 		$data = array();
 		$data["title"] = $this->lang->line('register_heading');
 		$data["heading"] = $this->lang->line('register_heading');
-		// $data['master_template'] = "user/register";
+		$data['master_template'] = "user/register";
 		$this->load->view("user/register",$data);
 	}
 
