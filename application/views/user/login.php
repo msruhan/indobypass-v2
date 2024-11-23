@@ -36,85 +36,34 @@
                     <?= $this->session->flashdata('message') ?>
 
                     <?php echo form_open('login', array('role' => 'form', 'method' => 'post')); ?>
-                    <div class="form-group">
-                        <label for="Email"><b><?php echo $this->lang->line('login_lb_email') ?></b></label>
-                        <input type="email" id="Email" name="Email" class="form-control" value="<?php echo set_value('Email'); ?>" placeholder="<?php echo $this->lang->line('login_lb_email') ?>" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="Password"><b><?php echo $this->lang->line('login_lb_password') ?></b></label>
-                        <a href="<?php echo site_url('forgot_password'); ?>" class="link float-end"><?php echo $this->lang->line('login_forgot_password') ?>?</a>
-                        <div class="position-relative">
-                            <input type="password" id="Password" name="Password" class="form-control" placeholder="<?php echo $this->lang->line('login_lb_password') ?>" required>
-                            <div class="show-password">
-                                <i class="icon-eye"></i>
+                        <div class="form-group">
+                            <label for="Email"><b><?php echo $this->lang->line('login_lb_email') ?></b></label>
+                            <input type="email" id="Email" name="Email" class="form-control" value="<?php echo set_value('Email'); ?>" placeholder="<?php echo $this->lang->line('login_lb_email') ?>" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="Password"><b><?php echo $this->lang->line('login_lb_password') ?></b></label>
+                            <a href="<?php echo site_url('forgot_password'); ?>" class="link float-end"><?php echo $this->lang->line('login_forgot_password') ?>?</a>
+                            <div class="position-relative">
+                                <input type="password" id="Password" name="Password" class="form-control" placeholder="<?php echo $this->lang->line('login_lb_password') ?>" required>
+                                <div class="show-password">
+                                    <i class="icon-eye"></i>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    <div class="form-group form-action-d-flex mb-3">
-                        <div class="form-check">
-                            <input type="checkbox" class="form-check-input" id="rememberme">
-                            <label class="custom-control-label m-0" for="rememberme">Remember Me</label>
+                        <div class="form-group form-action-d-flex mb-3">
+                            <div class="form-check">
+                                <input type="checkbox" class="form-check-input" id="rememberme">
+                                <label class="custom-control-label m-0" for="rememberme">Remember Me</label>
+                            </div>
+                            <button type="submit" class="btn btn-primary col-md-5 float-end mt-3 mt-sm-0 fw-bold"><?php echo $this->lang->line('login_btn_login') ?></button>
                         </div>
-                        <button type="submit" class="btn btn-primary col-md-5 float-end mt-3 mt-sm-0 fw-bold"><?php echo $this->lang->line('login_btn_login') ?></button>
-                    </div>
                     <?php echo form_close(); ?>
 
                     <div class="login-account">
                         <span class="msg">Don't have an account yet?</span>
-						<a href="#" id="show-signup" class="link">Sign Up</a>
+                        <a href="<?= site_url('register'); ?>" class="link">Register</a>
                     </div>
                 </div>
-            </div>
-
-            <div class="container container-signup container-transparent animated fadeIn">
-                <h3 class="text-center">Sign Up</h3>
-                <div class="login-form">
-                      <!-- Displaying errors if any -->
-            <?= form_error('FirstName', '<div class="alert alert-danger alert-dismissible fade show" role="alert">', '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>'); ?>
-            <?= form_error('LastName', '<div class="alert alert-danger alert-dismissible fade show" role="alert">', '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>'); ?>
-            <?= form_error('Email', '<div class="alert alert-danger alert-dismissible fade show" role="alert">', '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>'); ?>
-            <?= form_error('Password', '<div class="alert alert-danger alert-dismissible fade show" role="alert">', '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>'); ?>
-            <?= form_error('CPassword', '<div class="alert alert-danger alert-dismissible fade show" role="alert">', '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>'); ?>
-
-            <!-- Registration form -->
-            <?php echo form_open('register', array('role' => 'form', 'method' => 'post')); ?>
-                <div class="form-group mb-2">
-                    <label for=""><?php echo $this->lang->line('register_lb_first_name') ?></label>
-                    <input type="text" name="FirstName" value="<?php echo set_value('FirstName'); ?>" class="form-control" placeholder="<?php echo $this->lang->line('register_lb_first_name') ?>" required >
-                </div>
-
-                <div class="form-group mb-2">
-                    <label for=""><?php echo $this->lang->line('register_lb_last_name') ?></label>
-                    <input type="text" name="LastName" value="<?php echo set_value('LastName'); ?>" class="form-control" placeholder="<?php echo $this->lang->line('register_lb_last_name') ?>" required >
-                </div>
-
-                <div class="form-group mb-2">
-                    <label for=""><?php echo $this->lang->line('register_lb_email') ?></label>
-                    <input type="email" name="Email" value="<?php echo set_value('Email'); ?>" class="form-control" placeholder="<?php echo $this->lang->line('register_lb_email') ?>" required >
-                </div>
-
-                <div class="form-group mb-2">
-                    <label for=""><?php echo $this->lang->line('register_lb_password') ?></label>
-                    <input type="password" name="Password" class="form-control" placeholder="<?php echo $this->lang->line('register_lb_password') ?>" required >
-                </div>
-
-                <div class="form-group mb-2">
-                    <label for=""><?php echo $this->lang->line('register_lb_confirm_password') ?></label>
-                    <input type="password" name="CPassword" class="form-control" placeholder="<?php echo $this->lang->line('register_lb_confirm_password') ?>" required >
-                </div>
-
-                <div class="text-center mb-2">
-                    <button type="submit" class="btn btn-primary btn-sm text-center">Register</button>
-                </div>
-            <?php echo form_close(); ?>
-
-            <!-- Link to login page -->
-            <div class="text-center mt-5">
-                <p class="mb-0">Already have an account? <a href="<?php echo site_url('login'); ?>" class="text-secondary fw-bold">Login</a></p>
-            </div>
-                </div>
-           
-           
             </div>
         </div>
     </div>
