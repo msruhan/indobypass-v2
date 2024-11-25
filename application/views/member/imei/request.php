@@ -99,7 +99,7 @@
                         <div class="col-12">
                             <textarea name="IMEI" id="IMEI"
                                 placeholder="<?php echo $this->lang->line('imei_fields_imei_sr') ?>"
-                                class="form-control" minlength="12" required><?php echo set_value('IMEI'); ?></textarea>
+                                class="form-control" minlength="10" required><?php echo set_value('IMEI'); ?></textarea>
                         </div>
                     </div>
                     <div class="form-group">
