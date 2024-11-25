@@ -53,8 +53,8 @@ class Imeiorder extends FSD_Controller
 		$this->form_validation->set_rules('MethodID' , 'Method' ,'required');
 		$this->form_validation->set_rules('Maker' , 'Maker' ,'');
 		$this->form_validation->set_rules('Model' , 'Model' ,'');
-		$this->form_validation->set_rules('IMEI' , 'IMEI' ,'required|min_length[15]');
-		$this->form_validation->set_rules('Email' , 'Email' ,'required|valid_email');
+		$this->form_validation->set_rules('IMEI' , 'IMEI' ,'required|min_length[10]');
+		$this->form_validation->set_rules('Email' , 'Email' ,'');
 		$this->form_validation->set_rules('MobileNo' , 'Mobile No' ,'');
 		$this->form_validation->set_rules('Note' , 'Note' ,'');
 		$this->form_validation->set_rules('Comments' , 'Comments' ,'');		
