@@ -506,7 +506,7 @@ class imeirequest extends FSD_Controller
 		$sns = array_unique($sns);
 		foreach($sns as $sn)
 		{	
-			if( strlen($sn) != 10 ) 
+			if (strlen($sn) != 10 && strlen($sn) != 12)
 			{
 				$this->form_validation->set_message('sn_check', 'One or more Serial No(s) are invalid.');
 				return FALSE;
