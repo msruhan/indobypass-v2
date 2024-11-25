@@ -15,7 +15,7 @@ class Imeiorder extends FSD_Controller
 		$this->load->model('credit_model');
 		$this->load->model('autoresponder_model');
 		$this->load->model('member_model');
-		$this->status = array(''=>'', 'Pending'=>'Pending', 'Issued'=>'Issued', 'Canceled'=>'Canceled');
+		$this->status = array(''=>'', 'Pending'=>'Pending', 'In Process'=>'In Process', 'Issued'=>'Issued', 'Canceled'=>'Canceled');
 	}
 	
 	public function index()

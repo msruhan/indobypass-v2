@@ -287,6 +287,8 @@ $(document).ready(function() {
                 return "<span class='badge bg-success'>Success</span>";
             case 'Pending':
                 return "<span class='badge bg-warning'>Pending</span>";
+            case 'In Process':
+                return "<span class='badge bg-warning'>In Process</span>";
             case 'Rejected':
                 return "<span class='badge bg-danger'>Rejected</span>";
             default:

@@ -543,6 +543,9 @@ class Welcome extends FSD_Controller
                 case 'Pending':
                     $status = 0;
                     break;
+                case 'In Process':
+                    $status = 1;
+                    break;
                 case 'Verified':
                 case 'Issued':
                     $status = 4;

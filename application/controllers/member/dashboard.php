@@ -103,6 +103,9 @@ class dashboard extends FSD_Controller
 				case "Pending":
 					$status = "<span class='badge bg-warning'>Pending</span>";
 					break;
+				case "In Process":
+					$status = "<span class='badge bg-warning'>In Process</span>";
+					break;
 				case "Success":
 					$status = "<span class='badge bg-success'>Success</span>";
 					break;
@@ -190,6 +193,9 @@ class dashboard extends FSD_Controller
                 case "Pending":
                     $status = "<span class='badge bg-warning text-white'>Pending</span>";
                     break;
+				case "In Process":
+					$status = "<span class='badge bg-warning text-white'>In Process</span>";
+					break;
                 case "Issued":
                     $status = "<span class='badge bg-success'>Success</span>";
                     break;

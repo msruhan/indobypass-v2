@@ -21,14 +21,14 @@ class Welcome extends FSD_Controller
 		$data['active_employees'] = $this->employee_model->count_where(['Status' => 'Enabled']);
 		$data['inactive_employees'] = $this->employee_model->count_where(['Status' => 'Disabled']);
 
-		$data['imei_orders'] = ['Pending' => 0, 'Issued' => 0, 'Canceled' => 0];
+		$data['imei_orders'] = ['Pending' => 0, 'Issued' => 0, 'In Process' => 0, 'Canceled' => 0];
 		$status_count = $this->imeiorder_model->get_count_by('Status');
 		foreach ($status_count as $v) 
 		{
 			$data['imei_orders'][$v->Status] = $v->countof;
 		}
 
-		$data['file_orders'] = ['Pending' => 0, 'Issued' => 0, 'Canceled' => 0];
+		$data['file_orders'] = ['Pending' => 0, 'Issued' => 0, 'In Process' => 0, 'Canceled' => 0];
 		$status_count = $this->fileorder_model->get_count_by('Status');
 		foreach ($status_count as $v) 
 		{
