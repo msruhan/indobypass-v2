@@ -11,14 +11,14 @@ class Autoresponder extends FSD_Controller
 		parent::__construct();
 		$this->load->model('autoresponder_model');
 		$this->load->helper('ckeditor');
-		
+
 		//Ckeditor's configuration
 		$this->editor =  array(
-		
+
 			//ID of the textarea that will be replaced
 			'id' 	=> 	'Message',
 			'path'	=>	$this->config->item('ckeditor_path'),
-		
+
 			//Optionnal values
 			'config' => array(
 				'toolbar' 	=> 	"Full", 	//Using the Full toolbar
@@ -28,17 +28,17 @@ class Autoresponder extends FSD_Controller
 				'stylesheetParser_skipSelectors' => '/(^body\.|^caption\.|\.high|^\.)/i;',
 				//'contentsCss' => base_url("css/styles.css"),				
 				'filebrowserBrowseUrl' => site_url('admin/filemanager/browse').'?mode=file'
-					
+
 			)
 		);				
 	}
-	
+
 	public function index()
 	{
 		$data['template'] = "admin/autoresponder/list";
 		$this->load->view('admin/master_template',$data);
 	}
-	
+
 	public function listener()
 	{
 		echo $this->autoresponder_model->get_datatable($this->access);
@@ -60,19 +60,19 @@ class Autoresponder extends FSD_Controller
 		$data['template'] = "admin/autoresponder/edit";
 		$this->load->view('admin/master_template',$data);
 	}
-		
+
 	public function delete($id)
 	{	
 		$this->autoresponder_model->delete($id);
 		$this->session->set_flashdata('success', 'Record delete successfully.');
 		redirect("admin/autoresponder/");
 	}
-	
+
 	public function insert()
 	{
 		$this->load->library('form_validation');
 		$this->load->library('image_lib');		
-		
+
 		$this->form_validation->set_rules('Title' , 'Title' ,'required|min_length[3]');
 		$this->form_validation->set_rules('FromEmail' , 'From Email' ,'required|min_length[3]');
 		$this->form_validation->set_rules('ToEmail' , 'To Email' ,'required|min_length[3]');
@@ -97,11 +97,11 @@ class Autoresponder extends FSD_Controller
 	public function update()
 	{
 		$this->load->library('form_validation');
-		$this->load->helper('image_note');
-				
+		$this->load->library('image_lib');
+
 		$data = $this->input->post(NULL,TRUE);
 		$id = $data['ID'];
-							
+
 		$this->form_validation->set_rules('Title' , 'Title' ,'required|min_length[3]');
 		$this->form_validation->set_rules('FromEmail' , 'From Email' ,'required|min_length[3]');
 		$this->form_validation->set_rules('ToEmail' , 'To Email' ,'required|min_length[3]');
@@ -112,11 +112,6 @@ class Autoresponder extends FSD_Controller
 		}
 		else
 		{
-			$deletedString = str_replace('[removed]', '', $data['Message']);
-
-			$note_helper = saveNoteImage(html_entity_decode($deletedString), "1");
-            $data['Message'] = $note_helper['dom'];
-
 			unset($data['ID']);						
 			$data['Status'] = isset($data['Status'])?"Enabled":"Disabled"; 
 			$data['UpdatedDateTime'] = date("Y-m-d H:i:s");
@@ -128,4 +123,3 @@ class Autoresponder extends FSD_Controller
 }
 
 /* End of file autoresponder.php */
-/* Location: ./application/controllers/admin/autoresponder.php */
