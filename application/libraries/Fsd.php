@@ -29,7 +29,7 @@ class Fsd
 			$config['smtp_user'] = $settings['smtp_username'];
 			$config['smtp_pass'] = $settings['smtp_password'];
 			$config['smtp_port'] = empty($settings['smtp_port'])? 25: $settings['smtp_port'];
-			// $config['smtp_crypto'] = 'tls';
+			$config['smtp_crypto'] = 'ssl';
 			$config['crlf'] = "\r\n";
 			$config['newline'] = "\r\n";
 		}
