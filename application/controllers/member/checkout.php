@@ -7,6 +7,7 @@ class checkout extends FSD_Controller
 	public function __construct()
 	{
 		parent::__construct();
+		$this->load->library('tripay_lib');
 		$this->load->library('merchant');
 		$this->merchant->load('paypal_express');
 		$this->load->model('payment_model');
@@ -165,7 +166,7 @@ class checkout extends FSD_Controller
 		$order_id = CASH_PAYMENT_RECEIVED . $date . $random . '|' . $this->session->userdata('MemberID');
 
 		$datas['order_id'] = $order_id;
-		$datas['gross_amount'] = $_POST['gross_amount'];
+		$datas['gross_amount'] = str_replace('.', '', $_POST['gross_amount']);
 		$datas['member_first_name'] = $this->session->userdata('MemberFirstName');
 		$datas['member_last_name'] = $this->session->userdata('MemberLastName');
 		$datas['member_email'] = $this->session->userdata('MemberEmail');
@@ -177,5 +178,63 @@ class checkout extends FSD_Controller
 		$result = $midtrans_object->get_token($datas);
 
 		echo json_encode($result);
+	}
+
+	public function getTokenTripay() {
+		if ($this->input->post()) {
+			$amount = str_replace('.', '', $this->input->post('gross_amount'));
+			$method = $this->input->post('payment_method');
+			
+			$merchant_ref = 'INV-' . time() . '-' . $this->session->userdata('MemberID');
+			
+			$data = [
+				'amount' => $amount,
+				'method' => $method,
+				'merchant_ref' => $merchant_ref,
+				'customer_name' => $this->session->userdata('MemberFirstName') . ' ' . $this->session->userdata('MemberLastName'),
+				'customer_email' => $this->session->userdata('MemberEmail'),
+				'customer_phone' => $this->session->userdata('MemberPhone') ?: '08123456789',
+				'order_items' => [
+					[
+						'sku' => 'CREDIT',
+						'name' => 'Add Credit',
+						'price' => $amount,
+						'quantity' => 1
+					]
+				]
+			];
+			
+			$response = $this->tripay_lib->create_transaction($data);
+			
+			if ($response && $response['success']) {
+				// Save transaction to database
+				$transaction_data = [
+					'member_id' => $this->session->userdata('MemberID'),
+					'merchant_ref' => $merchant_ref,
+					'tripay_reference' => $response['data']['reference'],
+					'amount' => $amount,
+					'status' => 'UNPAID',
+					'created_at' => date('Y-m-d H:i:s')
+				];
+				
+				$this->db->insert('tripay_transactions', $transaction_data);
+				
+				echo json_encode([
+					'success' => true,
+					'checkout_url' => $response['data']['checkout_url']
+				]);
+			} else {
+				echo json_encode([
+					'success' => false,
+					'message' => $response['message']
+				]);
+			}
+		}
+	}
+
+	public function getPaymentChannel() {
+		$response = $this->tripay_lib->get_payment_channels();
+
+		echo json_encode($response);
 	}
 }

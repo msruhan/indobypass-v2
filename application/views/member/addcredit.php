@@ -32,7 +32,9 @@
                             class="control-label"><?php echo $this->lang->line('credit_fields_payment_type'); ?></label>
                         <div class="col-8">
                             <select name="payment_type" id="payment_type" class="form-control" required onchange="changePaymentType()">
-                                <option value="midtrans">Indonesia Payment</option>
+                                <!-- <option value="midtrans">Indonesia Payment</option> -->
+                                <option value="">--Select payment type--</option>
+                                <option value="tripay">Tripay</option>
                                 <option value="paypal">PayPal</option>
                             </select>
                         </div>
@@ -50,7 +52,21 @@
                         <label
                             class="control-label">Credit Amount (IDR)</label>
                         <div class="col-8">
-                            <input type="number" class="form-control" id="inputCredit" placeholder="0">
+                            <input type="text" class="form-control input_amount" id="inputCredit" placeholder="0">
+                        </div>
+                    </div>
+                    <div class="form-group credit_tripay">
+                        <label
+                            class="control-label">Credit Amount (IDR)</label>
+                        <div class="col-8">
+                            <input type="text" class="form-control input_amount" id="inputCreditTripay" placeholder="0" required>
+                        </div>
+                    </div>
+                    <div class="form-group credit_tripay">
+                        <label class="control-label">Payment Method</label>
+                        <div class="col-8">
+                            <select name="tripay_method" id="tripay_method" class="form-control" required>
+                            </select>
                         </div>
                     </div>
                     <div class="form-group btn_paypal">
@@ -63,6 +79,12 @@
                         <div class="col-sm-offset-3 col-sm-9">
                             <button type="submit"
                                 class="btn btn-info btn-sm" onclick="getTokenMidtrans()">Add Credits</button>
+                        </div>
+                    </div>
+                    <div class="form-group btn_tripay">
+                        <div class="col-sm-offset-3 col-sm-9">
+                            <button type="submit"
+                                class="btn btn-info btn-sm" onclick="processTripayPayment()">Add Credits</button>
                         </div>
                     </div>
 
@@ -156,6 +178,13 @@ $(document).ready(function() {
     $('.credit_paypal').addClass('d-none', true);
     $('.btn_paypal').addClass('d-none', true);
     $('.note_paypal').addClass('d-none', true);
+
+    $('.credit_tripay').addClass('d-none', true);
+    $('#inputCredit').attr('disabled', true);
+    
+    $('.btn_tripay').addClass('d-none', true);
+
+    getPaymentChannel();
 });
 
 function changePaymentType () {
@@ -167,13 +196,30 @@ function changePaymentType () {
 
         $('.credit_midtrans').removeClass('d-none', true);
         $('.btn_midtrans').removeClass('d-none', true);
-    }else{
+
+        $('.credit_tripay').addClass('d-none', true);
+        $('.btn_tripay').addClass('d-none', true);
+
+    } if($('#payment_type').val() == 'tripay') {
+        $('.credit_paypal').addClass('d-none', true);
+        $('.btn_paypal').addClass('d-none', true);
+        $('.note_paypal').addClass('d-none', true);
+
+        $('.credit_tripay').removeClass('d-none', true);
+        $('.btn_tripay').removeClass('d-none', true);
+
+        $('.credit_midtrans').addClass('d-none', true);
+        $('.btn_midtrans').addClass('d-none', true);
+    } else{
         $('.credit_paypal').removeClass('d-none', true);
         $('.btn_paypal').removeClass('d-none', true);
         $('.note_paypal').removeClass('d-none', true);
 
         $('.credit_midtrans').addClass('d-none', true);
         $('.btn_midtrans').addClass('d-none', true);
+
+        $('.credit_tripay').addClass('d-none', true);
+        $('.btn_tripay').addClass('d-none', true);
 
     }
 }
@@ -226,4 +272,70 @@ function getTokenMidtrans(){
         console.log("Error!!! " + errorThrown);
     });
 }
+
+function processTripayPayment() {
+
+    if($('#inputCreditTripay').val() == 0){
+        swal('Warning!', 'Please enter credit amount', 'warning');
+        return false;
+    }
+
+    if($('#tripay_method').val() == ''){
+        swal('Warning!', 'Please select payment method', 'warning');
+        return false;
+    }
+
+    $.ajax({
+        method: "POST",
+        dataType: "JSON",
+        url: base_url + "member/checkout/getTokenTripay",
+        data: {
+            'gross_amount': $('#inputCreditTripay').val(),
+            'payment_method': $('#tripay_method').val()
+        },
+        beforeSend: function () { },
+        success: function (response) {
+            if(response.success) {
+                window.open(response.checkout_url, '_blank');
+            } else {
+                swal('Error!', response.message, 'error');
+            }
+        },
+        error: function() {
+            swal('Error!', 'Something went wrong!', 'error');
+        }
+    });
+}
+
+function getPaymentChannel() {
+    $.ajax({
+        method: "POST",
+        dataType: "JSON",
+        url: base_url + "member/checkout/getPaymentChannel",
+        data: {},
+        beforeSend: function () { },
+        success: function (response) {
+
+            var html = '<option value="">--Select a method--</option>';
+    
+            $.each(response.data, function(index, method) {
+                if (method) {
+                     html += '<option value="' + method.code + '">' +method.name + '</option>';
+                }
+            });
+            
+            $('#tripay_method').html(html);
+        },
+        error: function() {
+            swal('Error!', 'Something went wrong!', 'error');
+        }
+    });
+}
+
+$('.input_amount').on('input', function () {
+    // var value = $(this).val();
+    $(this).val(function (index, value) {
+        return value.replace(/\D/g, '').replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+    });
+});
 </script>
