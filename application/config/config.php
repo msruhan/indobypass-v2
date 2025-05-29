@@ -26,8 +26,8 @@ $config['captcha_url']					= 	$config['base_url'].'uploads/captcha/';
 $config['testimonial_thumb_url']		= 	$config['base_url'].'uploads/testimonials/';
 
 // Midtrans
-$config['midtransServerKey']			=	'Mid-server-924p7L9E01yMJ5YEKenE-D2r';
-$config['midtransClientKey']			=	'Mid-client-1cB2hwK9YQ7YaCuT';
+$config['midtransServerKey']			=	'';
+$config['midtransClientKey']			=	'';
 $config['midtransIsProduction']			=	true;
 
 //CK Editor
