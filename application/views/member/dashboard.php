@@ -8,6 +8,7 @@
 			<div class="ms-md-auto py-2 py-md-0">
 				<a href="#" class="btn btn-label-info btn-round me-2">Manage</a>
 				<a href="<?= site_url('member/dashboard/addfund') ?>" class="btn btn-primary btn-round"> + Add Fund</a>
+				<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 			</div>
 		</div>
 	</head>
