@@ -258,12 +258,15 @@ $(document).ready(function() {
                         // set html if data exist
                         html +=
                             '<div class="form-group">' +
-                            '<label class="col-sm-3 control-label"><strong><?php echo $this->lang->line('imei_fields_price') ?></strong></label>' +
-                            '<div class="col-sm-9 text">' +
-                            '<?php echo format_currency($method['Price']); ?> </div>' +
-                            '</div>';
+                            '<label class="col-sm-3 control-label"><?php echo $this->lang->line('imei_fields_price') ?></label>' +
+                            '<div class="col-sm-9 text">' + '$' + data.price_fix +
+                            '</div>' +
+                            '</div>'
                     }
 
+                     
+
+                    
                     if (data.delivery_time) {
                         // set html if data exist
                         html +=
