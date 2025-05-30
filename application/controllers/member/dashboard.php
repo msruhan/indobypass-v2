@@ -113,7 +113,7 @@ class dashboard extends FSD_Controller
 					$status = "<span class='badge bg-danger'>Rejected</span>"; // Mengubah Canceled menjadi Rejected
 					break;
 				default:
-					$status = "<span class='badge bg-secondary'>Unknown</span>";
+					$status = "<span class='badge bg-secondary'>In process</span>";
 					break;
 			}
 
@@ -203,7 +203,7 @@ class dashboard extends FSD_Controller
                     $status = "<span class='badge bg-danger'>Rejected</span>";
                     break;
                 default:
-                    $status = "<span class='bg bg-secondary'>Unknown</span>";
+                    $status = "<span class='bg bg-secondary'>In process</span>";
                     break;
             }
 
