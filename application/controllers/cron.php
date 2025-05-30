@@ -131,7 +131,7 @@ class Cron extends CI_Controller
 							case 0: // Pendding					
 							case 1: // In Process
 								$data['Code'] = $request['SUCCESS'][0]['CODE'];
-								$data['Status'] = 'In Process';
+								$data['Status'] = 'In process';
 								$data['UpdatedDateTime'] = date("Y-m-d H:i:s");									
 								$this->imeiorder_model->update($data, $id);
 								## Get Issue Email Template ##
