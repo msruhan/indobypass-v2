@@ -129,7 +129,14 @@ class Cron extends CI_Controller
 						switch(intval($request['SUCCESS'][0]['STATUS']))
 						{
 							case 0: // Pendding					
-							case 1: //In Process				
+							case 1: // In Process
+								$data['Code'] = $request['SUCCESS'][0]['CODE'];
+								$data['Status'] = 'In Process';
+								$data['UpdatedDateTime'] = date("Y-m-d H:i:s");									
+								$this->imeiorder_model->update($data, $id);
+								## Get Issue Email Template ##
+								$data = $this->autoresponder_model->get_where(array('Status' => 'Enabled', 'ID' => 1)); // IMEI Code Issued 
+								break;				
 							case 2:
 								break;
 							case 3: // Rejected
