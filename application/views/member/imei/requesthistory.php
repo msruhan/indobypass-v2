@@ -37,6 +37,15 @@
         font-size: 1rem;
     }
 
+    .soft-label {
+        font-size: 0.9rem;
+        color: #6c757d;
+    }
+    .soft-value {
+        font-size: 1rem;
+        font-weight: 500;
+    }
+
 </style>
 
 <div class="page-header">
@@ -92,59 +101,28 @@
 </div>
 
 <!-- Modal -->
-<div class="modal fade" id="detailImeiOrderModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel">Detail IMEI Order</h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <div class="card card-action mb-4">
-                    <div class="collapse show">
-                        <div class="table-responsive">
-                            <table class="table table-hover">
-                                <tbody class="table-border-bottom-0">
-                                    <tr>
-                                        <th style="width: 160px;">SERVICE </th>
-                                        <td id="titleModal"></td>
-                                    </tr>
-                                    <tr>
-                                        <th>IMEI </th>
-                                        <td id="imeiModal"></td>
-                                    </tr>
-                                    <tr>
-                                        <th>PRICE </th>
-                                        <td id="priceModal"></td>
-                                    </tr>
-                                    <tr>
-                                        <th>STATUS </th>
-                                        <td id="statusModal"></td>
-                                    </tr>
-                                    <tr>
-                                        <th>NOTE </th>
-                                        <td id="noteModal"></td>
-                                    </tr>
-                                    <tr>
-                                        <th>ORDER TIME </th>
-                                        <td id="createdAtModal"></td>
-                                    </tr>
-                                    <tr>
-                                        <th>REPLY TIME </th>
-                                        <td id="replyAtModal"></td>
-                                    </tr>
-                                    <tr>
-                                        <th>REPLY </th>
-                                        <td id="codeModal"></td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-            </div>
+<div class="modal fade" id="detailImeiOrderModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content shadow rounded-3 border-0">
+      <div class="modal-header bg-light border-bottom-0">
+        <i class="fas fa-info-circle me-2 text-primary"></i>
+        <h5 class="modal-title text-primary fw-bold">IMEI Order Detail</h5>
+        <button class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <div class="row g-4">
+          <div class="col-6"><div class="soft-label">Service</div><div class="soft-value" id="titleModal">N/A</div></div>
+          <div class="col-6"><div class="soft-label">IMEI</div><div class="soft-value" id="imeiModal">N/A</div></div>
+          <div class="col-6"><div class="soft-label">Price</div><div class="soft-value" id="priceModal">N/A</div></div>
+          <div class="col-6"><div class="soft-label">Status</div><div class="soft-value" id="statusModal">N/A</div></div>
+          <div class="col-12"><div class="soft-label">Note</div><div class="soft-value" id="noteModal">N/A</div></div>
+          <div class="col-6"><div class="soft-label">Order Time</div><div class="soft-value" id="createdAtModal">N/A</div></div>
+          <div class="col-6"><div class="soft-label">Reply Time</div><div class="soft-value" id="replyAtModal">N/A</div></div>
+          <div class="col-12"><div class="soft-label">Reply</div><div class="soft-value" id="codeModal">N/A</div></div>
         </div>
+      </div>
     </div>
+  </div>
 </div>
 
 </style>
@@ -292,7 +270,7 @@ $(document).ready(function() {
             case 'Rejected':
                 return "<span class='badge bg-danger'>Rejected</span>";
             default:
-                return "<span class='badge bg-secondary'>In process</span>";
+                return "<span class='badge bg-secondary'>In</span>";
         }
     }
 });
