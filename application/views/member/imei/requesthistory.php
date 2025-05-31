@@ -197,7 +197,7 @@ $(document).ready(function() {
             $('#imeiModal').text(row.data().imei || 'N/A');
             $('#priceModal').text(row.data().price || 'N/A');
             $('#statusModal').html(formatBadge(row.data().status));
-            $('#codeModal').html(row.data().code || 'N/A');  // Use .html() here
+            $('#codeModal').html(`<em>${row.data().code || 'N/A'}</em>`);
             $('#noteModal').text(row.data().note || 'N/A');
             $('#createdAtModal').text(row.data().created_at || 'N/A');
             $('#replyAtModal').text(row.data().updated_date_time || 'N/A');
