@@ -297,7 +297,7 @@
                 case 'Rejected':
                     return "<span class='badge bg-danger'>Rejected</span>";
                 default:
-                    return "<span class='badge bg-secondary'>Unknown</span>";
+                    return "<span class='badge bg-secondary'>In process</span>";
             }
         }
 

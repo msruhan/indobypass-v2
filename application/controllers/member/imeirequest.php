@@ -202,6 +202,7 @@ class imeirequest extends FSD_Controller
 			$pricing = $this->method_model->get_user_price($member_id, $id);
 			
 			$data['field_type'] = $method[0]['FieldType'];
+			$data['price_fix'] = $method[0]['Price'];
 			$data['price'] = floatval($pricing[0]['Price']);
 			$data['delivery_time'] = $method[0]['DeliveryTime'];
 			$data['description'] = $method[0]['Description'];
@@ -250,6 +251,7 @@ class imeirequest extends FSD_Controller
 			$pricing = $this->method_model->get_user_price($member_id, $id);
 			
 			$data['field_type'] = $method[0]['FieldType'];
+			$data['price_fix'] = $method[0]['Price'];
 			$data['price'] = floatval($pricing[0]['Price']);
 			$data['delivery_time'] = $method[0]['DeliveryTime'];
 			$data['description'] = $method[0]['Description'];
