@@ -10,6 +10,7 @@ class User extends FSD_Controller
 		$this->load->model('method_model');
 		$this->load->model('fileservices_model');
 		$this->load->model('autoresponder_model');
+		$this->load->model('otp_model');
 	}
 	
 	public function forgot_password()
@@ -128,10 +129,18 @@ class User extends FSD_Controller
 							'MemberPhone' => $query[0]['Mobile'],
 							'MemberCurrency' => $query[0]['Currency'],
 							'IDR' => $data['key']['idr'],
-							'is_member_logged_in' => TRUE 
+							'is_member_logged_in' => FALSE 
 						);
 						$this->session->set_userdata($session);					
-						redirect('member/dashboard');
+						// redirect('member/dashboard');
+
+						// Instead of setting the full session, set temporary session
+						$this->session->set_userdata('temp_user_id', $query[0]['ID']);
+						$this->session->set_userdata('temp_user_email', $query[0]['Email']);
+						
+						// Send OTP and redirect to verification
+						$this->send_otp();
+						redirect('user/verify_otp');
 					}	
 					else 
 					{
@@ -146,6 +155,11 @@ class User extends FSD_Controller
 				}			 
 			}
 		}
+		
+		if ($this->session->userdata('is_member_logged_in')) {
+			redirect('member/dashboard');
+		}
+
 		$data = array();
 		$data["title"] = "Login";
 		$data["heading"] = "Login";
@@ -298,6 +312,82 @@ class User extends FSD_Controller
 		$this->session->set_userdata('MemberCurrency', $member_currency);
 		echo json_encode($update);
 		
+	}
+
+	public function send_otp() {
+		if (!$this->session->userdata('temp_user_id')) {
+			redirect('user/login');
+		}
+				
+		$user_id = $this->session->userdata('temp_user_id');
+		$email = $this->session->userdata('temp_user_email');
+		
+		// Generate OTP
+		$otp_code = $this->otp_model->generate_otp($user_id, $email);
+		
+		// Send OTP email
+		$this->send_otp_email($email, $otp_code);
+		
+		if ($this->input->is_ajax_request()) {
+			echo json_encode(array('status' => 'success', 'message' => $this->lang->line('otp_sent')));
+		} else {
+			$this->session->set_flashdata('success', $this->lang->line('otp_sent'));
+			redirect('user/verify_otp');
+		}
+	}
+
+	public function verify_otp() {
+		if (!$this->session->userdata('temp_user_id')) {
+			redirect('user/login');
+		}
+			
+		if ($this->input->post('otp_code')) {
+
+			$user_id = $this->session->userdata('temp_user_id');
+			$otp_code = $this->input->post('otp_code');
+			
+			if ($this->otp_model->verify_otp($user_id, $otp_code)) {
+				// OTP verified successfully
+				$this->session->unset_userdata('temp_user_id');
+				$this->session->unset_userdata('temp_user_email');
+				
+				$session = array(
+					'is_member_logged_in' => TRUE 
+				);
+				$this->session->set_userdata($session);	
+
+				$this->session->set_flashdata('success', $this->lang->line('otp_success'));
+				
+				redirect('member/dashboard'); // or wherever you want to redirect
+			} else {
+				$this->session->set_flashdata('error', $this->lang->line('otp_invalid'));
+			}
+		}else{
+				$this->session->set_flashdata('error', $this->lang->line('otp_invalid'));
+		}
+		
+		$data['page_title'] = $this->lang->line('otp_title');
+		$this->load->view('user/verify_otp', $data);
+	}
+
+	private function send_otp_email($email, $otp_code) {
+		// Get OTP email template (you'll need to create this in your autoresponder)
+		$template = $this->autoresponder_model->get_where(array('Status' => 'Enabled', 'ID' => 12)); // OTP email template
+		
+		if (isset($template) && count($template) > 0) {
+			$from_name = $template[0]['FromName'];
+			$from_email = $template[0]['FromEmail'];
+			$to_email = $email;
+			$subject = $template[0]['Subject'];
+			$message = html_entity_decode($template[0]['Message']);
+			
+			// Replace OTP code in template
+			$post['OTPCode'] = $otp_code;
+			$post['Email'] = $email;
+			
+			$this->fsd->email_template($post, $from_email, $from_name, $to_email, $subject, $message);
+			$this->fsd->sent_email($from_email, $from_name, $to_email, $subject, $message);
+		}
 	}
 }
 
