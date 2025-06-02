@@ -67,12 +67,45 @@
     </div>
 </div>
 
+
 <div class="row">
     <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12">
         <div class="card">
             <div class="card-header custom-card-header">
                 <div class="card-title">IMEI Order History</div>
             </div>
+
+            <div class="row mb-3">
+                <div class="col-md-3">
+                    <label for="statusFilter" class="form-label fw-semibold">Filter by Status</label>
+                    <select id="statusFilter" class="form-select">
+                        <option value="">All</option>
+                        <option value="<span class='badge bg-success'>Success</span>">Success</option>
+                        <option value="<span class='badge bg-warning'>Pending</span>">Pending</option>
+                        <option value="<span class='badge bg-warning'>In Process</span>">In Process</option>
+                        <option value="<span class='badge bg-danger'>Rejected</span>">Rejected</option>
+                    </select>
+                </div>
+
+                <div class="col-md-3">
+                    <label for="startDate" class="form-label fw-semibold">Start Date</label>
+                    <input type="date" id="startDate" class="form-control">
+                </div>
+
+                <div class="col-md-3">
+                    <label for="endDate" class="form-label fw-semibold">End Date</label>
+                    <input type="date" id="endDate" class="form-control">
+                </div>
+
+                <div class="col-md-3 d-flex align-items-end gap-2">
+                    <button id="applyFilter" class="btn btn-primary w-100">Start Filter</button>
+                    <button id="resetFilter" class="btn btn-secondary w-100">Reset</button>
+                </div>
+
+            </div>
+
+
+
             <div class="card-body custom-card-body">
                 <div class="row">
                     <div class="table-responsive p-0">
@@ -129,46 +162,90 @@
 <!-- Select2 -->
 <script type="text/javascript">
 var base_url = "<?= base_url() ?>";
-$(document).ready(function() {
+$(document).ready(function () {
     var base_url = "<?= base_url() ?>";
 
-    // Initialize DataTable
     var table = $("#table_data_imei").DataTable({
-        ajax: {
-            url: base_url + "member/dashboard/listener_new",
-            type: 'POST',
-            data: {}
+    ajax: {
+        url: base_url + "member/dashboard/listener_new",
+        type: 'POST',
+        data: function (d) {
+            d.status = $('#statusFilter').val(); // Masih dikirim, meskipun tidak dipakai di backend
         },
-        columns: [
-            {
-                data: null,
-                className: 'details-control column-actions',
-                defaultContent: '<button class="btn btn-secondary btn-round btn-xs toggle-detail"><i class="fas fa-chevron-down"></i></button>',
-                orderable: false
-            },
-            { data: "no" },
-            { data: "created_at" },
-            { data: "imei" },
-            { data: "service", className: 'column-service' },
-            { data: "status", className: 'column-status' },
-            {
-                data: null,
-                className: 'column-details',
-                defaultContent: '<button class="btn btn-info btn-xs view-detail">View</button>',
-                orderable: false
-            },
-            
-        ],
-        pagingType: "input",
-        processing: true,
-        serverSide: true,
-        bInfo: false,
-        ordering: false,
-        deferRender: true,
-        searching: true
+        dataSrc: function(json) {
+        var selectedStatus = $('#statusFilter').val();
+        var startDate = $('#startDate').val();
+        var endDate = $('#endDate').val();
+
+        return json.data.filter(function(row) {
+            // --- STATUS FILTER ---
+            var rowStatusText = $('<div>').html(row.status).text().trim().toLowerCase();
+            var selectedStatusText = $('<div>').html(selectedStatus).text().trim().toLowerCase();
+            var statusMatch = !selectedStatus || rowStatusText === selectedStatusText;
+
+            // --- DATE FILTER ---
+            var dateMatch = true;
+            if (startDate || endDate) {
+                var rowDate = new Date(row.created_at);
+                if (startDate) {
+                    var fromDate = new Date(startDate);
+                    dateMatch = dateMatch && rowDate >= fromDate;
+                }
+                if (endDate) {
+                    var toDate = new Date(endDate);
+                    toDate.setHours(23, 59, 59, 999); // agar tetap dalam hari yang sama
+                    dateMatch = dateMatch && rowDate <= toDate;
+                }
+            }
+
+            return statusMatch && dateMatch;
+        });
+    }
+
+    },
+    columns: [
+        {
+            data: null,
+            className: 'details-control column-actions',
+            defaultContent: '<button class="btn btn-secondary btn-round btn-xs toggle-detail"><i class="fas fa-chevron-down"></i></button>',
+            orderable: false
+        },
+        { data: "no" },
+        { data: "created_at" },
+        { data: "imei" },
+        { data: "service", className: 'column-service' },
+        { data: "status", className: 'column-status' },
+        {
+            data: null,
+            className: 'column-details',
+            defaultContent: '<button class="btn btn-info btn-xs view-detail">View</button>',
+            orderable: false
+        },
+    ],
+    pagingType: "input",
+    processing: true,
+    serverSide: true,
+    bInfo: false,
+    ordering: false,
+    deferRender: true,
+    searching: true
+});
+
+
+    // Tombol START FILTER
+    $('#applyFilter').on('click', function () {
+        table.ajax.reload();
     });
 
-    // Handle click event for the 'Toggle' button
+    // Tombol RESET FILTER
+    $('#resetFilter').on('click', function () {
+        $('#statusFilter').val('');
+        $('#startDate').val('');
+        $('#endDate').val('');
+        table.ajax.reload();
+    });
+
+    // Detail toggle & modal (tetap seperti sebelumnya)
     $('#table_data_imei tbody').on('click', 'button.toggle-detail', function () {
         var tr = $(this).closest('tr');
         var row = table.row(tr);
@@ -184,15 +261,11 @@ $(document).ready(function() {
         }
     });
 
-    // Handle click event for 'View Details' button in the main table column
-    $('#table_data_imei tbody').on('click', 'button.view-detail', function () {
-        var tr = $(this).closest('tr');
+    $('#table_data_imei tbody').on('click', 'button.view-detail, button.view-detail-inline', function () {
+        var tr = $(this).closest('tr').hasClass('child') ? $(this).closest('tr').prev() : $(this).closest('tr');
         var row = table.row(tr);
 
         if (row.data()) {
-            console.log("Row data:", row.data());
-
-            // Populate modal with row data
             $('#titleModal').text(row.data().service || 'N/A');
             $('#imeiModal').text(row.data().imei || 'N/A');
             $('#priceModal').text(row.data().price || 'N/A');
@@ -202,50 +275,16 @@ $(document).ready(function() {
             $('#createdAtModal').text(row.data().created_at || 'N/A');
             $('#replyAtModal').text(row.data().updated_date_time || 'N/A');
 
-            // Show the modal
             $('#detailImeiOrderModal').modal('show');
-        } else {
-            console.error('No data available for this row.');
-        }
-    });
-
-    // Handle click event for 'View Details' button in expandable row
-    $('#table_data_imei tbody').on('click', 'button.view-detail-inline', function () {
-        var tr = $(this).closest('tr').prev(); // The row is the previous sibling (because it was expanded)
-        var row = table.row(tr);
-
-        if (row.data()) {
-            console.log("Row data inline:", row.data());
-
-            // Populate modal with row data
-            $('#titleModal').text(row.data().service || 'N/A');
-            $('#imeiModal').text(row.data().imei || 'N/A');
-            $('#priceModal').text(row.data().price || 'N/A');
-            $('#statusModal').html(formatBadge(row.data().status));
-            $('#codeModal').html(row.data().code || 'N/A');  // Use .html() here
-            $('#noteModal').text(row.data().note || 'N/A');
-            $('#createdAtModal').text(row.data().created_at || 'N/A');
-            $('#replyAtModal').text(row.data().updated_date_time || 'N/A');
-
-            // Show the modal
-            $('#detailImeiOrderModal').modal('show');
-        } else {
-            console.error('No data available for this row.');
         }
     });
 
     function format(d) {
         return `
             <div class="details-container">
-                <div class="details-row">
-                    <strong>Service:</strong> ${d.service || 'N/A'}
-                </div>
-                <div class="details-row">
-                    <strong>Status:</strong> ${formatBadge(d.status)}
-                </div>
-                <div class="details-row">
-                    <strong>Detail:</strong> <button class="btn btn-info btn-xs view-detail-inline">View</button>
-                </div>
+                <div class="details-row"><strong>Service:</strong> ${d.service || 'N/A'}</div>
+                <div class="details-row"><strong>Status:</strong> ${formatBadge(d.status)}</div>
+                <div class="details-row"><strong>Detail:</strong> <button class="btn btn-info btn-xs view-detail-inline">View</button></div>
             </div>
         `;
     }
@@ -258,20 +297,15 @@ $(document).ready(function() {
 
     function formatBadge(status) {
         var normalizedStatus = extractTextFromHTML(status).trim();
-        console.log("Normalized status:", normalizedStatus);
-
         switch (normalizedStatus) {
-            case 'Success':
-                return "<span class='badge bg-success'>Success</span>";
-            case 'Pending':
-                return "<span class='badge bg-warning'>Pending</span>";
-            case 'In Process':
-                return "<span class='badge bg-warning'>In Process</span>";
-            case 'Rejected':
-                return "<span class='badge bg-danger'>Rejected</span>";
-            default:
-                return "<span class='badge bg-secondary'>In</span>";
+            case 'Success': return "<span class='badge bg-success'>Success</span>";
+            case 'Pending': return "<span class='badge bg-warning'>Pending</span>";
+            case 'In Process': return "<span class='badge bg-warning'>In Process</span>";
+            case 'Rejected': return "<span class='badge bg-danger'>Rejected</span>";
+            default: return "<span class='badge bg-secondary'>N/A</span>";
         }
     }
 });
+
 </script>
+
