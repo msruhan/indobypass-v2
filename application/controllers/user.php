@@ -121,26 +121,40 @@ class User extends FSD_Controller
 						foreach ($settings as $s)
 							$data['key'][$s['Key']] = $s['Value'];
 
-						$session = array(
-							'MemberID' => $query[0]['ID'],
-							'MemberEmail' => $query[0]['Email'],
-							'MemberFirstName' => $query[0]['FirstName'],
-							'MemberLastName' => $query[0]['LastName'],
-							'MemberPhone' => $query[0]['Mobile'],
-							'MemberCurrency' => $query[0]['Currency'],
-							'IDR' => $data['key']['idr'],
-							'is_member_logged_in' => FALSE 
-						);
-						$this->session->set_userdata($session);					
-						// redirect('member/dashboard');
-
-						// Instead of setting the full session, set temporary session
-						$this->session->set_userdata('temp_user_id', $query[0]['ID']);
-						$this->session->set_userdata('temp_user_email', $query[0]['Email']);
+						if($data['key']['OTP_verification'] == 'Enabled') {
+							$session = array(
+								'MemberID' => $query[0]['ID'],
+								'MemberEmail' => $query[0]['Email'],
+								'MemberFirstName' => $query[0]['FirstName'],
+								'MemberLastName' => $query[0]['LastName'],
+								'MemberPhone' => $query[0]['Mobile'],
+								'MemberCurrency' => $query[0]['Currency'],
+								'IDR' => $data['key']['idr'],
+								'is_member_logged_in' => FALSE 
+							);
+							$this->session->set_userdata($session);
 						
-						// Send OTP and redirect to verification
-						$this->send_otp();
-						redirect('user/verify_otp');
+							// Instead of setting the full session, set temporary session
+							$this->session->set_userdata('temp_user_id', $query[0]['ID']);
+							$this->session->set_userdata('temp_user_email', $query[0]['Email']);
+							
+							// Send OTP and redirect to verification
+							$this->send_otp();
+							redirect('user/verify_otp');
+						}else{
+								$session = array(
+								'MemberID' => $query[0]['ID'],
+								'MemberEmail' => $query[0]['Email'],
+								'MemberFirstName' => $query[0]['FirstName'],
+								'MemberLastName' => $query[0]['LastName'],
+								'MemberPhone' => $query[0]['Mobile'],
+								'MemberCurrency' => $query[0]['Currency'],
+								'IDR' => $data['key']['idr'],
+								'is_member_logged_in' => TRUE 
+							);
+							$this->session->set_userdata($session);
+							redirect('member/dashboard');
+						}
 					}	
 					else 
 					{

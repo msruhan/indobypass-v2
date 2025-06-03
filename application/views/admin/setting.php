@@ -86,6 +86,12 @@
                                         <span class="help-block"> Commission will be given on first recharged only.</span>
                                     </div>
                                 </div>
+                                <div class="form-group">
+                                    <label class="col-md-3 control-label">OTP Verification</label>
+                                    <div class="col-md-4">
+                                        <?php echo form_dropdown('OTP_verification', ['Enabled'=>'Enabled', 'Disabled'=>'Disabled'], set_value('OTP_verification', $data['OTP_verification']), 'class="form-control"'); ?>
+                                    </div>
+                                </div>
                                 <div class="form-actions">
                                     <div class="row">
                                         <div class="col-md-offset-3 col-md-9">
@@ -364,7 +370,9 @@
     </div>
 </div>
 <!-- END PAGE CONTENT-->
+<script src="<?php echo $this->config->item('assets_url');?>plugins/bootstrap-switch/js/bootstrap-switch.min.js" type="text/javascript"></script>
 <script>
+
 $( "#btn_chat_submit" ).click(function() {
     // Encode the String
     var chat_code = $('#chat_code').val();
