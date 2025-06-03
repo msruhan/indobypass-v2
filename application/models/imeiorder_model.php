@@ -139,6 +139,62 @@ class imeiorder_model extends CI_Model
         $query = $this->db->count_all($this->tbl_name);
         return $query;
     }
+
+	public function count_all_imei($id)
+	{
+		$sql = "SELECT COUNT(*) as total FROM {$this->tbl_name} WHERE MemberID = ?";
+		$query = $this->db->query($sql, array($id));
+		return $query->row()->total;
+	}
+
+	public function count_filtered_imei($id, $cari_data = '', $status = '', $startDate = '', $endDate = '')
+	{
+		$params = array($id);
+		$sql = "SELECT COUNT(*) as total FROM {$this->tbl_name} t1 
+				INNER JOIN {$this->tbl_method} t2 ON t1.MethodID = t2.ID 
+				WHERE t1.MemberID = ?";
+
+		if (!empty($cari_data)) {
+			$sql .= " AND (
+				t1.IMEI LIKE ? OR 
+				t2.Title LIKE ? OR 
+				t1.Code LIKE ? OR 
+				t1.Note LIKE ? OR 
+				t1.Status LIKE ?
+			)";
+			for ($i = 0; $i < 5; $i++) {
+				$params[] = '%' . $cari_data . '%';
+			}
+		}
+
+		if (!empty($status)) {
+			if ($status === "Success") {
+				$sql .= " AND t1.Status = ?";
+				$params[] = 'Issued';
+			} elseif ($status === "Rejected") {
+				$sql .= " AND t1.Status = ?";
+				$params[] = 'Canceled';
+			} else {
+				$sql .= " AND t1.Status = ?";
+				$params[] = $status;
+			}
+		}
+
+		if (!empty($startDate)) {
+			$sql .= " AND DATE(t1.CreatedDateTime) >= ?";
+			$params[] = $startDate;
+		}
+
+		if (!empty($endDate)) {
+			$sql .= " AND DATE(t1.CreatedDateTime) <= ?";
+			$params[] = $endDate;
+		}
+
+		$query = $this->db->query($sql, $params);
+		return $query->row()->total;
+	}
+
+
 	
     public function count_where($params) 
     {
@@ -211,13 +267,67 @@ class imeiorder_model extends CI_Model
 		return $this->odatatables->generate();
 	}
 
-	public function get_imei_data_new($id, $start, $length, $cari_data)
+	public function get_imei_data_new($id, $start, $length, $cari_data = '', $status = '', $startDate = '', $endDate = '')
 	{
-		$sql = "SELECT t1.ID, t1.IMEI, t2.Title, t2.Price, t1.Code, t1.Note, t1.Status, t1.CreatedDateTime, t1.UpdatedDateTime FROM $this->tbl_name t1 INNER JOIN $this->tbl_method t2 ON t1.MethodID = t2.ID WHERE t1.MemberID = $id AND (t1.IMEI LIKE '%$cari_data%' OR t2.Title LIKE '%$cari_data%' OR t1.Code LIKE '%$cari_data%' OR t1.Note LIKE '%$cari_data%' OR t1.Status LIKE '%$cari_data%') ORDER BY t1.ID DESC LIMIT $start, $length";
+		$params = array($id); // untuk binding ID member
+		$sql = "
+			SELECT 
+				t1.ID, t1.IMEI, t2.Title, t2.Price, 
+				t1.Code, t1.Note, t1.Status, 
+				t1.CreatedDateTime, t1.UpdatedDateTime 
+			FROM {$this->tbl_name} t1 
+			INNER JOIN {$this->tbl_method} t2 ON t1.MethodID = t2.ID 
+			WHERE t1.MemberID = ?
+		";
 
-		$result = $this->db->query($sql);
-		return $result->result_array();
+		// Search query
+		if (!empty($cari_data)) {
+			$sql .= " AND (
+				t1.IMEI LIKE ? OR 
+				t2.Title LIKE ? OR 
+				t1.Code LIKE ? OR 
+				t1.Note LIKE ? OR 
+				t1.Status LIKE ?
+			)";
+			for ($i = 0; $i < 5; $i++) {
+				$params[] = '%' . $cari_data . '%';
+			}
+		}
+
+		// Status filter
+		if (!empty($status)) {
+			if ($status === "Success") {
+				$sql .= " AND t1.Status = ?";
+				$params[] = 'Issued';
+			} elseif ($status === "Rejected") {
+				$sql .= " AND t1.Status = ?";
+				$params[] = 'Canceled';
+			} else {
+				$sql .= " AND t1.Status = ?";
+				$params[] = $status;
+			}
+		}
+
+		// Date range filter
+		if (!empty($startDate)) {
+			$sql .= " AND DATE(t1.CreatedDateTime) >= ?";
+			$params[] = $startDate;
+		}
+		if (!empty($endDate)) {
+			$sql .= " AND DATE(t1.CreatedDateTime) <= ?";
+			$params[] = $endDate;
+		}
+
+		// Ordering and Pagination
+		$sql .= " ORDER BY t1.ID DESC LIMIT ?, ?";
+		$params[] = (int) $start;
+		$params[] = (int) $length;
+
+		// Execute and return
+		$query = $this->db->query($sql, $params);
+		return $query->result_array();
 	}
+
 
 	public function get_imei_data_new_detail($id, $id_order)
 	{

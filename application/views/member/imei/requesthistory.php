@@ -80,10 +80,14 @@
                     <label for="statusFilter" class="form-label fw-semibold">Filter by Status</label>
                     <select id="statusFilter" class="form-select">
                         <option value="">All</option>
-                        <option value="<span class='badge bg-success'>Success</span>">Success</option>
+                        <!-- <option value="<span class='badge bg-success'>Success</span>">Success</option>
                         <option value="<span class='badge bg-warning'>Pending</span>">Pending</option>
                         <option value="<span class='badge bg-warning'>In Process</span>">In Process</option>
-                        <option value="<span class='badge bg-danger'>Rejected</span>">Rejected</option>
+                        <option value="<span class='badge bg-danger'>Rejected</span>">Rejected</option> -->
+                        <option value="Issued">Success</option>
+                        <option value="Pending">Pending</option>
+                        <option value="In process">In Process</option>
+                        <option value="Canceled">Rejected</option>
                     </select>
                 </div>
 
@@ -170,37 +174,14 @@ $(document).ready(function () {
         url: base_url + "member/dashboard/listener_new",
         type: 'POST',
         data: function (d) {
-            d.status = $('#statusFilter').val(); // Masih dikirim, meskipun tidak dipakai di backend
+            d.status = $('#statusFilter').val();
+            d.startDate = $('#startDate').val();
+            d.endDate = $('#endDate').val();
         },
+
         dataSrc: function(json) {
-        var selectedStatus = $('#statusFilter').val();
-        var startDate = $('#startDate').val();
-        var endDate = $('#endDate').val();
-
-        return json.data.filter(function(row) {
-            // --- STATUS FILTER ---
-            var rowStatusText = $('<div>').html(row.status).text().trim().toLowerCase();
-            var selectedStatusText = $('<div>').html(selectedStatus).text().trim().toLowerCase();
-            var statusMatch = !selectedStatus || rowStatusText === selectedStatusText;
-
-            // --- DATE FILTER ---
-            var dateMatch = true;
-            if (startDate || endDate) {
-                var rowDate = new Date(row.created_at);
-                if (startDate) {
-                    var fromDate = new Date(startDate);
-                    dateMatch = dateMatch && rowDate >= fromDate;
-                }
-                if (endDate) {
-                    var toDate = new Date(endDate);
-                    toDate.setHours(23, 59, 59, 999); // agar tetap dalam hari yang sama
-                    dateMatch = dateMatch && rowDate <= toDate;
-                }
-            }
-
-            return statusMatch && dateMatch;
-        });
-    }
+        return json.data;
+        }
 
     },
     columns: [
@@ -214,7 +195,11 @@ $(document).ready(function () {
         { data: "created_at" },
         { data: "imei" },
         { data: "service", className: 'column-service' },
-        { data: "status", className: 'column-status' },
+        { data: "status", className: 'column-status',
+            render: function(data, type, row) {
+            return formatBadge(data);
+            }
+         },
         {
             data: null,
             className: 'column-details',

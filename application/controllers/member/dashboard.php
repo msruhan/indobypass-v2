@@ -87,8 +87,11 @@ class dashboard extends FSD_Controller
 		$start      =  $_REQUEST['start'];
         $length     = $_REQUEST['length'];
         $cari_data  = $_REQUEST['search']['value'];
+		$statusFilter = $_REQUEST['status'] ?? '';
+		$startDate = $_REQUEST['startDate'] ?? '';
+		$endDate = $_REQUEST['endDate'] ?? '';
 
-        $datas = $this->imeiorder_model->get_imei_data_new($id, $start, $length, $cari_data);
+		$datas = $this->imeiorder_model->get_imei_data_new($id, $start, $length, $cari_data, $statusFilter, $startDate, $endDate);
 
         $total = 9999999;
         $array_data = array();
@@ -103,7 +106,7 @@ class dashboard extends FSD_Controller
 				case "Pending":
 					$status = "<span class='badge bg-warning'>Pending</span>";
 					break;
-				case "In Process":
+				case "In process":
 					$status = "<span class='badge bg-warning'>In Process</span>";
 					break;
 				case "Success":
