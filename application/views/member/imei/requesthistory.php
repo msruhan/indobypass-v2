@@ -46,6 +46,34 @@
         font-weight: 500;
     }
 
+    #statusFilter,
+    #startDate,
+    #endDate {
+        border-radius: 0.375rem;
+    }
+
+    #applyFilter, #resetFilter {
+        font-size: 0.8rem;
+        padding: 0.25rem 0.75rem;
+        height: 32px;
+    }
+
+    @media (max-width: 576px) {
+        #applyFilter, #resetFilter {
+            flex: 1;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .row.mb-3.align-items-end.g-3 {
+            flex-direction: column;
+        }
+    }
+
+    .filter-row {
+        margin-left: 5px; /* sesuaikan angka agar pas */
+    }
+
 </style>
 
 <div class="page-header">
@@ -74,16 +102,12 @@
             <div class="card-header custom-card-header">
                 <div class="card-title">IMEI Order History</div>
             </div>
-
-            <div class="row mb-3">
+ 
+            <div class="row mb-3 align-items-end g-3 filter-row">
                 <div class="col-md-3">
-                    <label for="statusFilter" class="form-label fw-semibold">Filter by Status</label>
-                    <select id="statusFilter" class="form-select">
+                    <label for="statusFilter" class="form-label fw-semibold">Status</label>
+                    <select id="statusFilter" class="form-select form-select-sm">
                         <option value="">All</option>
-                        <!-- <option value="<span class='badge bg-success'>Success</span>">Success</option>
-                        <option value="<span class='badge bg-warning'>Pending</span>">Pending</option>
-                        <option value="<span class='badge bg-warning'>In Process</span>">In Process</option>
-                        <option value="<span class='badge bg-danger'>Rejected</span>">Rejected</option> -->
                         <option value="Issued">Success</option>
                         <option value="Pending">Pending</option>
                         <option value="In process">In Process</option>
@@ -92,23 +116,24 @@
                 </div>
 
                 <div class="col-md-3">
-                    <label for="startDate" class="form-label fw-semibold">Start Date</label>
-                    <input type="date" id="startDate" class="form-control">
+                    <label for="startDate" class="form-label fw-semibold">Start</label>
+                    <input type="date" id="startDate" class="form-control form-control-sm">
                 </div>
 
                 <div class="col-md-3">
-                    <label for="endDate" class="form-label fw-semibold">End Date</label>
-                    <input type="date" id="endDate" class="form-control">
+                    <label for="endDate" class="form-label fw-semibold">End</label>
+                    <input type="date" id="endDate" class="form-control form-control-sm">
                 </div>
 
-                <div class="col-md-3 d-flex align-items-end gap-2">
-                    <button id="applyFilter" class="btn btn-primary w-100">Start Filter</button>
-                    <button id="resetFilter" class="btn btn-secondary w-100">Reset</button>
+                <div class="col-md-3">
+                    <label class="form-label fw-semibold d-block">&nbsp;</label>
+                    <div class="d-flex gap-2">
+                        <button id="applyFilter" class="btn btn-sm btn-secondary px-3">Filter</button>
+                        <button id="resetFilter" class="btn btn-sm btn-outline-secondary px-3">Reset</button>
+                    </div>
                 </div>
 
             </div>
-
-
 
             <div class="card-body custom-card-body">
                 <div class="row">
@@ -203,7 +228,7 @@ $(document).ready(function () {
         {
             data: null,
             className: 'column-details',
-            defaultContent: '<button class="btn btn-info btn-xs view-detail">View</button>',
+            defaultContent: '<button class="btn btn-info btn-xs view-detail">Viewx</button>',
             orderable: false
         },
     ],
@@ -243,8 +268,25 @@ $(document).ready(function () {
             row.child(format(row.data())).show();
             tr.addClass('shown');
             $(this).find('i').removeClass('fa-chevron-down').addClass('fa-chevron-up');
+
+            tr.next('tr').find('button.view-detail-inline').off('click').on('click', function () {
+                var data = row.data();
+                if (data) {
+                    $('#titleModal').text(data.service || 'N/A');
+                    $('#imeiModal').text(data.imei || 'N/A');
+                    $('#priceModal').text(data.price || 'N/A');
+                    $('#statusModal').html(formatBadge(data.status));
+                    $('#codeModal').html(`<em>${data.code || 'N/A'}</em>`);
+                    $('#noteModal').text(data.note || 'N/A');
+                    $('#createdAtModal').text(data.created_at || 'N/A');
+                    $('#replyAtModal').text(data.updated_date_time || 'N/A');
+
+                    $('#detailImeiOrderModal').modal('show');
+                }
+            });
         }
     });
+
 
     $('#table_data_imei tbody').on('click', 'button.view-detail, button.view-detail-inline', function () {
         var tr = $(this).closest('tr').hasClass('child') ? $(this).closest('tr').prev() : $(this).closest('tr');
@@ -269,7 +311,7 @@ $(document).ready(function () {
             <div class="details-container">
                 <div class="details-row"><strong>Service:</strong> ${d.service || 'N/A'}</div>
                 <div class="details-row"><strong>Status:</strong> ${formatBadge(d.status)}</div>
-                <div class="details-row"><strong>Detail:</strong> <button class="btn btn-info btn-xs view-detail-inline">View</button></div>
+                <div class="details-row"><strong>Detail:</strong> <button class="btn btn-info btn-xs view-detail-inline">Viewz</button></div>
             </div>
         `;
     }
@@ -285,7 +327,7 @@ $(document).ready(function () {
         switch (normalizedStatus) {
             case 'Success': return "<span class='badge bg-success'>Success</span>";
             case 'Pending': return "<span class='badge bg-warning'>Pending</span>";
-            case 'In Process': return "<span class='badge bg-warning'>In Process</span>";
+            case 'In process': return "<span class='badge bg-secondary'>In Process</span>";
             case 'Rejected': return "<span class='badge bg-danger'>Rejected</span>";
             default: return "<span class='badge bg-secondary'>N/A</span>";
         }
