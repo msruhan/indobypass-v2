@@ -107,7 +107,7 @@ class dashboard extends FSD_Controller
 					$status = "<span class='badge bg-warning'>Pending</span>";
 					break;
 				case "In process":
-					$status = "<span class='badge bg-warning'>In Process</span>";
+					$status = "<span class='badge bg-secondary'>In process</span>";
 					break;
 				case "Success":
 					$status = "<span class='badge bg-success'>Success</span>";
@@ -116,7 +116,7 @@ class dashboard extends FSD_Controller
 					$status = "<span class='badge bg-danger'>Rejected</span>"; // Mengubah Canceled menjadi Rejected
 					break;
 				default:
-					$status = "<span class='badge bg-secondary'>In process</span>";
+					$status = "<span class='badge bg-secondary'>Unknown</span>";
 					break;
 			}
 
