@@ -451,6 +451,11 @@ class imeirequest extends FSD_Controller
         $cari_data  = $_REQUEST['search']['value'];
 
         $datas = $this->imeiorder_model->get_imei_data_select_new($id, $param, $start, $length, $cari_data);
+		// Hitung total data tanpa filter
+		$total_records = $this->imeiorder_model->count_all_imei($id);
+
+		// Hitung total data setelah filter
+		$total_filtered = $this->imeiorder_model->count_filtered_imei($id, $cari_data, $statusFilter, $startDate, $endDate);
 
         $total = 9999999;
         $array_data = array();
@@ -472,13 +477,13 @@ class imeirequest extends FSD_Controller
             }
         }
 
-        $output = array(
 
-            "draw" => intval($_REQUEST['draw']),
-            "recordsTotal" => intval($total),
-            "recordsFiltered" => intval($total),
-            "data" => $array_data
-        );
+		$output = array(
+			"draw" => intval($_REQUEST['draw']),
+			"recordsTotal" => intval($total_records),
+			"recordsFiltered" => intval($total_filtered),
+			"data" => $array_data
+		);
 
 
         echo json_encode($output);
