@@ -193,6 +193,28 @@
     </div>
 </div>
 
+<!-- Modal Popup -->
+<div class="modal fade" id="orderSuccessModal" tabindex="-1" aria-labelledby="orderSuccessLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-sm">
+    <div class="modal-content border-0 shadow rounded-4">
+      <div class="modal-header bg-secondary text-white border-0 rounded-top-4">
+        <h5 class="modal-title fw-semibold" id="orderSuccessLabel">Order Success</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body text-center py-5">
+        <h5 class="mb-3"><?= $this->session->flashdata('success_order'); ?></h5>
+        <p class="mb-4 text-muted">Continue to place order?</p>
+
+        <div class="d-flex justify-content-center gap-3">
+          <a href="<?= site_url('member/imeirequest'); ?>" class="btn btn-secondary px-4">Click Here</a>
+          <a href="<?= site_url('member/imeirequest/history'); ?>" class="btn btn-outline-secondary px-4">Order History</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
 <style>
 .select2-container .select2-selection--single .select2-selection__rendered {
     /* line-height: 60px !important; */
@@ -206,6 +228,8 @@
 }
 </style>
 <!-- Select2 -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
 <script type="text/javascript">
 var base_url = "<?= base_url() ?>";
 $(document).ready(function() {
@@ -324,4 +348,11 @@ $(document).ready(function() {
 
 });
 
+  document.addEventListener("DOMContentLoaded", function () {
+    const modalText = document.querySelector("#orderSuccessModal .modal-body h5");
+    if (modalText && modalText.textContent.trim() !== "") {
+      var orderModal = new bootstrap.Modal(document.getElementById('orderSuccessModal'));
+      orderModal.show();
+    }
+  });
 </script>

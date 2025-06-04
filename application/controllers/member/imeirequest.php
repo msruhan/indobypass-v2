@@ -410,7 +410,8 @@ class imeirequest extends FSD_Controller
     			}
 
 			}						
-			$this->session->set_flashdata('message', '<div class="alert alert-success alert-dismissible fade show" role="alert" role="danger"> '.$this->lang->line('error_record_addes_successfully').'  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>');
+			// $this->session->set_flashdata('message', '<div class="alert alert-success alert-dismissible fade show" role="alert" role="danger"> '.$this->lang->line('error_record_addes_successfully').'  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>');
+			$this->session->set_flashdata('success_order', $this->lang->line('error_record_addes_successfully'));
 
 			redirect("member/imeirequest/");
 		}
