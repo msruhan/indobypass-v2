@@ -74,6 +74,15 @@
         margin-left: 5px; /* sesuaikan angka agar pas */
     }
 
+.progress-bar {
+    font-size: 0.75rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+
 </style>
 
 <div class="page-header">
@@ -110,7 +119,7 @@
                         <option value="">All</option>
                         <option value="Issued">Success</option>
                         <option value="Pending">Pending</option>
-                        <option value="In process">In Process</option>
+                        <option value="In process">In process</option>
                         <option value="Canceled">Rejected</option>
                     </select>
                 </div>
@@ -228,7 +237,7 @@ $(document).ready(function () {
         {
             data: null,
             className: 'column-details',
-            defaultContent: '<button class="btn btn-info btn-xs view-detail">Viewx</button>',
+            defaultContent: '<button class="btn btn-info btn-xs view-detail">View</button>',
             orderable: false
         },
     ],
@@ -276,6 +285,7 @@ $(document).ready(function () {
                     $('#imeiModal').text(data.imei || 'N/A');
                     $('#priceModal').text(data.price || 'N/A');
                     $('#statusModal').html(formatBadge(data.status));
+                    // $('#statusModal').html(formatBadgeSmall(data.status));
                     $('#codeModal').html(`<em>${data.code || 'N/A'}</em>`);
                     $('#noteModal').text(data.note || 'N/A');
                     $('#createdAtModal').text(data.created_at || 'N/A');
@@ -297,6 +307,7 @@ $(document).ready(function () {
             $('#imeiModal').text(row.data().imei || 'N/A');
             $('#priceModal').text(row.data().price || 'N/A');
             $('#statusModal').html(formatBadge(row.data().status));
+            // $('#statusModal').html(formatBadgeSmall(row.data().status));
             $('#codeModal').html(`<em>${row.data().code || 'N/A'}</em>`);
             $('#noteModal').text(row.data().note || 'N/A');
             $('#createdAtModal').text(row.data().created_at || 'N/A');
@@ -310,7 +321,7 @@ $(document).ready(function () {
         return `
             <div class="details-container">
                 <div class="details-row"><strong>Service:</strong> ${d.service || 'N/A'}</div>
-                <div class="details-row"><strong>Status:</strong> ${formatBadge(d.status)}</div>
+                <div class="details-row"><strong>Status:</strong> ${formatBadgeSmall(d.status)}</div>
                 <div class="details-row"><strong>Detail:</strong> <button class="btn btn-info btn-xs view-detail-inline">Viewz</button></div>
             </div>
         `;
@@ -323,15 +334,78 @@ $(document).ready(function () {
     }
 
     function formatBadge(status) {
-        var normalizedStatus = extractTextFromHTML(status).trim();
-        switch (normalizedStatus) {
-            case 'Success': return "<span class='badge bg-success'>Success</span>";
-            case 'Pending': return "<span class='badge bg-warning'>Pending</span>";
-            case 'In process': return "<span class='badge bg-secondary'>In Process</span>";
-            case 'Rejected': return "<span class='badge bg-danger'>Rejected</span>";
-            default: return "<span class='badge bg-secondary'>N/A</span>";
-        }
+    var normalizedStatus = extractTextFromHTML(status).trim();
+    switch (normalizedStatus) {
+        case 'Success':
+            return `
+                <div class="progress" style="height: 20px;">
+                    <div class="progress-bar bg-success" role="progressbar" style="width: 100%">
+                        Success
+                    </div>
+                </div>`;
+        case 'Pending':
+            return `
+                <div class="progress" style="height: 20px;">
+                    <div class="progress-bar progress-bar-striped progress-bar-animated bg-warning" role="progressbar" style="width: 70%">
+                        Pending...
+                    </div>
+                </div>`;
+        case 'In process':
+            return `
+                <div class="progress" style="height: 20px;">
+                    <div class="progress-bar progress-bar-striped progress-bar-animated bg-secondary" role="progressbar" style="width: 90%">
+                        In process...
+                    </div>
+                </div>`;
+        case 'Rejected':
+            return `
+                <div class="progress" style="height: 20px;">
+                    <div class="progress-bar bg-danger" role="progressbar" style="width: 100%">
+                        Rejected
+                    </div>
+                </div>`;
+        default:
+            return `
+                <div class="progress" style="height: 20px;">
+                    <div class="progress-bar bg-secondary" role="progressbar" style="width: 100%">
+                        N/A
+                    </div>
+                </div>`;
     }
+}
+
+function formatBadgeSmall(status) {
+    var normalizedStatus = extractTextFromHTML(status).trim();
+    let className = '';
+    let label = '';
+
+    switch (normalizedStatus) {
+        case 'Success':
+            className = 'bg-success';
+            label = 'Success';
+            break;
+        case 'Pending':
+            className = 'bg-warning';
+            label = 'Pending';
+            break;
+        case 'In process':
+            className = 'bg-secondary';
+            label = 'In process';
+            break;
+        case 'Rejected':
+            className = 'bg-danger';
+            label = 'Rejected';
+            break;
+        default:
+            className = 'bg-secondary';
+            label = 'N/A';
+    }
+
+    return `<span class="badge ${className}" style="font-size: 0.75rem; padding: 0.4em 0.6em;">${label}</span>`;
+}
+
+
+
 });
 
 </script>
