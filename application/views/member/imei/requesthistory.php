@@ -87,6 +87,17 @@
     vertical-align: middle;
 }
 
+@media (max-width: 576px) {
+  table.table-sm {
+    font-size: 12px;
+  }
+
+  .table-responsive {
+    overflow-x: auto;
+  }
+}
+
+
 
 </style>
 
@@ -309,7 +320,7 @@ $(document).ready(function () {
                     var replyCode = row.data().code || '';
                     $('#codeRawContainer').html(`<em>${replyCode}</em>`);
 
-                    if (/imei|roamer/i.test(replyCode)) {
+                    if (/roamer/i.test(replyCode)) {
                         $('#codeTableContainer').html(formatReplyAsTable(replyCode));
                         $('#table-tab').parent().show();
                         $('#codeTab').show();
@@ -341,7 +352,7 @@ $(document).ready(function () {
             var replyCode = row.data().code || '';
             $('#codeRawContainer').html(`<em>${replyCode}</em>`);
 
-            if (/imei|roamer/i.test(replyCode)) {
+            if (/roamer/i.test(replyCode)) {
                 $('#codeTableContainer').html(formatReplyAsTable(replyCode));
                 $('#table-tab').parent().show();
                 $('#codeTab').show();
@@ -456,12 +467,12 @@ function formatReplyAsTable(replyText) {
     let tableHTML = `<div>${imeiHeader}</div><div class="table-responsive"><table class="table table-sm table-bordered mt-2">
         <thead class="table-light">
             <tr>
-                <th>No</th>
-                <th>Date</th>
-                <th>IMEI</th>
-                <th>IMSI</th>
-                <th>Action</th>
-                <th>Note</th>
+                <th class="text-nowrap">No</th>
+                <th class="text-nowrap">Date</th>
+                <th class="text-nowrap">IMEI</th>
+                <th class="text-nowrap">IMSI</th>
+                <th class="text-nowrap">Action</th>
+                <th class="text-nowrap">Note</th>
             </tr>
         </thead>
         <tbody>`;
