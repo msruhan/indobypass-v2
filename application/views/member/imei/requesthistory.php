@@ -306,9 +306,18 @@ $(document).ready(function () {
                     $('#imeiModal').text(data.imei || 'N/A');
                     $('#priceModal').text(data.price || 'N/A');
                     $('#statusModal').html(formatBadge(data.status));
-                    // $('#statusModal').html(formatBadgeSmall(data.status));
-                    $('#codeRawContainer').html(`<em>${row.data().code || 'N/A'}</em>`);
-                    $('#codeTableContainer').html(formatReplyAsTable(row.data().code));
+                    var replyCode = row.data().code || '';
+                    $('#codeRawContainer').html(`<em>${replyCode}</em>`);
+
+                    if (/imei|roamer/i.test(replyCode)) {
+                        $('#codeTableContainer').html(formatReplyAsTable(replyCode));
+                        $('#table-tab').parent().show();
+                        $('#codeTab').show();
+                    } else {
+                        $('#codeTableContainer').html('');
+                        $('#table-tab').parent().hide();
+                        $('#raw-tab').tab('show');
+                    }
                     $('#noteModal').text(data.note || 'N/A');
                     $('#createdAtModal').text(data.created_at || 'N/A');
                     $('#replyAtModal').text(data.updated_date_time || 'N/A');
@@ -329,9 +338,18 @@ $(document).ready(function () {
             $('#imeiModal').text(row.data().imei || 'N/A');
             $('#priceModal').text(row.data().price || 'N/A');
             $('#statusModal').html(formatBadge(row.data().status));
-            // $('#statusModal').html(formatBadgeSmall(row.data().status));
-            $('#codeRawContainer').html(`<em>${row.data().code || 'N/A'}</em>`);
-            $('#codeTableContainer').html(formatReplyAsTable(row.data().code));
+            var replyCode = row.data().code || '';
+            $('#codeRawContainer').html(`<em>${replyCode}</em>`);
+
+            if (/imei|roamer/i.test(replyCode)) {
+                $('#codeTableContainer').html(formatReplyAsTable(replyCode));
+                $('#table-tab').parent().show();
+                $('#codeTab').show();
+            } else {
+                $('#codeTableContainer').html('');
+                $('#table-tab').parent().hide();
+                $('#raw-tab').tab('show');
+            }
             $('#noteModal').text(row.data().note || 'N/A');
             $('#createdAtModal').text(row.data().created_at || 'N/A');
             $('#replyAtModal').text(row.data().updated_date_time || 'N/A');
@@ -438,7 +456,7 @@ function formatReplyAsTable(replyText) {
     let tableHTML = `<div>${imeiHeader}</div><div class="table-responsive"><table class="table table-sm table-bordered mt-2">
         <thead class="table-light">
             <tr>
-                <th>#</th>
+                <th>No</th>
                 <th>Date</th>
                 <th>IMEI</th>
                 <th>IMSI</th>
