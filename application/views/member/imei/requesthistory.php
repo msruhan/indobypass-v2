@@ -82,6 +82,11 @@
     justify-content: center;
 }
 
+#codeModal table td, #codeModal table th {
+    font-size: 0.85rem;
+    vertical-align: middle;
+}
+
 
 </style>
 
@@ -189,7 +194,23 @@
           <div class="col-12"><div class="soft-label">Note</div><div class="soft-value" id="noteModal">N/A</div></div>
           <div class="col-6"><div class="soft-label">Order Time</div><div class="soft-value" id="createdAtModal">N/A</div></div>
           <div class="col-6"><div class="soft-label">Reply Time</div><div class="soft-value" id="replyAtModal">N/A</div></div>
-          <div class="col-12"><div class="soft-label">Reply</div><div class="soft-value" id="codeModal">N/A</div></div>
+          <!-- <div class="col-12"><div class="soft-label">Reply</div><div class="soft-value" id="codeModal">N/A</div></div> -->
+          <ul class="nav nav-tabs" id="codeTab" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="raw-tab" data-bs-toggle="tab" data-bs-target="#rawCode" type="button" role="tab">Raw</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="table-tab" data-bs-toggle="tab" data-bs-target="#tableCode" type="button" role="tab">Table</button>
+            </li>
+            </ul>
+            <div class="tab-content mt-2">
+                <div class="tab-pane fade show active" id="rawCode" role="tabpanel">
+                    <div id="codeRawContainer"></div>
+                </div>
+                <div class="tab-pane fade" id="tableCode" role="tabpanel">
+                    <div id="codeTableContainer"></div>
+                </div>
+            </div>
         </div>
       </div>
     </div>
@@ -286,7 +307,8 @@ $(document).ready(function () {
                     $('#priceModal').text(data.price || 'N/A');
                     $('#statusModal').html(formatBadge(data.status));
                     // $('#statusModal').html(formatBadgeSmall(data.status));
-                    $('#codeModal').html(`<em>${data.code || 'N/A'}</em>`);
+                    $('#codeRawContainer').html(`<em>${row.data().code || 'N/A'}</em>`);
+                    $('#codeTableContainer').html(formatReplyAsTable(row.data().code));
                     $('#noteModal').text(data.note || 'N/A');
                     $('#createdAtModal').text(data.created_at || 'N/A');
                     $('#replyAtModal').text(data.updated_date_time || 'N/A');
@@ -308,7 +330,8 @@ $(document).ready(function () {
             $('#priceModal').text(row.data().price || 'N/A');
             $('#statusModal').html(formatBadge(row.data().status));
             // $('#statusModal').html(formatBadgeSmall(row.data().status));
-            $('#codeModal').html(`<em>${row.data().code || 'N/A'}</em>`);
+            $('#codeRawContainer').html(`<em>${row.data().code || 'N/A'}</em>`);
+            $('#codeTableContainer').html(formatReplyAsTable(row.data().code));
             $('#noteModal').text(row.data().note || 'N/A');
             $('#createdAtModal').text(row.data().created_at || 'N/A');
             $('#replyAtModal').text(row.data().updated_date_time || 'N/A');
@@ -322,7 +345,7 @@ $(document).ready(function () {
             <div class="details-container">
                 <div class="details-row"><strong>Service:</strong> ${d.service || 'N/A'}</div>
                 <div class="details-row"><strong>Status:</strong> ${formatBadgeSmall(d.status)}</div>
-                <div class="details-row"><strong>Detail:</strong> <button class="btn btn-info btn-xs view-detail-inline">Viewz</button></div>
+                <div class="details-row"><strong>Detail:</strong> <button class="btn btn-info btn-xs view-detail-inline">View</button></div>
             </div>
         `;
     }
@@ -404,8 +427,47 @@ function formatBadgeSmall(status) {
     return `<span class="badge ${className}" style="font-size: 0.75rem; padding: 0.4em 0.6em;">${label}</span>`;
 }
 
+function formatReplyAsTable(replyText) {
+    if (!replyText || typeof replyText !== 'string') return 'N/A';
 
+    // Ambil bagian utama (buang header jika ada)
+    const parts = replyText.split(/\[\d+\]/).filter(p => p.trim() !== '');
+    const headerMatch = replyText.match(/History Check for IMEI:\s*([^\[]+)/i);
+    const imeiHeader = headerMatch ? `<strong>History Check for IMEI:</strong> ${headerMatch[1].trim()}` : '';
 
+    let tableHTML = `<div>${imeiHeader}</div><div class="table-responsive"><table class="table table-sm table-bordered mt-2">
+        <thead class="table-light">
+            <tr>
+                <th>#</th>
+                <th>Date</th>
+                <th>IMEI</th>
+                <th>IMSI</th>
+                <th>Action</th>
+                <th>Note</th>
+            </tr>
+        </thead>
+        <tbody>`;
+
+    parts.forEach((part, index) => {
+        const dateMatch = part.match(/Date:\s*([^,]+)/i);
+        const imeiMatch = part.match(/IMEI:\s*([^,]+)/i);
+        const imsiMatch = part.match(/IMSI:\s*([^,]+)/i);
+        const actionMatch = part.match(/Action:\s*([^,]+)/i);
+        const noteMatch = part.match(/Note:\s*(.+)$/i);
+
+        tableHTML += `<tr>
+            <td>${index + 1}</td>
+            <td>${dateMatch ? dateMatch[1].trim() : '-'}</td>
+            <td>${imeiMatch ? imeiMatch[1].trim() : '-'}</td>
+            <td>${imsiMatch ? imsiMatch[1].trim() : '-'}</td>
+            <td>${actionMatch ? actionMatch[1].trim() : '-'}</td>
+            <td>${noteMatch ? noteMatch[1].trim() : '-'}</td>
+        </tr>`;
+    });
+
+    tableHTML += `</tbody></table></div>`;
+    return tableHTML;
+}
 });
 
 </script>

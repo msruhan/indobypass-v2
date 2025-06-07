@@ -1,4 +1,4 @@
-<?php $status_options = ['Pending' => 'Pending', 'Issued' => 'Issued', 'Verified' => 'Verified']; ?>
+<?php $status_options = ['Pending' => 'Pending', 'Issued' => 'Issued', 'Verified' => 'Verified', 'In process' => 'In process']; ?>
 <div class="portlet">
     <div class="portlet-body form">
     	
@@ -203,6 +203,15 @@
                         <i class="fa fa-font"></i>
                         </span>
                         <?php echo form_textarea(array('name'=>"Comments",'id'=>"Comments", 'class'=>"form-control", 'value'=>set_value('Comments', $data[0]['Comments']))); ?>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-md-3 control-label">Reply:</label>
+                    <div class="input-group col-md-6">
+                        <span class="input-group-addon">
+                        <i class="fa fa-font"></i>
+                        </span>
+                        <?php echo form_textarea(array('name'=>"Code",'id'=>"Code", 'class'=>"form-control", 'value'=>set_value('Code', $data[0]['Code']))); ?>
                     </div>
                 </div>
 				<div class="form-group">
