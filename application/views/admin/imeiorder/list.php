@@ -18,11 +18,15 @@
                     <div class="form-body">
                         <div class="form-group">
                             <label class="col-md-1 control-label">IMEI</label>
-                            <div class="col-md-3">
+                            <div class="col-md-2">
                                 <input type="text" id="imei" class="form-control" placeholder="Enter imei">
                             </div>
+                            <label class="col-md-1 control-label">User</label>
+                            <div class="col-md-2">
+                                <input type="text" id="email" class="form-control" placeholder="Enter Email">
+                            </div>
                             <label class="col-md-1 control-label">Method</label>
-                            <div class="col-md-4">
+                            <div class="col-md-2">
                                 <select id="method" class="form-control">
                                     <option value="">All Methods</option>
                                 <?php foreach ($methods as $m): ?>
@@ -63,7 +67,7 @@
                               <th width="13%">IMEI</th>
                               <th width="23%">Method</th>
                               <th width="15%">Email</th>
-                              <th>Comments</th>
+                              <th>Reply</th>
                               <th width="5%">Status</th>
                               <th width="15%">Created Date Time</th>         
                               <th width="10%">Options</th>
@@ -75,7 +79,7 @@
                             <th>IMEI</th>
                             <th>Method</th>
                             <th>Email</th>
-                            <th>Comments</th>
+                            <th>Reply</th>
                             <th>Status</th>
                             <th>Created Date Time</th>      
                             <th>Options</th>   
@@ -136,6 +140,9 @@ $(document).ready(function() {
     });
     $('#method').change(function(){
         table.columns( 2 ).search( jQuery(this).val() ).draw();
+    });
+    $('#email').keyup(function(){
+    table.columns(3).search(jQuery(this).val()).draw();
     });
     $('#status').change(function(){
         table.columns( 5 ).search( jQuery(this).val() ).draw();
