@@ -87,17 +87,6 @@
     vertical-align: middle;
 }
 
-@media (max-width: 576px) {
-  table.table-sm {
-    font-size: 12px;
-  }
-
-  .table-responsive {
-    overflow-x: auto;
-  }
-}
-
-
 
 </style>
 
@@ -467,12 +456,12 @@ function formatReplyAsTable(replyText) {
     let tableHTML = `<div>${imeiHeader}</div><div class="table-responsive"><table class="table table-sm table-bordered mt-2">
         <thead class="table-light">
             <tr>
-                <th class="text-nowrap">No</th>
-                <th class="text-nowrap">Date</th>
-                <th class="text-nowrap">IMEI</th>
-                <th class="text-nowrap">IMSI</th>
-                <th class="text-nowrap">Action</th>
-                <th class="text-nowrap">Note</th>
+                <th>No</th>
+                <th>Date</th>
+                <th>IMEI</th>
+                <th>IMSI</th>
+                <th>Action</th>
+                <th>Note</th>
             </tr>
         </thead>
         <tbody>`;
@@ -483,6 +472,7 @@ function formatReplyAsTable(replyText) {
         const imsiMatch = part.match(/IMSI:\s*([^,]+)/i);
         const actionMatch = part.match(/Action:\s*([^,]+)/i);
         const noteMatch = part.match(/Note:\s*(.+)$/i);
+        const statusMatch = part.match(/Status:\s*([^,]+)/i); // Extract "Status"
 
         tableHTML += `<tr>
             <td>${index + 1}</td>
@@ -490,7 +480,7 @@ function formatReplyAsTable(replyText) {
             <td>${imeiMatch ? imeiMatch[1].trim() : '-'}</td>
             <td>${imsiMatch ? imsiMatch[1].trim() : '-'}</td>
             <td>${actionMatch ? actionMatch[1].trim() : '-'}</td>
-            <td>${noteMatch ? noteMatch[1].trim() : '-'}</td>
+            <td>${noteMatch ? noteMatch[1].trim() : (statusMatch ? statusMatch[1].trim() : '-')}</td> <!-- Include Status in Note -->
         </tr>`;
     });
 
