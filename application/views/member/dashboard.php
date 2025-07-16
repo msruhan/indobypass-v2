@@ -13,6 +13,7 @@
 		</div>
 	</head>
 	<body>
+		<?php $this->load->view('chatbox_view'); ?>
 		<!-- Card Chart -->
 		<div class="row">
 			<div class="col-sm-6 col-md-3">
