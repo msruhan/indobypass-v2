@@ -55,6 +55,8 @@
     </div>
 </div>
 
+<?php $this->load->view('chatbox_view'); ?>
+
 </style>
 <!-- Select2 -->
 <script type="text/javascript">

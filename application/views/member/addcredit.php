@@ -1,3 +1,4 @@
+<?php $this->load->view('chatbox_view'); ?>
 <div class="page-header">
     <div class="d-flex justify-content-between">
         <h3 class="fw-bold">Add Fund</h3>
