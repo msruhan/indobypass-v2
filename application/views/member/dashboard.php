@@ -13,8 +13,8 @@
 		</div>
 	</head>
 	<body>
-		<?php $this->load->view('chatbox_view'); ?>
 		<!-- Card Chart -->
+		<?php $this->load->view('chatbox_tawk'); ?>
 		<div class="row">
 			<div class="col-sm-6 col-md-3">
 				<div class="card card-stats card-primary card-round">
@@ -239,6 +239,7 @@
 							<?php } ?>
 						</ol>
 					</div>
+					
 				</div>
 				<div class="card card-round">
 					<div class="card-body">
@@ -281,6 +282,16 @@
 								<a href="https://t.me/al1010" target="_blank" class="btn btn-icon btn-sm">
 									<i class="fab fa-telegram"></i>
 								</a>
+							</div>
+						</div>
+					</div>
+				</div>
+					<!-- Chatbox Card -->
+				<div class="row">
+					<div class="col-md-12">
+						<div class="card card-chatbox mb-4" style="box-shadow:0 8px 32px rgba(23,125,255,0.10);border-radius:22px;overflow:hidden;">
+							<div class="card-body p-0" style="background:#fff;">
+								<?php $this->load->view('chatbox_view'); ?>
 							</div>
 						</div>
 					</div>
@@ -333,13 +344,13 @@
 </html>
 
 <script>
-    var appraovedPercentage = <?= $appraovedPercentage ?>;
-    var rejectPercentage = <?= $rejectPercentage ?>;
-    var pendingPercentage = <?= $pendingPercentage ?>;
-    var pendingStatistic = <?= $pendingStatistic ?>;
-    var rejectStatistic = <?= $rejectStatistic ?>;
-    var successStatistic = <?= $successStatistic ?>;
-    var base_url = "<?= base_url() ?>";
+	var appraovedPercentage = <?= $appraovedPercentage ?>;
+	var rejectPercentage = <?= $rejectPercentage ?>;
+	var pendingPercentage = <?= $pendingPercentage ?>;
+	var pendingStatistic = <?= $pendingStatistic ?>;
+	var rejectStatistic = <?= $rejectStatistic ?>;
+	var successStatistic = <?= $successStatistic ?>;
+	var base_url = "<?= base_url() ?>";
 
 	//Chart
 	const pending_count = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
