@@ -141,6 +141,21 @@
       padding: 10px 8px 8px 8px;
       border-radius: 0;
       gap: 6px;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+    }
+    #chatbox-clear-btn {
+      margin-left: 0;
+      margin-right: 0;
+      margin-top: 6px;
+      margin-bottom: 6px;
+      padding: 6px 10px;
+      font-size: 0.95em;
+      min-width: 60px;
+      max-width: 100%;
+      box-sizing: border-box;
+      word-break: break-word;
     }
     .chatbox-header-modern img {
       width: 24px; height: 24px;
