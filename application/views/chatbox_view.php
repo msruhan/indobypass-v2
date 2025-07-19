@@ -5,7 +5,7 @@
     position: static !important;
     margin: 0 auto;
     width: 100%;
-    height: 400px;
+    height: 100%;
     box-shadow: 0 8px 32px rgba(23,125,255,0.10);
     border-radius: 22px;
     background: #fff;
@@ -49,9 +49,12 @@
   #chat-messages-modern {
     flex: 1 1 auto;
     min-height: 0;
-    max-height: 400px;
+    max-height: 100%;
+    height: 100%;
     overflow-y: auto;
-    background: #f4f7fa;
+    background-color: #fff;
+    background-image: url('data:image/svg+xml;utf8,<svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg"><rect width="32" height="32" fill="white"/><path d="M0 32L32 0" stroke="%23333" stroke-width="2" opacity="0.13"/><path d="M8 32L32 8" stroke="%23333" stroke-width="2" opacity="0.13"/><path d="M0 24L24 0" stroke="%23333" stroke-width="2" opacity="0.13"/></svg>');
+    /* pattern diagonal lines abu-abu gelap, modern dan tidak dots */
     padding: 24px 18px;
     border-bottom: 1px solid #e3e6ea;
     font-size: 1.25rem;
@@ -124,13 +127,75 @@
   #chat-send-modern:hover {
     background: linear-gradient(90deg,#6a82fb 60%,#177dff 100%);
   }
+   /* Responsive untuk smartphone */
+  @media (max-width: 600px) {
+    #chatbox-container-modern {
+      border-radius: 0;
+      box-shadow: none;
+      width: 100vw;
+      height: 100vh;
+      max-width: 100vw;
+      max-height: 100vh;
+      padding: 0;
+    }
+    .chatbox-header-modern {
+      font-size: 1em;
+      padding: 10px 8px 8px 8px;
+      border-radius: 0;
+      gap: 6px;
+    }
+    .chatbox-header-modern img {
+      width: 24px; height: 24px;
+    }
+    #chat-messages-modern {
+      padding: 12px 6px;
+      font-size: 1em;
+    }
+    .chat-msg-modern .bubble {
+      padding: 8px 12px;
+      font-size: 1em;
+      max-width: 90vw;
+    }
+    #chat-form-modern {
+      padding: 10px 8px;
+      border-radius: 0 0 0 0;
+      gap: 6px;
+    }
+    #chat-input-modern {
+      padding: 8px 10px;
+      font-size: 1em;
+    }
+    #chat-send-modern {
+      padding: 0 12px;
+      font-size: 1em;
+    }
+    #chat-emoji-btn {
+      font-size: 1.2em;
+      margin-right: 4px;
+    }
+    #chat-emoji-popup {
+      max-width: 90vw;
+      left: 0;
+      bottom: 48px;
+      padding: 8px 8px;
+    }
+    .emoji-item {
+      font-size: 1.2em !important;
+    }
+  }
 </style>
+ 
 
 <div id="chatbox-container-modern">
-  <div class="chatbox-header-modern">
-    <img src="<?= base_url() ?>assets/assets_members/img/chatbot.png" alt="AI Robot" class="avatar-img rounded-circle" />
-    AI Agent INDOBYPASS
+  <div class="chatbox-header-modern" style="justify-content:space-between;">
+    <div style="display:flex;align-items:center;gap:10px;">
+      <img src="<?= base_url() ?>assets/assets_members/img/chatbot.png" alt="AI Robot" class="avatar-img rounded-circle" />
+      AI Agent INDOBYPASS
+    </div>
+    <button id="chatbox-clear-btn" type="button" style="background:#FFD600;color:#222;border:none;border-radius:8px;padding:6px 16px;font-weight:600;cursor:pointer;font-size:1em;">Clear</button>
   </div>
+
+
   <div id="chat-messages-modern"></div>
   <form id="chat-form-modern" style="position:relative;">
     <input type="text" id="chat-input-modern" placeholder="Silahkan bertanya pada AI Agent.." autocomplete="off" />
@@ -197,8 +262,18 @@ $(function(){
         : '<span class="avatar"><img src="'+window.location.origin+'/indobypass/assets/assets_members/img/profile.jpg" alt="AI Robot" class="avatar-img rounded-circle" style="width:100%;height:100%;border-radius:50%"></span>' ;
       // Izinkan emoticon dengan innerHTML, tapi tetap escape script
       var safeText = m.text.replace(/</g,'&lt;').replace(/>/g,'&gt;');
-      var bubble = '<span class="bubble">'+safeText+'</span>';
+      var timeStr = '';
+      if(m.time) {
+        var timeColor = (m.user==='user') ? '#fff' : '#888';
+        timeStr = '<span class="chat-time" style="display:block;font-size:0.85em;color:'+timeColor+';margin-top:4px;text-align:right">'+m.time+'</span>';
+      }
+      var senderName = m.user==='admin' 
+        ? '<span class="chat-sender" style="display:block;font-size:0.95em;font-weight:600;color:#177dff;margin-bottom:2px;">AI Agent INDOBYPASS</span>' 
+        : '<span class="chat-sender" style="display:block;font-size:0.95em;font-weight:600;color:#FFD600;margin-bottom:2px;"><?= $this->session->userdata('MemberFirstName') ?: 'User' ?></span>';
+      var bubble = '<span class="bubble">'+senderName+safeText+timeStr+'</span>';
       return '<div class="chat-msg-modern '+(m.user==='admin'?'admin':'user')+'">'+avatar+bubble+'</div>';
+// Ambil nama user dari PHP session dan expose ke JS
+
     }).join('');
     if(typing) {
       html += '<div class="chat-msg-modern admin">'
@@ -215,7 +290,11 @@ $(function(){
     e.preventDefault();
     var val = $('#chat-input-modern').val();
     if(val.trim()=='') return;
-    messages.push({user:'user',text:val});
+    var now = new Date();
+    var jam = now.getHours().toString().padStart(2,'0');
+    var menit = now.getMinutes().toString().padStart(2,'0');
+    var timeStr = jam+':'+menit;
+    messages.push({user:'user',text:val,time:timeStr});
     saveMessages();
     renderMessages(true); // tampilkan animasi typing
     $('#chat-input-modern').val('');
@@ -227,7 +306,11 @@ $(function(){
       data: JSON.stringify({message: val, from: 'user'}),
       success: function(res) {
         if(res && res.reply) {
-          messages.push({user:'admin',text:res.reply});
+          var now = new Date();
+          var jam = now.getHours().toString().padStart(2,'0');
+          var menit = now.getMinutes().toString().padStart(2,'0');
+          var timeStr = jam+':'+menit;
+          messages.push({user:'admin',text:res.reply,time:timeStr});
           saveMessages();
           renderMessages();
         } else {
@@ -248,7 +331,11 @@ $(function(){
         dataType: 'json',
         success: function(res) {
           if(res && res.reply) {
-            messages.push({user:'admin',text:res.reply});
+            var now = new Date();
+            var jam = now.getHours().toString().padStart(2,'0');
+            var menit = now.getMinutes().toString().padStart(2,'0');
+            var timeStr = jam+':'+menit;
+            messages.push({user:'admin',text:res.reply,time:timeStr});
             saveMessages();
             renderMessages();
           } else {
@@ -313,6 +400,11 @@ $(function(){
     ];
     renderMessages();
   }
+
+  // Event handler untuk tombol Clear
+  $('#chatbox-clear-btn').on('click', function(){
+    window.clearChatboxHistory();
+  });
 });
 </script>
 <style>

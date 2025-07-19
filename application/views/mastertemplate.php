@@ -89,7 +89,7 @@
                     </span>
                     <h4 class="text-section">Menus</h4>
                 </li>
-                <li <?= $this->uri->uri_string(2) == 'member/dashboard' ? 'class="nav-item active"' : 'class="nav-item"'; ?>>
+                <li <?= $this->uri->uri_string(2) == 'member/dashboard' ? 'class="nav-item active"' : 'class="nav-item"'; ?> >
                     <a href="<?= site_url() ?>member/dashboard">
                         <i class="fas fa-home"></i>
                         <p>Home</p>
@@ -156,6 +156,18 @@
                             </li>
                         </ul>
                     </div>
+                </li>
+                   <li class="nav-section">
+                    <span class="sidebar-mini-icon">
+                        <i class="fa fa-ellipsis-h"></i>
+                    </span>
+                    <h4 class="text-section">Special Features</h4>
+                </li>
+                <li <?= $this->uri->uri_string(2) == 'member/aiagent' ? 'class="nav-item active"' : 'class="nav-item"'; ?> >
+                    <a href="<?= site_url() ?>member/aiagent">
+                        <i class="fas fa-robot"></i>
+                        <p>AI Agent</p>
+                    </a>
                 </li>
                 <li class="nav-section center-content">
                     <span class="sidebar-mini-icon">
