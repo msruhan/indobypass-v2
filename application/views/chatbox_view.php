@@ -130,7 +130,7 @@
     #chatbox-container-modern {
       border-radius: 0;
       box-shadow: none;
-      width: 100vw;
+      width: 95vw;
       height: 100vh;
       max-width: 100vw;
       max-height: 100vh;
