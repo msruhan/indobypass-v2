@@ -42,13 +42,13 @@
 	overflow: hidden;
   }
   .chatbox-big-card {
-	width: 88vw;
-	max-width: 88vw;
+	width: 100vw;
+	max-width: 95vw;
 	height: 80dvh;
-	max-height: 80dvh;
+	max-height: 70dvh;
 	border-radius: 12px;
 	box-shadow: 0 4px 24px rgba(23,125,255,0.10);
-	margin: 12px auto 0 auto;
+	margin: 12px 0 0 0;
 	display: flex;
 	flex-direction: column;
 	overflow: hidden;
