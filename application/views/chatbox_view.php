@@ -1,22 +1,32 @@
-
 <!-- Modern Chatbox Frontend (HTML + CSS + JS) -->
 <style>
+  /* Card style for chatbox */
   #chatbox-container-modern {
-    position: fixed;
-    bottom: 32px;
-    right: 32px;
-    width: 520px;
-    height: 600px;
-    max-width: 98vw;
-    max-height: 98vh;
-    z-index: 9999;
-    font-family: 'Segoe UI', Arial, sans-serif;
-    box-shadow: 0 12px 40px rgba(0,0,0,0.22);
+    position: static !important;
+    margin: 0 auto;
+    width: 100%;
+    height: 400px;
+    box-shadow: 0 8px 32px rgba(23,125,255,0.10);
     border-radius: 22px;
     background: #fff;
-    animation: fadeInUp 0.7s;
+    animation: none;
     display: flex;
     flex-direction: column;
+    z-index: 1;
+    /* Responsive: gunakan lebar penuh parent */
+    max-width: none;
+  }
+  .card-chatbox {
+    width: 100%;
+    margin: 0 auto 32px auto;
+    box-shadow: 0 8px 32px rgba(23,125,255,0.10);
+    border-radius: 22px;
+    overflow: hidden;
+    background: #fff;
+    max-width: none;
+  }
+  #chatbox-open, #chatbox-close {
+    display: none !important;
   }
   @keyframes fadeInUp {
     from { opacity: 0; transform: translateY(40px); }
@@ -118,46 +128,96 @@
 
 <div id="chatbox-container-modern">
   <div class="chatbox-header-modern">
-    <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="AD" />
-    Live Chat Admin INDOBYPASS
-    <div style="margin-left:auto;display:flex;gap:6px;">
-      <!-- <button id="chatbox-minimize" title="Minimize" style="background:none;border:none;color:#fff;font-size:18px;cursor:pointer;line-height:1;padding:0 4px;">&#8211;</button> -->
-      <button id="chatbox-close" title="Close" style="background:none;border:none;color:#fff;font-size:18px;cursor:pointer;line-height:1;padding:0 4px;">&times;</button>
-    </div>
+    <img src="<?= base_url() ?>assets/assets_members/img/chatbot.png" alt="AI Robot" class="avatar-img rounded-circle" />
+    AI Agent INDOBYPASS
   </div>
   <div id="chat-messages-modern"></div>
-  <form id="chat-form-modern">
-    <input type="text" id="chat-input-modern" placeholder="Ketik pesan..." autocomplete="off" />
+  <form id="chat-form-modern" style="position:relative;">
+    <input type="text" id="chat-input-modern" placeholder="Silahkan bertanya pada AI Agent.." autocomplete="off" />
+    <button type="button" id="chat-emoji-btn" style="background:none;border:none;font-size:1.5em;cursor:pointer;margin-right:8px;">😀</button>
     <button type="submit" id="chat-send-modern">Kirim</button>
+    <div id="chat-emoji-popup" style="display:none;position:absolute;bottom:56px;left:0;z-index:10000;background:#fff;border-radius:12px;box-shadow:0 4px 24px rgba(23,125,255,0.12);padding:12px 16px;max-width:340px;max-height:180px;overflow-y:auto;">
+      <div style="display:flex;flex-wrap:wrap;gap:8px;">
+        <span class="emoji-item" style="font-size:1.6em;cursor:pointer;">😊</span>
+        <span class="emoji-item" style="font-size:1.6em;cursor:pointer;">😂</span>
+        <span class="emoji-item" style="font-size:1.6em;cursor:pointer;">😍</span>
+        <span class="emoji-item" style="font-size:1.6em;cursor:pointer;">👍</span>
+        <span class="emoji-item" style="font-size:1.6em;cursor:pointer;">🙏</span>
+        <span class="emoji-item" style="font-size:1.6em;cursor:pointer;">🔥</span>
+        <span class="emoji-item" style="font-size:1.6em;cursor:pointer;">🥳</span>
+        <span class="emoji-item" style="font-size:1.6em;cursor:pointer;">😎</span>
+        <span class="emoji-item" style="font-size:1.6em;cursor:pointer;">😢</span>
+        <span class="emoji-item" style="font-size:1.6em;cursor:pointer;">🤔</span>
+        <span class="emoji-item" style="font-size:1.6em;cursor:pointer;">😡</span>
+        <span class="emoji-item" style="font-size:1.6em;cursor:pointer;">🥰</span>
+        <span class="emoji-item" style="font-size:1.6em;cursor:pointer;">😆</span>
+        <span class="emoji-item" style="font-size:1.6em;cursor:pointer;">😇</span>
+        <span class="emoji-item" style="font-size:1.6em;cursor:pointer;">🤩</span>
+        <span class="emoji-item" style="font-size:1.6em;cursor:pointer;">😜</span>
+        <span class="emoji-item" style="font-size:1.6em;cursor:pointer;">😋</span>
+        <span class="emoji-item" style="font-size:1.6em;cursor:pointer;">😴</span>
+        <span class="emoji-item" style="font-size:1.6em;cursor:pointer;">🤗</span>
+        <span class="emoji-item" style="font-size:1.6em;cursor:pointer;">🙌</span>
+        <span class="emoji-item" style="font-size:1.6em;cursor:pointer;">💪</span>
+        <span class="emoji-item" style="font-size:1.6em;cursor:pointer;">🎉</span>
+        <span class="emoji-item" style="font-size:1.6em;cursor:pointer;">❤️</span>
+        <span class="emoji-item" style="font-size:1.6em;cursor:pointer;">💯</span>
+      </div>
+    </div>
   </form>
 </div>
-<button id="chatbox-open" style="display:none;position:fixed;bottom:24px;right:24px;z-index:9998;background:linear-gradient(90deg,#177dff 60%,#6a82fb 100%);color:#fff;border:none;border-radius:50%;width:56px;height:56px;box-shadow:0 4px 16px rgba(23,125,255,0.18);font-size:28px;cursor:pointer;align-items:center;justify-content:center;transition:background 0.2s;">
-  <span style="font-size:28px;">💬</span>
-</button>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
 $(function(){
-  // Dummy messages for demo
-  var messages = [
-    {user:'admin',text:'Halo, ada yang bisa dibantu?'},
-  ];
-  function renderMessages() {
-    $('#chat-messages-modern').html(messages.map(function(m){
+  // Load messages dari localStorage jika ada, jika tidak pakai default
+  var messages = [];
+  try {
+    var saved = localStorage.getItem('chatbox_messages');
+    if(saved) {
+      messages = JSON.parse(saved);
+    } else {
+      messages = [
+        {user:'admin',text:'Halo, ada yang bisa dibantu?'},
+      ];
+    }
+  } catch(e) {
+    messages = [
+      {user:'admin',text:'Halo, ada yang bisa dibantu?'},
+    ];
+  }
+
+  function saveMessages() {
+    localStorage.setItem('chatbox_messages', JSON.stringify(messages));
+  }
+
+  function renderMessages(typing) {
+    var html = messages.map(function(m){
       var avatar = m.user==='admin' 
-        ? '<span class="avatar"><img src="https://randomuser.me/api/portraits/men/32.jpg" style="width:100%;height:100%;border-radius:50%"></span>' 
-        : '<span class="avatar"><img src="https://randomuser.me/api/portraits/women/44.jpg" style="width:100%;height:100%;border-radius:50%"></span>';
-      var bubble = '<span class="bubble">'+$('<div>').text(m.text).html()+'</span>';
+        ? '<span class="avatar"><img src="'+window.location.origin+'/indobypass/assets/assets_members/img/chatbot.png" alt="AI Robot" class="avatar-img rounded-circle" style="width:100%;height:100%;border-radius:50%"></span>' 
+        : '<span class="avatar"><img src="'+window.location.origin+'/indobypass/assets/assets_members/img/profile.jpg" alt="AI Robot" class="avatar-img rounded-circle" style="width:100%;height:100%;border-radius:50%"></span>' ;
+      // Izinkan emoticon dengan innerHTML, tapi tetap escape script
+      var safeText = m.text.replace(/</g,'&lt;').replace(/>/g,'&gt;');
+      var bubble = '<span class="bubble">'+safeText+'</span>';
       return '<div class="chat-msg-modern '+(m.user==='admin'?'admin':'user')+'">'+avatar+bubble+'</div>';
-    }).join(''));
+    }).join('');
+    if(typing) {
+      html += '<div class="chat-msg-modern admin">'
+        +'<span class="avatar"><img src="'+window.location.origin+'/indobypass/assets/assets_members/img/chatbot.png" alt="AI Robot" class="avatar-img rounded-circle" style="width:100%;height:100%;border-radius:50%"></span>'
+        +'<span class="bubble"><span class="typing-dots"><span>.</span><span>.</span><span>.</span></span></span>'
+        +'</div>';
+    }
+    $('#chat-messages-modern').html(html);
     $('#chat-messages-modern').scrollTop($('#chat-messages-modern')[0].scrollHeight);
   }
   renderMessages();
+
   $('#chat-form-modern').on('submit',function(e){
     e.preventDefault();
     var val = $('#chat-input-modern').val();
     if(val.trim()=='') return;
     messages.push({user:'user',text:val});
-    renderMessages();
+    saveMessages();
+    renderMessages(true); // tampilkan animasi typing
     $('#chat-input-modern').val('');
     // Kirim ke webhook n8n
     $.ajax({
@@ -166,22 +226,22 @@ $(function(){
       contentType: 'application/json',
       data: JSON.stringify({message: val, from: 'user'}),
       success: function(res) {
-        // Jika ingin menampilkan balasan dari n8n, bisa tambahkan di sini
         if(res && res.reply) {
           messages.push({user:'admin',text:res.reply});
+          saveMessages();
           renderMessages();
         } else {
-          // polling untuk jawaban dari n8n
           pollN8nReply();
         }
       },
       error: function() {
-        // Optional: tampilkan error jika gagal
+        renderMessages(); // hilangkan typing jika error
       }
     });
 
     // Fungsi polling jawaban dari n8n
     function pollN8nReply() {
+      renderMessages(true); // tetap tampilkan typing selama polling
       $.ajax({
         url: 'https://n8n.indobypass.cloud/webhook/chatbot-receiver',
         method: 'GET',
@@ -189,13 +249,37 @@ $(function(){
         success: function(res) {
           if(res && res.reply) {
             messages.push({user:'admin',text:res.reply});
+            saveMessages();
             renderMessages();
+          } else {
+            setTimeout(pollN8nReply, 1200); // polling ulang jika belum ada balasan
           }
         },
         error: function() {
-          // Optional: tampilkan error jika gagal
+          renderMessages(); // hilangkan typing jika error
         }
       });
+    }
+  });
+
+  // Emoji popup logic
+  $('#chat-emoji-btn').on('click',function(e){
+    e.preventDefault();
+    $('#chat-emoji-popup').toggle();
+  });
+  $(document).on('click','.emoji-item',function(){
+    var emoji = $(this).text();
+    var $input = $('#chat-input-modern');
+    $input.val($input.val()+emoji);
+    $('#chat-emoji-popup').hide();
+    $input.focus();
+  });
+  // Hide popup if click outside
+  $(document).on('mousedown',function(e){
+    var $popup = $('#chat-emoji-popup');
+    var $btn = $('#chat-emoji-btn');
+    if(!$popup.is(e.target) && $popup.has(e.target).length===0 && !$btn.is(e.target)){
+      $popup.hide();
     }
   });
 
@@ -220,6 +304,38 @@ $(function(){
     $('#chatbox-container-modern').fadeIn(200);
     $(this).fadeOut(200);
   });
-  
+
+  // Hapus riwayat chat saat user logout
+  window.clearChatboxHistory = function() {
+    localStorage.removeItem('chatbox_messages');
+    messages = [
+      {user:'admin',text:'Halo, ada yang bisa dibantu?'},
+    ];
+    renderMessages();
+  }
 });
 </script>
+<style>
+.typing-dots {
+  display: inline-block;
+  min-width: 32px;
+}
+.typing-dots span {
+  display: inline-block;
+  font-size: 1.5em;
+  color: #177dff;
+  animation: blink 1.2s infinite;
+  margin-right: 2px;
+}
+.typing-dots span:nth-child(2) {
+  animation-delay: 0.2s;
+}
+.typing-dots span:nth-child(3) {
+  animation-delay: 0.4s;
+}
+@keyframes blink {
+  0%, 80%, 100% { opacity: 0.2; }
+  40% { opacity: 1; }
+}
+</style>
+

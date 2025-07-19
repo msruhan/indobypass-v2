@@ -2,12 +2,12 @@ $(document).ready(function () {
     $.notify({
         // icon: 'icon-bell',
         title: 'Hello!',
-        message: 'Welcome to INDOBYPASS Dashboard',
+        message: 'Welcome to INDOBYPASS Dashboasdard',
     }, {
         type: 'secondary',
         placement: {
             from: "bottom",
-            align: "right"
+            align: "left"
         },
         time: 1000,
     });
