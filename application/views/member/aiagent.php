@@ -13,9 +13,9 @@
 	padding: 0;
   }
   .chatbox-big-card {
-	width: 1400px;
+	width: 1100px;
 	max-width: 99vw;
-	height: 1200px;
+	height: 900px;
 	max-height: 98vh;
 	box-shadow: 0 20px 80px rgba(23,125,255,0.25);
 	border-radius: 44px;

@@ -52,9 +52,7 @@
     max-height: 100%;
     height: 100%;
     overflow-y: auto;
-    background-color: #fff;
-    background-image: url('data:image/svg+xml;utf8,<svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg"><rect width="32" height="32" fill="white"/><path d="M0 32L32 0" stroke="%23333" stroke-width="2" opacity="0.13"/><path d="M8 32L32 8" stroke="%23333" stroke-width="2" opacity="0.13"/><path d="M0 24L24 0" stroke="%23333" stroke-width="2" opacity="0.13"/></svg>');
-    /* pattern diagonal lines abu-abu gelap, modern dan tidak dots */
+    background: linear-gradient(180deg, #fff 70%, #ececec 100%);
     padding: 24px 18px;
     border-bottom: 1px solid #e3e6ea;
     font-size: 1.25rem;
