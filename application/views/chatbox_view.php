@@ -131,9 +131,9 @@
       border-radius: 0;
       box-shadow: none;
       width: 95vw;
-      height: 100vh;
+      height: 95vh;
       max-width: 100vw;
-      max-height: 100vh;
+      max-height: 95vh;
       padding: 0;
     }
     .chatbox-header-modern {
