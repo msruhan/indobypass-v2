@@ -44,8 +44,8 @@
   .chatbox-big-card {
 	width: 100vw;
 	max-width: 95vw;
-	height: 90vh;
-	max-height: 80vh;
+	height: 82vh;
+	max-height: 72vh;
 	border-radius: 12px;
 	box-shadow: 0 4px 24px rgba(23,125,255,0.10);
 	margin: 12px 0 0 0;
