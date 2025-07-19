@@ -32,24 +32,33 @@
   /* Responsive khusus mobile */
   @media (max-width: 600px) {
 	.chatbox-big-container {
-	  align-items: flex-start;
-	  justify-content: flex-start;
+	  align-items: center;
+	  justify-content: center;
 	  padding: 0;
 	  background: #f4f7fa;
+	  min-height: 100dvh;
+	  width: 100vw;
+	  overflow: hidden;
 	}
 	.chatbox-big-card {
 	  width: 100vw;
 	  max-width: 100vw;
-	  height: 100vh;
-	  max-height: 100vh;
+	  height: 90dvh;
+	  max-height: 90dvh;
 	  border-radius: 0;
 	  box-shadow: none;
-	  margin: 0;
+	  margin: 0 auto;
+	  display: flex;
+	  flex-direction: column;
+	  overflow: hidden;
 	}
 	.card-body.p-0 {
-	  height: 100vh;
-	  min-height: 100vh;
+	  height: 100%;
+	  min-height: 0;
 	  padding: 0;
+	  overflow-y: auto;
+	  overflow-x: hidden;
+	  box-sizing: border-box;
 	}
   }
 </style>
