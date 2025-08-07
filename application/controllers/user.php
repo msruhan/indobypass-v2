@@ -143,7 +143,7 @@ class User extends FSD_Controller
 								'MemberPhone' => $user[0]['Mobile'],
 								'MemberCurrency' => $user[0]['Currency'],
 								'IDR' => $data['key']['idr'],
-								'is_member_logged_in' => TRUE 
+								'is_member_logged_in' => FALSE 
 							);
 							$this->session->set_userdata($session);
 							redirect('member/dashboard');
