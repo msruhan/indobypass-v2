@@ -116,7 +116,8 @@ $autoload['language'] = array(
     'imei_fields',
     'server_fields',
     'file_fields',
-    'credit_fields'
+    'credit_fields',
+    'otp'
 );
 
 

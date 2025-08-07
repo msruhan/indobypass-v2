@@ -176,6 +176,8 @@
 			</div>
 </div>
 
+<?php $this->load->view('chatbox_view'); ?>
+
 <!-- Select2 -->
 <script type="text/javascript">
 var base_url = "<?= base_url() ?>";
