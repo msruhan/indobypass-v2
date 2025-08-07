@@ -63,7 +63,10 @@ class member_model extends CI_Model
 	{
 		if(array_key_exists("Password", $data)) {
 			if($data["Password"] != null ) {
-				$data["Password"] = password_hash($data["Password"], PASSWORD_DEFAULT);
+				// Jika password sudah berbentuk bcrypt, jangan hash ulang
+				if (!(is_string($data["Password"]) && substr($data["Password"], 0, 4) === '$2y$')) {
+					$data["Password"] = password_hash($data["Password"], PASSWORD_DEFAULT);
+				}
 			} else {
 				unset($data['Password']);
 			}
