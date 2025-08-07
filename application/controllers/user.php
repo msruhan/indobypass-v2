@@ -109,8 +109,55 @@ class User extends FSD_Controller
 			$this->form_validation->set_rules('Password', 'Password', 'required|min_length[5]');
 			if ($this->form_validation->run() !== FALSE)
 			{
-				$data = $this->input->post(NULL, TRUE);			
-				$query = $this->member_model->get_where(array( 'Email' => $data['Email'], 'Password' => md5($data['Password'])));
+				$data = $this->input->post(NULL, TRUE);
+				$user = $this->member_model->get_where(array('Email' => $data['Email']));
+				if(count($user) > 0) {
+					$hash = $user[0]['Password'];
+					$input_password = $data['Password'];
+					$is_md5 = (strlen($hash) === 32 && ctype_xdigit($hash));
+					$valid = false;
+					if ($is_md5) {
+						// Cek password lama (MD5)
+						if (md5($input_password) === $hash) {
+							$valid = true;
+							// Upgrade ke hash baru
+							$this->member_model->update(['Password' => password_hash($input_password, PASSWORD_DEFAULT)], $user[0]['ID']);
+						}
+					} else {
+						// Cek password hash baru
+						if (password_verify($input_password, $hash)) {
+							$valid = true;
+						}
+					}
+					if ($valid) {
+						if($user[0]["Status"] == "Enabled") {
+							$settings = $this->setting_model->get_all();
+							foreach ($settings as $s)
+								$data['key'][$s['Key']] = $s['Value'];
+							$session = array(
+								'MemberID' => $user[0]['ID'],
+								'MemberEmail' => $user[0]['Email'],
+								'MemberFirstName' => $user[0]['FirstName'],
+								'MemberLastName' => $user[0]['LastName'],
+								'MemberPhone' => $user[0]['Mobile'],
+								'MemberCurrency' => $user[0]['Currency'],
+								'IDR' => $data['key']['idr'],
+								'is_member_logged_in' => TRUE 
+							);
+							$this->session->set_userdata($session);
+							redirect('member/dashboard');
+						} else {
+							$this->session->set_flashdata('message', '<div class="alert alert-danger alert-dismissible fade show" role="alert" role="danger"> '.$this->lang->line('error_account_deactivated').'  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>');
+							redirect('login');
+						}
+					} else {
+						$this->session->set_flashdata('message', '<div class="alert alert-danger alert-dismissible fade show" role="alert" role="danger"> '.$this->lang->line('error_invalid_login').'  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>');
+						redirect('login');
+					}
+				} else {
+					$this->session->set_flashdata('message', '<div class="alert alert-danger alert-dismissible fade show" role="alert" role="danger"> '.$this->lang->line('error_invalid_login').'  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>');
+					redirect('login');
+				}
 				
 				if(count($query) > 0)
 				{
@@ -173,7 +220,7 @@ class User extends FSD_Controller
 				$data['Token'] = $token;
 				$data['ReferralMemberID'] = $this->session->userdata('referral')? $this->session->userdata('referral'): NULL;
 				$data['Status'] = 'Disabled';
-                $data["CreatedDateTime"] = date("y-m-d H:i:s");
+				$data["CreatedDateTime"] = date("y-m-d H:i:s");
 								
 				$this->member_model->insert($data);	
 				## Get Issue Email Template ##
