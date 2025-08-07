@@ -135,18 +135,36 @@ class User extends FSD_Controller
 							$settings = $this->setting_model->get_all();
 							foreach ($settings as $s)
 								$data['key'][$s['Key']] = $s['Value'];
-							$session = array(
-								'MemberID' => $user[0]['ID'],
-								'MemberEmail' => $user[0]['Email'],
-								'MemberFirstName' => $user[0]['FirstName'],
-								'MemberLastName' => $user[0]['LastName'],
-								'MemberPhone' => $user[0]['Mobile'],
-								'MemberCurrency' => $user[0]['Currency'],
-								'IDR' => $data['key']['idr'],
-								'is_member_logged_in' => FALSE 
-							);
-							$this->session->set_userdata($session);
-							redirect('member/dashboard');
+							if(isset($data['key']['OTP_verification']) && $data['key']['OTP_verification'] == 'Enabled') {
+								$session = array(
+									'MemberID' => $user[0]['ID'],
+									'MemberEmail' => $user[0]['Email'],
+									'MemberFirstName' => $user[0]['FirstName'],
+									'MemberLastName' => $user[0]['LastName'],
+									'MemberPhone' => $user[0]['Mobile'],
+									'MemberCurrency' => $user[0]['Currency'],
+									'IDR' => $data['key']['idr'],
+									'is_member_logged_in' => FALSE
+								);
+								$this->session->set_userdata($session);
+								$this->session->set_userdata('temp_user_id', $user[0]['ID']);
+								$this->session->set_userdata('temp_user_email', $user[0]['Email']);
+								$this->send_otp();
+								redirect('user/verify_otp');
+							} else {
+								$session = array(
+									'MemberID' => $user[0]['ID'],
+									'MemberEmail' => $user[0]['Email'],
+									'MemberFirstName' => $user[0]['FirstName'],
+									'MemberLastName' => $user[0]['LastName'],
+									'MemberPhone' => $user[0]['Mobile'],
+									'MemberCurrency' => $user[0]['Currency'],
+									'IDR' => $data['key']['idr'],
+									'is_member_logged_in' => TRUE
+								);
+								$this->session->set_userdata($session);
+								redirect('member/dashboard');
+							}
 						} else {
 							$this->session->set_flashdata('message', '<div class="alert alert-danger alert-dismissible fade show" role="alert" role="danger"> '.$this->lang->line('error_account_deactivated').'  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>');
 							redirect('login');

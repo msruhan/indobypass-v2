@@ -34,115 +34,90 @@
 <!-- END THEME STYLES -->
 <link rel="shortcut icon" href="favicon.ico"/>
 </head>
-<!-- BEGIN BODY -->
-<body class="login">
-<!-- BEGIN LOGO -->
-<div class="logo">
-	<!-- <a href="index.html">
-	<img src="<?php echo $this->config->item('assets_url');?>img/logo.png" alt=""/>
-	</a> -->
-</div>
-<!-- END LOGO -->
-<!-- BEGIN LOGIN -->
-<div class="content">
-	<!-- BEGIN LOGIN FORM -->
-    
-    <?php echo form_open('admin/session/login', array('class' => 'login-form')); ?>
-    <input type="hidden" name="return_url" value="<?php echo $this->input->get('return_url') ?>" />
-		<h3 class="form-title">Welcome Please Sign In</h3>
-		<div class="alert alert-danger display-hide">
-			<button class="close" data-close="alert"></button>
-			<span>
-			Enter any username and password. </span>
-		</div>
-		<div class="form-group">
-			<!--ie8, ie9 does not support html5 placeholder, so we just show field title for that-->
-			<label class="control-label visible-ie8 visible-ie9">Email</label>
-			<div class="input-icon">
-				<i class="fa fa-envelope"></i>
-				<input class="form-control placeholder-no-fix" type="email" name="Email" id="Email" placeholder="Email" value="<?php echo set_value('Email') ?>" autocomplete="off"/>
+<body class="login" style="background: linear-gradient(135deg, #2980b9 0%, #6dd5fa 100%); min-height:100vh;">
+	<div class="wrapper wrapper-login wrapper-login-full p-0">
+		<div class="login-aside w-100 d-flex align-items-center justify-content-center bg-white">
+			<div class="container container-login container-transparent animated fadeIn" style="max-width:400px;">
+				<h3 class="text-center mb-4">Admin Login</h3>
+				<div class="login-form">
+					<?php if($this->session->flashdata('error')): ?>
+						<div class="alert alert-danger">
+							<?php echo $this->session->flashdata('error'); ?>
+						</div>
+					<?php endif; ?>
+					<?php if($this->session->flashdata('success')): ?>
+						<div class="alert alert-success">
+							<?php echo $this->session->flashdata('success'); ?>
+						</div>
+					<?php endif; ?>
+					<?php echo form_open('admin/session/login', array('role' => 'form', 'method' => 'post', 'class' => 'mb-3')); ?>
+						<input type="hidden" name="return_url" value="<?php echo $this->input->get('return_url') ?>" />
+						<div class="form-group mb-3">
+							<label for="Email"><b>Email</b></label>
+							<input type="email" id="Email" name="Email" class="form-control" value="<?php echo set_value('Email'); ?>" placeholder="Email" required>
+						</div>
+						<div class="form-group mb-3">
+							<label for="Password"><b>Password</b></label>
+							<a href="javascript:;" id="show-forgot" class="link float-end">Forgot password?</a>
+							<div class="position-relative">
+								<input type="password" id="Password" name="Password" class="form-control" placeholder="Password" required>
+								<div class="show-password" style="position:absolute;top:8px;right:12px;cursor:pointer;">
+									<i class="fa fa-eye"></i>
+								</div>
+							</div>
+						</div>
+						<div class="d-grid mb-2">
+							<button type="submit" class="btn btn-primary fw-bold">Login</button>
+						</div>
+					<?php echo form_close(); ?>
+					<div id="forgot-form" style="display:none; margin-top:20px;">
+						<?php echo form_open('admin/session/forgot_password', array('class' => 'forget-form')) ?>
+							<h5>Forgot Password?</h5>
+							<p>Enter your e-mail address below to reset your password.</p>
+							<div class="form-group mb-3">
+								<input class="form-control" type="email" autocomplete="off" placeholder="Your email" name="Email" value="<?php echo set_value('Email') ?>" required />
+							</div>
+							<div class="d-grid gap-2">
+								<button type="button" id="back-btn" class="btn btn-secondary">Back</button>
+								<button type="submit" class="btn btn-info">Submit</button>
+							</div>
+						<?php echo form_close(); ?>
+					</div>
+				</div>
+				<div class="text-center mt-4">
+					<small>2025 &copy; INDOBYPASS.</small>
+				</div>
 			</div>
 		</div>
-		<div class="form-group">
-			<label class="control-label visible-ie8 visible-ie9">Password</label>
-			<div class="input-icon">
-				<i class="fa fa-lock"></i>
-				<input class="form-control placeholder-no-fix" type="password" autocomplete="off" name="Password" id="Password" placeholder="Password"/>
-			</div>
-		</div>
-		<div class="form-actions">
-			<button type="submit" class="btn btn-info pull-right">
-			Login </button>
-		</div>
-		<div class="forget-password">
-			<h4>Forgot your password ?</h4>
-			<p>
-				 no worries, click <a href="javascript:;" id="forget-password">here</a>
-				to reset your password.
-			</p>
-		</div>
-    <?php echo form_close(); ?>  
-	<!-- END LOGIN FORM -->
-	<!-- BEGIN FORGOT PASSWORD FORM -->
-    <?php echo form_open('admin/session/forgot_password', array('class' => 'forget-form')) ?>
-		<h3>Forget Password ?</h3>
-		<p>
-			 Enter your e-mail address below to reset your password.
-		</p>
-		<div class="form-group">
-			<div class="input-icon">
-				<i class="fa fa-envelope"></i>
-				<input class="form-control placeholder-no-fix" type="email" autocomplete="off" placeholder="Your email" name="Email" value="<?php echo set_value('Email') ?>"/>
-			</div>
-		</div>
-		<div class="form-actions">
-			<button type="button" id="back-btn" class="btn btn-default">
-			<i class="m-icon-swapleft"></i> Back </button>
-			<button type="submit" class="btn btn-info pull-right">
-			Submit </button>
-		</div>
-    <?php echo form_close(); ?>  
-	<!-- END FORGOT PASSWORD FORM -->
-</div>
-<!-- END LOGIN -->
-<!-- BEGIN COPYRIGHT -->
-<div class="copyright">
-	 2018 &copy; Exclusiveunlock.
-</div>
-<!-- END COPYRIGHT -->
-<!-- BEGIN JAVASCRIPTS(Load javascripts at bottom, this will reduce page load time) -->
-<!-- BEGIN CORE PLUGINS -->
-<script src="<?php echo $this->config->item('assets_url');?>plugins/jquery-1.11.0.min.js" type="text/javascript"></script>
-<script src="<?php echo $this->config->item('assets_url');?>plugins/jquery-migrate-1.2.1.min.js" type="text/javascript"></script>
-<!-- IMPORTANT! Load jquery-ui-1.10.3.custom.min.js before bootstrap.min.js to fix bootstrap tooltip conflict with jquery ui tooltip -->
-<script src="<?php echo $this->config->item('assets_url');?>plugins/jquery-ui/jquery-ui-1.10.3.custom.min.js" type="text/javascript"></script>
-<script src="<?php echo $this->config->item('assets_url');?>plugins/bootstrap/js/bootstrap.min.js" type="text/javascript"></script>
-<script src="<?php echo $this->config->item('assets_url');?>plugins/bootstrap-hover-dropdown/bootstrap-hover-dropdown.min.js" type="text/javascript"></script>
-<script src="<?php echo $this->config->item('assets_url');?>plugins/jquery-slimscroll/jquery.slimscroll.min.js" type="text/javascript"></script>
-<script src="<?php echo $this->config->item('assets_url');?>plugins/jquery.blockui.min.js" type="text/javascript"></script>
-<script src="<?php echo $this->config->item('assets_url');?>plugins/uniform/jquery.uniform.min.js" type="text/javascript"></script>
-<!-- END CORE PLUGINS -->
-<!-- BEGIN PAGE LEVEL PLUGINS -->
-<script src="<?php echo $this->config->item('assets_url');?>plugins/jquery-validation/js/jquery.validate.min.js" type="text/javascript"></script>
-<script type="text/javascript" src="<?php echo $this->config->item('assets_url');?>plugins/select2/select2.min.js"></script>
-<!-- END PAGE LEVEL PLUGINS -->
-<!-- BEGIN PAGE LEVEL SCRIPTS -->
-<script src="<?php echo $this->config->item('assets_url');?>scripts/app.js" type="text/javascript"></script>
-<script src="<?php echo $this->config->item('assets_url');?>scripts/login.js" type="text/javascript"></script>
-<!-- END PAGE LEVEL SCRIPTS -->
-<script>
-jQuery(document).ready(function() {     
-  App.init();
-  Login.init();
-  var action = location.hash.substr(1);
-    if (action == 'forgetpassword')  {
-        $('.register-form').hide();
-        $('.login-form').hide();
-        $('.forget-form').show();
-    }
-});
-</script>
-<!-- END JAVASCRIPTS -->
+	</div>
+	<script src="<?= site_url() ?>assets/assets_members/js/core/jquery-3.7.1.min.js"></script>
+	<script src="<?= site_url() ?>assets/assets_members/js/core/bootstrap.min.js"></script>
+	<script>
+	$(document).ready(function() {
+		$('#show-forgot').click(function(e) {
+			e.preventDefault();
+			$('.login-form').hide();
+			$('#forgot-form').show();
+		});
+		$('#back-btn').click(function() {
+			$('#forgot-form').hide();
+			$('.login-form').show();
+		});
+		// Show/hide password
+		$('.show-password').on('click', function() {
+			var input = $('#Password');
+			var icon = $(this).find('i');
+			if (input.attr('type') === 'password') {
+				input.attr('type', 'text');
+				icon.removeClass('fa-eye').addClass('fa-eye-slash');
+			} else {
+				input.attr('type', 'password');
+				icon.removeClass('fa-eye-slash').addClass('fa-eye');
+			}
+		});
+	});
+	</script>
+</body>
 </body>
 <!-- END BODY -->
 </html>

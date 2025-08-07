@@ -25,37 +25,107 @@ class Session extends CI_Controller
 
 		if ($this->form_validation->run() !== FALSE)
 		{
-			$result = $this->employee_model->get_where(
-						array(
-							'Email' => $this->input->post('Email'),
-							'Password' => md5($this->input->post('Password')),
-							'Status' => 'Enabled'
-						)
+			$data = $this->input->post(NULL, TRUE);
+			$employee = $this->employee_model->get_where(array('Email' => $data['Email']));
+			if(count($employee) > 0) {
+				$hash = $employee[0]['Password'];
+				$input_password = $data['Password'];
+				$is_md5 = (strlen($hash) === 32 && ctype_xdigit($hash));
+				$valid = false;
+				if ($is_md5) {
+					if (md5($input_password) === $hash) {
+						$valid = true;
+						$this->employee_model->update(['Password' => password_hash($input_password, PASSWORD_DEFAULT)], $employee[0]['ID']);
+					}
+				} else {
+					if (password_verify($input_password, $hash)) {
+						$valid = true;
+					}
+				}
+				if ($valid && $employee[0]["Status"] == "Enabled") {
+					// OTP wajib untuk admin
+					$session = array(
+						'admin_id' => $employee[0]['ID'],
+						'admin_email' => $employee[0]['Email'],
+						'admin_name' => $employee[0]['FirstName'] . ' ' . $employee[0]['LastName'],
+						'is_admin_logged_in' => FALSE
 					);
-			
-			if (count($result)>0)
-			{
-				$data = array(
-					'employee_id' => $result[0]["ID"],
-					'full_name' => $result[0]["FirstName"]." ".$result[0]["LastName"],
-                    'email' => $result[0]["Email"],
-                    'is_admin_logged_in' => TRUE
-				);
-				$this->session->set_userdata($data);
-				
-				if($this->input->post('return_url')!="")
-					redirect($this->input->post('return_url'));
-				else
-					redirect("admin");
+					$this->session->set_userdata($session);
+					$this->session->set_userdata('temp_admin_id', $employee[0]['ID']);
+					$this->session->set_userdata('temp_admin_email', $employee[0]['Email']);
+					$this->send_otp_admin();
+					redirect('admin/session/verify_otp');
+				} else {
+					$this->session->set_flashdata("error", "Invalid Email or Password");
+					redirect("admin/session");
+				}
+			} else {
+				$this->session->set_flashdata("error", "Invalid Email or Password");
+				redirect("admin/session");
 			}
-			$this->session->set_flashdata("error", "Invalid Email or Password");
-			redirect("admin/session");
 		}
 		$this->index();
 	}
+	public function send_otp_admin() {
+		if (!$this->session->userdata('temp_admin_id')) {
+			redirect('admin/session/login');
+		}
+		$admin_id = $this->session->userdata('temp_admin_id');
+		$email = $this->session->userdata('temp_admin_email');
+		$this->load->model('otp_model');
+		$otp_code = $this->otp_model->generate_otp($admin_id, $email);
+		$this->send_otp_email_admin($email, $otp_code);
+		if ($this->input->is_ajax_request()) {
+			echo json_encode(array('status' => 'success', 'message' => 'OTP sent'));
+		} else {
+			$this->session->set_flashdata('success', 'OTP sent');
+			redirect('admin/session/verify_otp');
+		}
+	}
 
-	public function forgot_password()
-	{
+	public function verify_otp() {
+		if (!$this->session->userdata('temp_admin_id')) {
+			redirect('admin/session/login');
+		}
+		$this->load->model('otp_model');
+		if ($this->input->post('otp_code')) {
+			$admin_id = $this->session->userdata('temp_admin_id');
+			$otp_code = $this->input->post('otp_code');
+			if ($this->otp_model->verify_otp($admin_id, $otp_code)) {
+				$this->session->unset_userdata('temp_admin_id');
+				$this->session->unset_userdata('temp_admin_email');
+				$session = array(
+					'is_admin_logged_in' => TRUE
+				);
+				$this->session->set_userdata($session);
+				$this->session->set_flashdata('success', 'OTP verified successfully');
+				redirect('admin');
+			} else {
+				$this->session->set_flashdata('error', 'Invalid OTP code');
+			}
+		} else {
+			$this->session->set_flashdata('error', 'Invalid OTP code');
+		}
+		$data['page_title'] = 'OTP Verification';
+		$this->load->view('admin/verify_otp', $data);
+	}
+
+	private function send_otp_email_admin($email, $otp_code) {
+		$template = $this->autoresponder_model->get_where(array('Status' => 'Enabled', 'ID' => 12));
+		if (isset($template) && count($template) > 0) {
+			$from_name = $template[0]['FromName'];
+			$from_email = $template[0]['FromEmail'];
+			$to_email = $email;
+			$subject = $template[0]['Subject'];
+			$message = html_entity_decode($template[0]['Message']);
+			$post['OTPCode'] = $otp_code;
+			$post['Email'] = $email;
+			$this->fsd->email_template($post, $from_email, $from_name, $to_email, $subject, $message);
+			$this->fsd->sent_email($from_email, $from_name, $to_email, $subject, $message);
+		}
+	}
+// ...existing code...
+   public function forgot_password(){
 		$this->load->library('form_validation');	
 		$this->form_validation->set_rules('Email', 'Email', 'trim|required|valid_email|min_length[4]');
 		if($this->form_validation->run() !== FALSE)
