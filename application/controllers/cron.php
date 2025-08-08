@@ -34,6 +34,7 @@ class Cron extends CI_Controller
 		$this->load->model("imeiorder_model");
 		$this->load->model("fileorder_model");
 		$this->load->model("serverorder_model");
+		$this->load->helper('string');
 	}
 	
 	/**

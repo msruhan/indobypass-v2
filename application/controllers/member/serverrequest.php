@@ -116,9 +116,9 @@ class serverrequest extends FSD_Controller
 
 		foreach ($flattenedData as $method) {
 
-			$data['title'] = $method['title'];
-			$data['delivery_time'] = $method['DeliveryTime'];
-			$data['price'] = $method['methodPrice'];
+			$data['title'] = isset($method['title']) ? $method['title'] : '';
+			$data['delivery_time'] = isset($method['DeliveryTime']) ? $method['DeliveryTime'] : '';
+			$data['price'] = isset($method['methodPrice']) ? $method['methodPrice'] : '';
 
 			array_push($array_data, $data);
 		}

@@ -85,20 +85,20 @@ class dashboard extends FSD_Controller
 		$id = $this->session->userdata('MemberID');
 
 		$start      =  $_REQUEST['start'];
-        $length     = $_REQUEST['length'];
-        $cari_data  = $_REQUEST['search']['value'];
+		$length     = $_REQUEST['length'];
+		$cari_data  = $_REQUEST['search']['value'];
 		$statusFilter = $_REQUEST['status'] ?? '';
 		$startDate = $_REQUEST['startDate'] ?? '';
 		$endDate = $_REQUEST['endDate'] ?? '';
 
 		$datas = $this->imeiorder_model->get_imei_data_new($id, $start, $length, $cari_data, $statusFilter, $startDate, $endDate);
 
-        $total = 9999999;
-        $array_data = array();
-        $no = $start + 1;
-        if (!empty($datas) && $datas != null) {
+		$total = 9999999;
+		$array_data = array();
+		$no = $start + 1;
+		if (!empty($datas) && $datas != null) {
 
-            foreach ($datas as $d) {
+			foreach ($datas as $d) {
 
 				$status = ($d['Status'] == "Issued") ? "Success" : $d['Status'];
 
@@ -121,34 +121,34 @@ class dashboard extends FSD_Controller
 			}
 
 
-                $data["action"]      = "<a href='#' onclick='detailIMEI(\"".$d['ID']."\")'><i class='fas fa-chevron-down'></i></a>";
-                $data["no"]          = $d['ID'];
-                $data["detail"]      =  "<button class='btn btn-info btn-xs' onclick='detailIMEI(\"".$d['ID']."\")'>View</button>";
-                $data["imei"]        = $d['IMEI'];
-                // $data["description"] = $d['Title'];
-                $data["price"]       = format_currency($d['Price']);
-                $data["service"]     = $d['Title'];
-                $data["note"]    	 = $d['Note'];
-                $data["comments"]    = $d['Comments'];
-                $data["code"] 	 	 = $d['Code'];
-                $data["status"]      = $status;
-                $data["created_at"]  = $d['CreatedDateTime'];
-                $data["updated_date_time"]  = $d['UpdatedDateTime'];
-                array_push($array_data, $data);
-                $no++;
-            }
-        }
+				$data["action"]      = "<a href='#' onclick='detailIMEI(\"".$d['ID']."\")'><i class='fas fa-chevron-down'></i></a>";
+				$data["no"]          = $d['ID'];
+				$data["detail"]      =  "<button class='btn btn-info btn-xs' onclick='detailIMEI(\"".$d['ID']."\")'>View</button>";
+				$data["imei"]        = $d['IMEI'];
+				// $data["description"] = $d['Title'];
+				$data["price"]       = format_currency($d['Price']);
+				$data["service"]     = $d['Title'];
+				$data["note"]    	 = $d['Note'];
+				$data["comments"]    = isset($d['Comments']) ? $d['Comments'] : '';
+				$data["code"] 	 	 = $d['Code'];
+				$data["status"]      = $status;
+				$data["created_at"]  = $d['CreatedDateTime'];
+				$data["updated_date_time"]  = $d['UpdatedDateTime'];
+				array_push($array_data, $data);
+				$no++;
+			}
+		}
 
-        $output = array(
+		$output = array(
 
-            "draw" => intval($_REQUEST['draw']),
-            "recordsTotal" => intval($total),
-            "recordsFiltered" => intval($total),
-            "data" => $array_data
-        );
+			"draw" => intval($_REQUEST['draw']),
+			"recordsTotal" => intval($total),
+			"recordsFiltered" => intval($total),
+			"data" => $array_data
+		);
 
 
-        echo json_encode($output);
+		echo json_encode($output);
 	}
 
 	public function listener_new_detail()
@@ -175,68 +175,67 @@ class dashboard extends FSD_Controller
 
 	public function serverorder_new()
 {
-    $id = $this->session->userdata('MemberID');
+	$id = $this->session->userdata('MemberID');
 
-    $start      =  $_REQUEST['start'];
-    $length     = $_REQUEST['length'];
-    $cari_data  = $_REQUEST['search']['value'];
+	$start      =  $_REQUEST['start'];
+	$length     = $_REQUEST['length'];
+	$cari_data  = $_REQUEST['search']['value'];
 
-    $datas = $this->serverorder_model->get_server_data_new($id, $start, $length, $cari_data);
+	$datas = $this->serverorder_model->get_server_data_new($id, $start, $length, $cari_data);
 
-    $total = 9999999;
-    $array_data = array();
-    $no = $start + 1;
-    if (!empty($datas) && $datas != null) {
+	$total = 9999999;
+	$array_data = array();
+	$no = $start + 1;
+	if (!empty($datas) && $datas != null) {
 
-        foreach ($datas as $d) {
+		foreach ($datas as $d) {
 
-            $status = $d['Status'];
+			$status = $d['Status'];
 
-            switch ($status) {
-                case "Pending":
-                    $status = "<span class='badge bg-warning text-white'>Pending</span>";
-                    break;
+			switch ($status) {
+				case "Pending":
+					$status = "<span class='badge bg-warning text-white'>Pending</span>";
+					break;
 				case "In Process":
 					$status = "<span class='badge bg-warning text-white'>In Process</span>";
 					break;
-                case "Issued":
-                    $status = "<span class='badge bg-success'>Success</span>";
-                    break;
-                case "Cancelled":
-                    $status = "<span class='badge bg-danger'>Rejected</span>";
-                    break;
-                default:
-                    $status = "<span class='bg bg-secondary'>In process</span>";
-                    break;
-            }
+				case "Issued":
+					$status = "<span class='badge bg-success'>Success</span>";
+					break;
+				case "Cancelled":
+					$status = "<span class='badge bg-danger'>Rejected</span>";
+					break;
+				default:
+					$status = "<span class='bg bg-secondary'>In process</span>";
+					break;
+			}
 
 			$data["no"]          = $d['ID'];
-            $data["service"]    = $d['Title'];
-            $data["notes"]       = $d['Notes'];
-            $data["email"]      = $d['Email'];
-            $data["notes"]       = $d['Notes'];
-            $data["code"]       = $d['Code'];
-			$data["price"]       = format_currency($d['Price']);
-            $data["comments"]    = $d['Comments'];
-            $data["status"]     = $status;
-            $data["created_at"] = $d['CreatedDateTime'];
-            $data["updated_date_time"] = $d['UpdatedDateTime'];
-			$data["detail"]     = $d['Detail'];
+			$data["service"]     = $d['Title'];
+			$data["notes"]       = isset($d['Notes']) ? $d['Notes'] : '';
+			$data["email"]       = isset($d['Email']) ? $d['Email'] : '';
+			$data["code"]        = isset($d['Code']) ? $d['Code'] : '';
+			$data["price"]       = isset($d['Price']) ? format_currency($d['Price']) : '';
+			$data["comments"]     = isset($d['Comments']) ? $d['Comments'] : '';
+			$data["status"]      = $status;
+			$data["created_at"]  = isset($d['CreatedDateTime']) ? $d['CreatedDateTime'] : '';
+			$data["updated_date_time"] = isset($d['UpdatedDateTime']) ? $d['UpdatedDateTime'] : '';
+			$data["detail"]      = isset($d['Detail']) ? $d['Detail'] : '';
 
-            array_push($array_data, $data);
-            $no++;
-        }
-    }
+			array_push($array_data, $data);
+			$no++;
+		}
+	}
 
-    $output = array(
+	$output = array(
 
-        "draw" => intval($_REQUEST['draw']),
-        "recordsTotal" => intval($total),
-        "recordsFiltered" => intval($total),
-        "data" => $array_data
-    );
+		"draw" => intval($_REQUEST['draw']),
+		"recordsTotal" => intval($total),
+		"recordsFiltered" => intval($total),
+		"data" => $array_data
+	);
 
-    echo json_encode($output);
+	echo json_encode($output);
 }
 
 
@@ -251,39 +250,39 @@ class dashboard extends FSD_Controller
 		$id = $this->session->userdata('MemberID');
 
 		$start      =  $_REQUEST['start'];
-        $length     = $_REQUEST['length'];
-        $cari_data  = $_REQUEST['search']['value'];
+		$length     = $_REQUEST['length'];
+		$cari_data  = $_REQUEST['search']['value'];
 
-        $datas = $this->credit_model->get_credit_data_new($id, $start, $length, $cari_data);
+		$datas = $this->credit_model->get_credit_data_new($id, $start, $length, $cari_data);
 
-        $total = 9999999;
-        $array_data = array();
-        $no = $start + 1;
-        if (!empty($datas) && $datas != null) {
+		$total = 9999999;
+		$array_data = array();
+		$no = $start + 1;
+		if (!empty($datas) && $datas != null) {
 
-            foreach ($datas as $d) {
+			foreach ($datas as $d) {
 
-                $data["no"]          = $no;
-                $data["code"] 		 = $d['Code'];
-                $data["amount"]      = format_currency($d['Amount']);
-                $data["description"] = $d['Description'];
-                $data["created_at"]  = $d['CreatedDateTime'];
+				$data["no"]          = $no;
+				$data["code"] 		 = $d['Code'];
+				$data["amount"]      = format_currency($d['Amount']);
+				$data["description"] = $d['Description'];
+				$data["created_at"]  = $d['CreatedDateTime'];
 
-                array_push($array_data, $data);
-                $no++;
-            }
-        }
+				array_push($array_data, $data);
+				$no++;
+			}
+		}
 
-        $output = array(
+		$output = array(
 
-            "draw" => intval($_REQUEST['draw']),
-            "recordsTotal" => intval($total),
-            "recordsFiltered" => intval($total),
-            "data" => $array_data
-        );
+			"draw" => intval($_REQUEST['draw']),
+			"recordsTotal" => intval($total),
+			"recordsFiltered" => intval($total),
+			"data" => $array_data
+		);
 
 
-        echo json_encode($output);
+		echo json_encode($output);
 	}
 
 	public function addfund()
