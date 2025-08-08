@@ -21,7 +21,17 @@ class Group extends FSD_Controller
 	
 	public function listener()
 	{
-		echo $this->group_model->get_datatable($this->access);
+		$json = $this->group_model->get_datatable($this->access);
+		$raw = json_decode($json, true);
+		if (isset($raw['data']) && is_array($raw['data'])) {
+			foreach ($raw['data'] as &$row) {
+				$row['delete'] =
+					'<a href="'.site_url('admin/group/edit/'.$row['ID']).'" class="btn btn-warning btn-sm"><i class="fa fa-edit"></i></a>';
+				$row['delete'] .=
+					' <a href="'.site_url('admin/group/delete/'.$row['ID']).'" class="btn btn-danger btn-sm" onclick="return confirm(\'Delete this group?\')"><i class="fa fa-trash"></i></a>';
+			}
+		}
+		echo json_encode($raw);
 	}
 
 	public function add()

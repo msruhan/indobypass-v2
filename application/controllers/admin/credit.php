@@ -22,7 +22,15 @@ class credit extends FSD_Controller
 	
 	public function listener()
 	{
-		echo $this->credit_model->get_datatable($this->access);
+		$json = $this->credit_model->get_datatable($this->access);
+		$raw = json_decode($json, true);
+		if (isset($raw['data']) && is_array($raw['data'])) {
+			foreach ($raw['data'] as &$row) {
+				$row['delete'] =
+					'<a href="'.site_url('admin/credit/delete/'.$row['ID']).'" class="btn btn-danger btn-sm" onclick="return confirm(\'Delete this credit?\')"><i class="fa fa-trash"></i></a>';
+			}
+		}
+		echo json_encode($raw);
 	}
 
 	public function add()

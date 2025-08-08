@@ -15,7 +15,7 @@ class Apimanager extends FSD_Controller
 		$this->load->model('network_model');
 		$this->load->model('serverbox_model');
 		$this->load->model('serverservice_model');
-        $this->load->model('fileservices_model');
+		$this->load->model('fileservices_model');
 	}
 	
 	public function index()
@@ -26,7 +26,20 @@ class Apimanager extends FSD_Controller
 	
 	public function listener()
 	{
-		echo $this->apimanager_model->get_datatable($this->access);
+		// Get JSON from model, decode, modify, then re-encode
+		$json = $this->apimanager_model->get_datatable($this->access);
+		$raw = json_decode($json, true);
+		if (isset($raw['data']) && is_array($raw['data'])) {
+			foreach ($raw['data'] as &$row) {
+				$row['delete'] =
+					'<a href="'.site_url('admin/apimanager/service_list/'.$row['ID']).'" class="btn btn-info btn-sm"><i class="fa fa-list"></i> Services</a>';
+				$row['delete'] .=
+					' <a href="'.site_url('admin/apimanager/edit/'.$row['ID']).'" class="btn btn-warning btn-sm"><i class="fa fa-edit"></i></a>';
+				$row['delete'] .=
+					' <a href="'.site_url('admin/apimanager/delete/'.$row['ID']).'" class="btn btn-danger btn-sm" onclick="return confirm(\'Delete this API?\')"><i class="fa fa-trash"></i></a>';
+			}
+		}
+		echo json_encode($raw);
 	}
 
 	public function add()
@@ -52,7 +65,7 @@ class Apimanager extends FSD_Controller
 			$this->session->set_flashdata('warning', $result . ' method(s) are associated with this API.');
 			redirect("admin/apimanager/");			
 		}
-        
+		
 		$result = $this->fileservices_model->count_where(array('ApiID' => $id));
 		if($result > 0)
 		{
@@ -108,7 +121,7 @@ class Apimanager extends FSD_Controller
 		{
 			unset($data['ID']);
 			$data['UpdatedDateTime'] = date("Y-m-d H:i:s");
-            $data['Status'] = isset($data['Status'])?"Enabled":"Disabled"; 
+			$data['Status'] = isset($data['Status'])?"Enabled":"Disabled"; 
 						
 			$this->apimanager_model->update($data, $id);
 			$this->session->set_flashdata('success', 'Record updated successfully.');
@@ -212,8 +225,8 @@ class Apimanager extends FSD_Controller
 			redirect('admin/apimanager');
 		}		
 	}
-    
-    public function add_imei_service_list($id)
+	
+	public function add_imei_service_list($id)
 	{
 		## Insert Selected services ##
 		if($this->input->server('REQUEST_METHOD') === 'POST')
@@ -270,8 +283,8 @@ class Apimanager extends FSD_Controller
 				redirect(site_url('admin/apimanager/'));				
 			}
 		}
-        $this->session->set_flashdata('error', 'No service selected.');
-        redirect('admin/apimanager');        
+		$this->session->set_flashdata('error', 'No service selected.');
+		redirect('admin/apimanager');        
 	} 
 	
 	public function add_server_service_list($id)
@@ -303,11 +316,11 @@ class Apimanager extends FSD_Controller
 				redirect(site_url('admin/apimanager/'));				
 			}
 		}
-        $this->session->set_flashdata('error', 'No service selected.');
-        redirect('admin/apimanager');        
-    }
-    
-    public function add_file_service_list($id)
+		$this->session->set_flashdata('error', 'No service selected.');
+		redirect('admin/apimanager');        
+	}
+	
+	public function add_file_service_list($id)
 	{
 		## Insert Selected services ##
 		if($this->input->server('REQUEST_METHOD') === 'POST')
@@ -335,9 +348,9 @@ class Apimanager extends FSD_Controller
 				redirect(site_url('admin/apimanager/'));				
 			}	
 		}
-        $this->session->set_flashdata('error', 'No service selected.');
-        redirect('admin/apimanager');        
-    }          	
+		$this->session->set_flashdata('error', 'No service selected.');
+		redirect('admin/apimanager');        
+	}          	
 }
 
 /* End of file apimanager.php */

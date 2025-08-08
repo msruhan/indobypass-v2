@@ -21,7 +21,17 @@ class Employee extends FSD_Controller
 	
 	public function listener()
 	{
-		echo $this->employee_model->get_datatable($this->access);
+		$json = $this->employee_model->get_datatable($this->access);
+		$raw = json_decode($json, true);
+		if (isset($raw['data']) && is_array($raw['data'])) {
+			foreach ($raw['data'] as &$row) {
+				$row['delete'] =
+					'<a href="'.site_url('admin/employee/edit/'.$row['ID']).'" class="btn btn-warning btn-sm"><i class="fa fa-edit"></i></a>';
+				$row['delete'] .=
+					' <a href="'.site_url('admin/employee/delete/'.$row['ID']).'" class="btn btn-danger btn-sm" onclick="return confirm(\'Delete this employee?\')"><i class="fa fa-trash"></i></a>';
+			}
+		}
+		echo json_encode($raw);
 	}
 
 	public function add()
@@ -163,52 +173,52 @@ class Employee extends FSD_Controller
 		$this->session->set_flashdata('success', 'Roles updated successfully.');
 		redirect("admin/employee/");				
 	}
-    
+	
 	public function profile()
 	{
-        $id = $this->session->userdata('employee_id');
-        if($this->input->server('REQUEST_METHOD') === 'POST')
-        {            
-            $this->load->library('form_validation');
-            $this->form_validation->set_rules('FirstName' , 'First Name' ,'required|min_length[3]|max_length[255]');		
-            $this->form_validation->set_rules('LastName' , 'Last Name' ,'required|min_length[3]|max_length[255]');
-            $this->form_validation->set_rules('Password' , 'Current Password' ,'min_length[6]|max_length[255]|callback_password_check');
-            $this->form_validation->set_rules('NewPassword' , 'New Password' ,'min_length[6]|max_length[255]');
-            $this->form_validation->set_rules('ConfirmPassword' , 'Confirm Password' ,'min_length[6]|max_length[255]|matches[NewPassword]');		
+		$id = $this->session->userdata('employee_id');
+		if($this->input->server('REQUEST_METHOD') === 'POST')
+		{            
+			$this->load->library('form_validation');
+			$this->form_validation->set_rules('FirstName' , 'First Name' ,'required|min_length[3]|max_length[255]');		
+			$this->form_validation->set_rules('LastName' , 'Last Name' ,'required|min_length[3]|max_length[255]');
+			$this->form_validation->set_rules('Password' , 'Current Password' ,'min_length[6]|max_length[255]|callback_password_check');
+			$this->form_validation->set_rules('NewPassword' , 'New Password' ,'min_length[6]|max_length[255]');
+			$this->form_validation->set_rules('ConfirmPassword' , 'Confirm Password' ,'min_length[6]|max_length[255]|matches[NewPassword]');		
 
-            if($this->form_validation->run() !== FALSE)
-            {
-                $data = $this->input->post(NULL, TRUE);
-                $data['Password'] = md5($data['NewPassword']);
-                $data['UpdatedDateTime'] = date("Y-m-d H:i:s");
-                
-                unset($data['NewPassword']);
-                unset($data['ConfirmPassword']);
-                $this->employee_model->update($data, $id);
-                $this->session->set_flashdata('success', 'Profile has been updated successfully.');
-                redirect("admin/employee/profile");
-            }            
-        }
+			if($this->form_validation->run() !== FALSE)
+			{
+				$data = $this->input->post(NULL, TRUE);
+				$data['Password'] = md5($data['NewPassword']);
+				$data['UpdatedDateTime'] = date("Y-m-d H:i:s");
+				
+				unset($data['NewPassword']);
+				unset($data['ConfirmPassword']);
+				$this->employee_model->update($data, $id);
+				$this->session->set_flashdata('success', 'Profile has been updated successfully.');
+				redirect("admin/employee/profile");
+			}            
+		}
 		$data['data'] = $this->employee_model->get_where(array('ID'=> $id));
 		$data['template'] = "admin/employee/profile";
 		$this->load->view('admin/master_template', $data);		
 	}
-    
+	
 	public function password_check($str)
 	{
-        $result = $this->employee_model->get_where(
-                    array(
-                        'ID' => $this->session->userdata('employee_id'),
-                        'Password' => md5($str),
-                        'Status' => 'Enabled'
-                    )
-                );        
-        if (count($result)>0)	
+		$result = $this->employee_model->get_where(
+					array(
+						'ID' => $this->session->userdata('employee_id'),
+						'Password' => md5($str),
+						'Status' => 'Enabled'
+					)
+				);        
+		if (count($result)>0)	
 		{
 			return TRUE;
 		}
-        $this->form_validation->set_message('password_check', 'The %s did not match with current %s.');
-        return FALSE;        
+		$this->form_validation->set_message('password_check', 'The %s did not match with current %s.');
+		return FALSE;        
 	}        	
 }
 

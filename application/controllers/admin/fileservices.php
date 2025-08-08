@@ -23,7 +23,17 @@ class fileservices extends FSD_Controller
 	
 	public function listener()
 	{
-		echo $this->fileservices_model->get_datatable($this->access);
+		$json = $this->fileservices_model->get_datatable($this->access);
+		$raw = json_decode($json, true);
+		if (isset($raw['data']) && is_array($raw['data'])) {
+			foreach ($raw['data'] as &$row) {
+				$row['delete'] =
+					'<a href="'.site_url('admin/fileservices/edit/'.$row['ID']).'" class="btn btn-warning btn-sm"><i class="fa fa-edit"></i></a>';
+				$row['delete'] .=
+					' <a href="'.site_url('admin/fileservices/delete/'.$row['ID']).'" class="btn btn-danger btn-sm" onclick="return confirm(\'Delete this service?\')"><i class="fa fa-trash"></i></a>';
+			}
+		}
+		echo json_encode($raw);
 	}
 
 	public function add()

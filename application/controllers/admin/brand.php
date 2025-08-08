@@ -21,7 +21,17 @@ class brand extends FSD_Controller
 	
 	public function listener()
 	{
-		echo $this->brand_model->get_datatable($this->access);
+		$json = $this->brand_model->get_datatable($this->access);
+		$raw = json_decode($json, true);
+		if (isset($raw['data']) && is_array($raw['data'])) {
+			foreach ($raw['data'] as &$row) {
+				$row['delete'] =
+					'<a href="'.site_url('admin/brand/edit/'.$row['BrandID']).'" class="btn btn-warning btn-sm"><i class="fa fa-edit"></i></a>';
+				$row['delete'] .=
+					' <a href="'.site_url('admin/brand/delete/'.$row['BrandID']).'" class="btn btn-danger btn-sm" onclick="return confirm(\'Delete this brand?\')"><i class="fa fa-trash"></i></a>';
+			}
+		}
+		echo json_encode($raw);
 	}
 
 	public function add()
