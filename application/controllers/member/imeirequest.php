@@ -18,6 +18,7 @@ class imeirequest extends FSD_Controller
 		$this->load->model("mep_model");
 		$this->load->model("autoresponder_model");
 		$this->load->helper('formatcurrency_helper');
+		$this->load->helper('string');
 	}
 	
 	########### IMEI Order Request Form display #######################################
@@ -67,17 +68,17 @@ class imeirequest extends FSD_Controller
 	{
 
 		$start      =  $_REQUEST['start'];
-        $length     = $_REQUEST['length'];
-        $cari_data  = $_REQUEST['search']['value'];
+		$length     = $_REQUEST['length'];
+		$cari_data  = $_REQUEST['search']['value'];
 
 		// Get sorting parameters
 		$order_dir = $this->input->post('order')[0]['dir'];
 
 		$datas = $this->method_model->method_with_networks_list($cari_data, $order_dir);
 
-        $total = 9999999;
-        $array_data = array();
-        $no = $start + 1;
+		$total = 9999999;
+		$array_data = array();
+		$no = $start + 1;
 
 		$flattenedData = [];
 		foreach ($datas as $network) {
@@ -100,25 +101,25 @@ class imeirequest extends FSD_Controller
 
 		foreach ($flattenedData as $method) {
 
-			$data['title'] = $method['title'];
-			$data['delivery_time'] = $method['DeliveryTime'];
-			$data['price'] = $method['methodPrice'];
+			$data['title'] = isset($method['title']) ? $method['title'] : '';
+			$data['delivery_time'] = isset($method['DeliveryTime']) ? $method['DeliveryTime'] : '';
+			$data['price'] = isset($method['methodPrice']) ? $method['methodPrice'] : '';
 
 			array_push($array_data, $data);
 		}
 
 		$no++;
 
-        $output = array(
+		$output = array(
 
-            "draw" => intval($_REQUEST['draw']),
-            "recordsTotal" => intval($total),
-            "recordsFiltered" => intval($total),
-            "data" => $array_data
-        );
+			"draw" => intval($_REQUEST['draw']),
+			"recordsTotal" => intval($total),
+			"recordsFiltered" => intval($total),
+			"data" => $array_data
+		);
 
 
-        echo json_encode($output);
+		echo json_encode($output);
 	}
 	
 	######################## Verify Imei Request FOrm display #########################
@@ -339,7 +340,7 @@ class imeirequest extends FSD_Controller
 				$insert = array();
 				$insert['MethodID'] = $method_id;
 				$insert['IMEI'] = $val;
-				$insert['Email'] = $data['Email'];
+				$insert['Email'] = isset($data['Email']) ? $data['Email'] : '';
 
 				$insert['MemberID'] = $member_id;
 				$insert['Maker'] = array_key_exists("Maker", $data)? $data['Maker']: NULL;
@@ -391,23 +392,25 @@ class imeirequest extends FSD_Controller
 				
 				## Send Email with Template ## 		
 				$data = $this->autoresponder_model->get_where(array('Status' => 'Enabled', 'ID' => 10)); // New order notification
-    			if( count($data) > 0 )
-    			{
-    				$from_name = $data[0]['FromName'];
-    				$from_email = $data[0]['FromEmail'];
-    				$to_email = $data[0]['ToEmail'];
-    				$subject = $data[0]['Subject'];
-    				$message = html_entity_decode($data[0]['Message']);
-    
-    				//Information
-    				$post['IMEI'] = $insert['IMEI'];
-    				$post['FirstName'] = $insert['FirstName'];
-    				$post['LastName'] = $insert['LastName'];
-    				$post['Email'] = $insert['Email'];
-    
-    				$this->fsd->email_template($post, $from_email, $from_name, $to_email, $subject, $message );
-    				$this->fsd->sent_email($from_email, $from_name,$to_email, $subject, $message );
-    			}
+				if( count($data) > 0 )
+				{
+					$from_name = $data[0]['FromName'];
+					$from_email = $data[0]['FromEmail'];
+					$to_email = $data[0]['ToEmail'];
+					$subject = $data[0]['Subject'];
+					$message = html_entity_decode($data[0]['Message']);
+
+					//Information
+					$post['IMEI'] = $insert['IMEI'];
+					// Use member data if not present in $insert
+					$member = $this->member_model->get_where(array('ID' => $member_id));
+					$post['FirstName'] = isset($insert['FirstName']) ? $insert['FirstName'] : (isset($member[0]['FirstName']) ? $member[0]['FirstName'] : '');
+					$post['LastName'] = isset($insert['LastName']) ? $insert['LastName'] : (isset($member[0]['LastName']) ? $member[0]['LastName'] : '');
+					$post['Email'] = isset($insert['Email']) ? $insert['Email'] : (isset($member[0]['Email']) ? $member[0]['Email'] : '');
+
+					$this->fsd->email_template($post, $from_email, $from_name, $to_email, $subject, $message );
+					$this->fsd->sent_email($from_email, $from_name,$to_email, $subject, $message );
+				}
 
 			}						
 			// $this->session->set_flashdata('message', '<div class="alert alert-success alert-dismissible fade show" role="alert" role="danger"> '.$this->lang->line('error_record_addes_successfully').'  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>');
@@ -448,35 +451,35 @@ class imeirequest extends FSD_Controller
 		$param = $this->input->post('param');
 
 		$start      =  $_REQUEST['start'];
-        $length     = $_REQUEST['length'];
-        $cari_data  = $_REQUEST['search']['value'];
+		$length     = $_REQUEST['length'];
+		$cari_data  = $_REQUEST['search']['value'];
 
-        $datas = $this->imeiorder_model->get_imei_data_select_new($id, $param, $start, $length, $cari_data);
+		$datas = $this->imeiorder_model->get_imei_data_select_new($id, $param, $start, $length, $cari_data);
 		// Hitung total data tanpa filter
 		$total_records = $this->imeiorder_model->count_all_imei($id);
 
 		// Hitung total data setelah filter
 		$total_filtered = $this->imeiorder_model->count_filtered_imei($id, $cari_data, $statusFilter, $startDate, $endDate);
 
-        $total = 9999999;
-        $array_data = array();
-        $no = $start + 1;
-        if (!empty($datas) && $datas != null) {
+		$total = 9999999;
+		$array_data = array();
+		$no = $start + 1;
+		if (!empty($datas) && $datas != null) {
 
-            foreach ($datas as $d) {
+			foreach ($datas as $d) {
 
-                $data["no"]          = $no;
-                $data["imei"]        = $d['IMEI'];
-                $data["service"] 	 = $d['Title'];
-                $data["code"]     	 = $d['Code'];
-                $data["note"]        = $d['Note'];
-                $data["status"]      = $d['Status'];
-                $data["created_at"]  = $d['CreatedDateTime'];
+				$data["no"]          = $no;
+				$data["imei"]        = $d['IMEI'];
+				$data["service"] 	 = $d['Title'];
+				$data["code"]     	 = $d['Code'];
+				$data["note"]        = $d['Note'];
+				$data["status"]      = $d['Status'];
+				$data["created_at"]  = $d['CreatedDateTime'];
 
-                array_push($array_data, $data);
-                $no++;
-            }
-        }
+				array_push($array_data, $data);
+				$no++;
+			}
+		}
 
 
 		$output = array(
@@ -487,7 +490,7 @@ class imeirequest extends FSD_Controller
 		);
 
 
-        echo json_encode($output);
+		echo json_encode($output);
 	}
 	
 	/* IMEI Validation */
