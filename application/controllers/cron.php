@@ -20,13 +20,13 @@ class Cron extends CI_Controller
 	public function __construct()
 	{
 		parent::__construct();
-        ## If request if not from cron or cli then show 404 error ##
-        /*if($this->input->is_cli_request() === FALSE)
-        {
-            show_404();
-            exit;
-        }*/
-                
+		## If request if not from cron or cli then show 404 error ##
+		/*if($this->input->is_cli_request() === FALSE)
+		{
+			show_404();
+			exit;
+		}*/
+				
 		$this->load->model("method_model");
 		$this->load->model("apimanager_model");
 		$this->load->model("autoresponder_model");
@@ -35,7 +35,7 @@ class Cron extends CI_Controller
 		$this->load->model("fileorder_model");
 		$this->load->model("serverorder_model");
 	}
-    
+	
 	/**
 	 * Request imei order to API Server
 	 *
@@ -97,7 +97,7 @@ class Cron extends CI_Controller
 // 			sleep(1);
 		}
 	}
-    
+	
 	/**
 	 * Receive IMEI Order From API Server
 	 *
@@ -185,7 +185,7 @@ class Cron extends CI_Controller
 			sleep(1);								
 		}
 	} 
-    
+	
 	/**
 	 * Request File order to API Server
 	 *
@@ -205,11 +205,11 @@ class Cron extends CI_Controller
 				case LIBRARY_DHURU_CLIENT: // Dhuru Fusion Client
 					$api = new DhruFusion($order['Host'], $order['Username'], $order['ApiKey']);
 					$api->debug = FALSE; // Debug on
-                    
-                    $para['ID'] = $order['ToolID']; // got from 'imeiservicelist' [SERVICEID]
-                    $para['FILENAME'] = $order['FileName'];
-                    $para['FILEDATA'] = base64_encode($this->config->item('upload_fileservice_dir').$order['FileName']);
-                    $request = $api->action('placefileorder', $para);
+					
+					$para['ID'] = $order['ToolID']; // got from 'imeiservicelist' [SERVICEID]
+					$para['FILENAME'] = $order['FileName'];
+					$para['FILEDATA'] = base64_encode($this->config->item('upload_fileservice_dir').$order['FileName']);
+					$request = $api->action('placefileorder', $para);
 					if (isset($request['SUCCESS']) && count($request['SUCCESS'])>0 )
 					{
 						$data['ReferenceID'] = $request['SUCCESS'][0]['REFERENCEID']; // get ID from Server
@@ -221,7 +221,7 @@ class Cron extends CI_Controller
 			sleep(1);
 		}
 	}
-    
+	
 	/**
 	 * Receive File Order From API Server
 	 *
@@ -375,17 +375,20 @@ class Cron extends CI_Controller
 				case LIBRARY_DHURU_CLIENT: // Dhuru Fusion Client
 					$api = new DhruFusion($order['Host'], $order['Username'], $order['ApiKey']);
 					$api->debug = FALSE; // Debug on
+					$para = array();
 					$para['QUANTITY'] = $order['Quantity'];
-					$para['ID'] = $order['ToolID']; // got from 'imeiservicelist' [SERVICEID]
-					$para['REQUIRED'] = $order['RequiredFields'];// got from 'serverservicelist' [REQUIRED]
+					// Kirim EMAIL jika tersedia di order
+					if (!empty($order['Email'])) {
+						$para['EMAIL'] = $order['Email'];
+					}
 					$request = $api->action('placeserverorder', $para);
 					echo '<pre>'; var_dump($request); echo '</pre>';
 					if (isset($request['SUCCESS']) && count($request['SUCCESS'])>0 )
 					{
 						$data['ReferenceID'] = $request['SUCCESS'][0]['REFERENCEID']; // get ID from Server
-						$data['UpdatedDateTime'] = date("Y-m-d H:i:s");									
-						$this->serverorder_model->update($data, $order['ID']);						
-					}					
+						$data['UpdatedDateTime'] = date("Y-m-d H:i:s");
+						$this->serverorder_model->update($data, $order['ID']);
+					}
 					break;
 			}
 			sleep(1);
