@@ -7,7 +7,7 @@ class method_model extends CI_Model
 	{
 		parent:: __construct();
 		$this->tbl_name = "gsm_methods";
-        $this->tbl_networks = "gsm_networks";
+		$this->tbl_networks = "gsm_networks";
 		$this->tbl_apis = "gsm_apis";
 		$this->tbl_imei_orders = "gsm_imei_orders";
 		$this->tbl_members = "gsm_members";
@@ -16,8 +16,8 @@ class method_model extends CI_Model
 
 	public function get_top10()
 	{
-        $query = $this->db->query("SELECT * FROM `gsm_methods` WHERE `ID` IN (SELECT `MethodID` FROM `gsm_imei_orders` GROUP by `MethodID` ORDER by COUNT(`MethodID`) DESC)  limit 10");
-        return $query->result_array();
+		$query = $this->db->query("SELECT * FROM `gsm_methods` WHERE `ID` IN (SELECT `MethodID` FROM `gsm_imei_orders` GROUP by `MethodID` ORDER by COUNT(`MethodID`) DESC)  limit 10");
+		return $query->result_array();
 	}
 	
 	public function get_pending_imei_orders() 
@@ -29,13 +29,13 @@ class method_model extends CI_Model
 		->join($this->tbl_name, "$this->tbl_apis.ID = $this->tbl_name.ApiID")
 		->join($this->tbl_imei_orders, "$this->tbl_name.ID = $this->tbl_imei_orders.MethodID")
 		->join($this->tbl_members, "$this->tbl_imei_orders.MemberID = $this->tbl_members.ID")
-		->where("$this->tbl_imei_orders.Status", "Pending")
+		->where_in("$this->tbl_imei_orders.Status", ["Pending", "In process"])
 		->where("`$this->tbl_imei_orders`.`ReferenceID` IS NOT NULL", NULL, false)
 		->order_by("$this->tbl_imei_orders.ID", "ASC");
 		
-        $query = $this->db->get();
-        return $query->result_array();
-    }
+		$query = $this->db->get();
+		return $query->result_array();
+	}
 	
 	public function send_pending_imei_orders() 
 	{
@@ -47,15 +47,15 @@ class method_model extends CI_Model
 		->where(array("$this->tbl_imei_orders.Status" => "Pending", "$this->tbl_imei_orders.ReferenceID" => NULL))
 		->order_by("$this->tbl_imei_orders.ID", "ASC");
 		
-        $query = $this->db->get();
-        return $query->result_array();
-    }	
+		$query = $this->db->get();
+		return $query->result_array();
+	}	
 	
 	public function get_where($params) 
 	{
-        $query = $this->db->get_where($this->tbl_name, $params);
-        return $query->result_array();
-    }
+		$query = $this->db->get_where($this->tbl_name, $params);
+		return $query->result_array();
+	}
 	
 	public function get_member_method_by_id($member_id, $method_id)
 	{
@@ -67,27 +67,27 @@ class method_model extends CI_Model
 		->where("{$this->tbl_member_methods}.MethodID", $method_id)
 		->where("{$this->tbl_name}.Status", 'Enabled');
 		$query = $this->db->get();
-        return $query->result_array();
+		return $query->result_array();
 	}
 	
 	public function method_with_networks() 
 	{
-        $data = array();
-        $query = $this->db->get($this->tbl_networks);
-        foreach ($query->result_array() as $network) 
-        {
-            $network_id = $network['ID'];
-            $data[$network_id]['Title'] = $network['Title'];
-        }
-                
-        $query = $this->db->get_where($this->tbl_name, array('Status' => 'Enabled'));
-        foreach ($query->result_array() as $method) 
-        {
-            $network_id = $method['NetworkID'];
-            $data[$network_id]['methods'][] = $method;
-        }
-        return $data;
-    }      
+		$data = array();
+		$query = $this->db->get($this->tbl_networks);
+		foreach ($query->result_array() as $network) 
+		{
+			$network_id = $network['ID'];
+			$data[$network_id]['Title'] = $network['Title'];
+		}
+				
+		$query = $this->db->get_where($this->tbl_name, array('Status' => 'Enabled'));
+		foreach ($query->result_array() as $method) 
+		{
+			$network_id = $method['NetworkID'];
+			$data[$network_id]['methods'][] = $method;
+		}
+		return $data;
+	}      
 	
 	public function method_with_networks_list($cari_data = NULL, $order_dir = NULL) 
 	{
@@ -131,7 +131,7 @@ class method_model extends CI_Model
 		}
 	
 		return $data;
-    } 
+	} 
 	
 	public function get_api_credentials($id) 
 	{
@@ -139,34 +139,34 @@ class method_model extends CI_Model
 		->from($this->tbl_name)
 		->join($this->tbl_apis, "{$this->tbl_name}.ApiID = {$this->tbl_apis}.ID")
 		->where("{$this->tbl_name}.ID", $id);
-        $query = $this->db->get();
-        return $query->result_array();
-    }
+		$query = $this->db->get();
+		return $query->result_array();
+	}
 	
-    public function get_all() 
-    {                
-        $query = $this->db->get($this->tbl_name);
-        return $query->result_array();
-    }
-    
-    public function count_all() 
-    {
-        $query = $this->db->count_all($this->tbl_name);
-        return $query;
-    }
+	public function get_all() 
+	{                
+		$query = $this->db->get($this->tbl_name);
+		return $query->result_array();
+	}
 	
-    public function count_where($params) 
-    {
+	public function count_all() 
+	{
+		$query = $this->db->count_all($this->tbl_name);
+		return $query;
+	}
+	
+	public function count_where($params) 
+	{
 		$this->db->from($this->tbl_name)->where($params);
-        return  $this->db->count_all_results();
-    }	
+		return  $this->db->count_all_results();
+	}	
 
-    public function insert($data) 
-    {
-        $this->db->insert($this->tbl_name, $data);
-        $id = $this->db->insert_id();
-        return intval($id);
-    }
+	public function insert($data) 
+	{
+		$this->db->insert($this->tbl_name, $data);
+		$id = $this->db->insert_id();
+		return intval($id);
+	}
 	
 	public function insert_batch($data)
 	{
@@ -183,10 +183,10 @@ class method_model extends CI_Model
 		$this->db->insert_batch("gsm_supplier_methods", $data);
 	}
 
-    public function update($data, $id)
-    {   
-        $this->db->update($this->tbl_name, $data, array('ID' => $id));
-    }
+	public function update($data, $id)
+	{   
+		$this->db->update($this->tbl_name, $data, array('ID' => $id));
+	}
 	
 	public function get_user_price($memberid,$methodid)
 	{
@@ -242,16 +242,16 @@ class method_model extends CI_Model
 		return $fields;
 	}
 
-    public function delete($id)
-    {
+	public function delete($id)
+	{
 		$this->db->delete($this->tbl_member_methods, array('MethodID' => $id));
-        $this->db->delete($this->tbl_name, array('ID' => $id));
-    }
-    
-    public function delete_api_relate($api_id)
-    {
-    	$this->db->delete($this->tbl_name, array('ApiID' => $api_id));
-    }
+		$this->db->delete($this->tbl_name, array('ID' => $id));
+	}
+	
+	public function delete_api_relate($api_id)
+	{
+		$this->db->delete($this->tbl_name, array('ApiID' => $api_id));
+	}
 	
 	function get_datatable($access)
 	{

@@ -31,12 +31,18 @@ class Apimanager extends FSD_Controller
 		$raw = json_decode($json, true);
 		if (isset($raw['data']) && is_array($raw['data'])) {
 			foreach ($raw['data'] as &$row) {
-				$row['delete'] =
-					'<a href="'.site_url('admin/apimanager/service_list/'.$row['ID']).'" class="btn btn-info btn-sm"><i class="fa fa-list"></i> Services</a>';
-				$row['delete'] .=
-					' <a href="'.site_url('admin/apimanager/edit/'.$row['ID']).'" class="btn btn-warning btn-sm"><i class="fa fa-edit"></i></a>';
-				$row['delete'] .=
-					' <a href="'.site_url('admin/apimanager/delete/'.$row['ID']).'" class="btn btn-danger btn-sm" onclick="return confirm(\'Delete this API?\')"><i class="fa fa-trash"></i></a>';
+			// Tombol Service IMEI
+			$row['delete'] =
+				'<a href="'.site_url('admin/apimanager/service_list/'.$row['ID'].'?type=imei').'" class="btn btn-info btn-sm"><i class="fa fa-list"></i> IMEI Services</a>';
+			// Tombol Service Server
+			$row['delete'] .=
+				' <a href="'.site_url('admin/apimanager/service_list/'.$row['ID'].'?type=server').'" class="btn btn-success btn-sm"><i class="fa fa-server"></i> Server Services</a>';
+			// Tombol Edit
+			$row['delete'] .=
+				' <a href="'.site_url('admin/apimanager/edit/'.$row['ID']).'" class="btn btn-warning btn-sm"><i class="fa fa-edit"></i></a>';
+			// Tombol Delete
+			$row['delete'] .=
+				' <a href="'.site_url('admin/apimanager/delete/'.$row['ID']).'" class="btn btn-danger btn-sm" onclick="return confirm(\'Delete this API?\')"><i class="fa fa-trash"></i></a>';
 			}
 		}
 		echo json_encode($raw);
@@ -135,95 +141,81 @@ class Apimanager extends FSD_Controller
 		$api_account = $this->apimanager_model->get_where(array('ID'=> $id));
 		if(isset($api_account[0]) && count($api_account[0])>0)
 		{
-			switch ($api_account[0]['ApiType']) 
-			{
-				case 'Imei':
-					switch (intval($api_account[0]['LibraryID'])) 
-					{
-						case LIBRARY_DHURU_CLIENT: // Dhuru Fusion Client
-							$api = new DhruFusion($api_account[0]['Host'], $api_account[0]['Username'], $api_account[0]['ApiKey']);
-							$api->debug = FALSE; // Debug on
-							$request = $api->action('imeiservicelist');
-							if(isset($request['SUCCESS'][0]['LIST']) && count($request['SUCCESS'][0]['LIST']) >0 )
-							{
-								$data['networks'] = $this->network_model->get_all();
-								$data['service_list'] = $request['SUCCESS'][0]['LIST'];
-								$data['template'] = "admin/apimanager/imei_service_list";
-							}
-							elseif (isset($request['ERROR'][0]['MESSAGE'])) 
-							{
-								$this->session->set_flashdata('error', $request['ERROR'][0]['MESSAGE']);
-								redirect('admin/apimanager');	
-							}	
-							else
-							{
-								$this->session->set_flashdata('error', 'Services list not available at this time');
-								redirect('admin/apimanager');								
-							}													
-						break;
-					}
-				break;
-				case 'File':				 
-					switch (intval($api_account[0]['LibraryID'])) 
-					{
-						case LIBRARY_DHURU_CLIENT: // Dhuru Fusion Client
-							$api = new DhruFusion($api_account[0]['Host'], $api_account[0]['Username'], $api_account[0]['ApiKey']);
-							$api->debug = FALSE; // Debug on
-							$request = $api->action('fileservicelist');
-							//echo '<pre>'; print_r($request); exit;
-							if(isset($request['SUCCESS'][0]['LIST']) && count($request['SUCCESS'][0]['LIST']) >0 )
-							{
-								$data['service_list'] = $request['SUCCESS'][0]['LIST'];
-								$data['template'] = "admin/apimanager/file_service_list";
-							}
-							elseif (isset($request['ERROR'][0]['MESSAGE'])) 
-							{
-								$this->session->set_flashdata('error', $request['ERROR'][0]['MESSAGE']);
-								redirect('admin/apimanager');	
-							}
-							else
-							{
-								$this->session->set_flashdata('error', 'Services list not available at this time');
-								redirect('admin/apimanager');								
-							}						
-						break;
-					}				
-				break;
-				case 'Server':				 
-				switch (intval($api_account[0]['LibraryID'])) 
-				{
-					case LIBRARY_DHURU_CLIENT: // Dhuru Fusion Client
+			$type = strtolower($this->input->get('type'));
+			if ($type == 'server') {
+				// Server Service
+				switch (intval($api_account[0]['LibraryID'])) {
+					case LIBRARY_DHURU_CLIENT:
 						$api = new DhruFusion($api_account[0]['Host'], $api_account[0]['Username'], $api_account[0]['ApiKey']);
-						$api->debug = FALSE; // Debug on
+						$api->debug = FALSE;
 						$request = $api->action('serverservicelist');
-						//echo '<pre>'; print_r($request); exit;
-						if(isset($request['SUCCESS'][0]['LIST']) && count($request['SUCCESS'][0]['LIST']) >0 )
-						{
+						if ($this->input->get('debug') == '1') {
+							echo '<pre style="background:#fff; color:#333; border:1px solid #ccc; padding:10px;">';
+							echo "<b>API Request:</b> ";
+							var_export([
+								'Host' => $api_account[0]['Host'],
+								'Username' => $api_account[0]['Username'],
+								'ApiKey' => $api_account[0]['ApiKey'],
+								'Action' => 'serverservicelist'
+							]);
+							echo "\n\n<b>API Response:</b> ";
+							var_export($request);
+							echo '</pre>';
+							exit;
+						}
+						if(isset($request['SUCCESS'][0]['LIST']) && count($request['SUCCESS'][0]['LIST']) >0 ) {
 							$data['networks'] = $this->serverbox_model->get_all();
 							$data['service_list'] = $request['SUCCESS'][0]['LIST'];
 							$data['template'] = "admin/apimanager/server_service_list";
-						}
-						elseif (isset($request['ERROR'][0]['MESSAGE'])) 
-						{
+						} elseif (isset($request['ERROR'][0]['MESSAGE'])) {
 							$this->session->set_flashdata('error', $request['ERROR'][0]['MESSAGE']);
-							redirect('admin/apimanager');	
-						}
-						else
-						{
+							redirect('admin/apimanager');
+						} else {
 							$this->session->set_flashdata('error', 'Services list not available at this time');
-							redirect('admin/apimanager');								
-						}						
+							redirect('admin/apimanager');
+						}
 					break;
-				}				
-			break;
-			}			
+				}
+			} else {
+				// Default: IMEI Service
+				switch (intval($api_account[0]['LibraryID'])) {
+					case LIBRARY_DHURU_CLIENT:
+						$api = new DhruFusion($api_account[0]['Host'], $api_account[0]['Username'], $api_account[0]['ApiKey']);
+						$api->debug = FALSE;
+						$request = $api->action('imeiservicelist');
+						if ($this->input->get('debug') == '1') {
+							echo '<pre style="background:#fff; color:#333; border:1px solid #ccc; padding:10px;">';
+							echo "<b>API Request:</b> ";
+							var_export([
+								'Host' => $api_account[0]['Host'],
+								'Username' => $api_account[0]['Username'],
+								'ApiKey' => $api_account[0]['ApiKey'],
+								'Action' => 'imeiservicelist'
+							]);
+							echo "\n\n<b>API Response:</b> ";
+							var_export($request);
+							echo '</pre>';
+							exit;
+						}
+						if(isset($request['SUCCESS'][0]['LIST']) && count($request['SUCCESS'][0]['LIST']) >0 ) {
+							$data['networks'] = $this->network_model->get_all();
+							$data['service_list'] = $request['SUCCESS'][0]['LIST'];
+							$data['template'] = "admin/apimanager/imei_service_list";
+						} elseif (isset($request['ERROR'][0]['MESSAGE'])) {
+							$this->session->set_flashdata('error', $request['ERROR'][0]['MESSAGE']);
+							redirect('admin/apimanager');
+						} else {
+							$this->session->set_flashdata('error', 'Services list not available at this time');
+							redirect('admin/apimanager');
+						}
+					break;
+				}
+			}
 			$this->load->view('admin/master_template', $data);
-		}
-		else
-		{
+		} else {
 			$this->session->set_flashdata('error', 'Invalid record.');
 			redirect('admin/apimanager');
-		}		
+		}
 	}
 	
 	public function add_imei_service_list($id)

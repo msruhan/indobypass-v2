@@ -91,11 +91,15 @@
                     <div id="load-field"></div>
 
                     <div class="form-group">
+                        <label class="control-label">Quantity</label>
+                        <div class="col-12">
+                            <input type="number" name="QUANTITY" min="1" class="form-control" placeholder="Enter quantity" value="<?php echo set_value('QUANTITY'); ?>" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
                         <label class="control-label"><?php echo $this->lang->line('imei_fields_email') ?></label>
                         <div class="col-12">
-                            <input type="email" name="Email"
-                                placeholder="<?php echo $this->lang->line('imei_fields_email') ?>" class="form-control"
-                                value="<?php echo set_value('Email'); ?>">
+                            <input type="email" name="Email" class="form-control" placeholder="<?php echo $this->lang->line('imei_fields_email') ?>" value="<?php echo set_value('Email'); ?>" required>
                         </div>
                     </div>
 
