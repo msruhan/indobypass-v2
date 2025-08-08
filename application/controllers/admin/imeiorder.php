@@ -27,7 +27,17 @@ class Imeiorder extends FSD_Controller
 	
 	public function listener()
 	{
-		echo $this->imeiorder_model->get_datatable($this->access);
+		$json = $this->imeiorder_model->get_datatable($this->access);
+		$raw = json_decode($json, true);
+		if (isset($raw['data']) && is_array($raw['data'])) {
+			foreach ($raw['data'] as &$row) {
+				$row['delete'] =
+					'<a href="'.site_url('admin/imeiorder/edit/'.$row['ID']).'" class="btn btn-warning btn-sm"><i class="fa fa-edit"></i></a>';
+				$row['delete'] .=
+					' <a href="'.site_url('admin/imeiorder/delete/'.$row['ID']).'" class="btn btn-danger btn-sm" onclick="return confirm(\'Delete this order?\')"><i class="fa fa-trash"></i></a>';
+			}
+		}
+		echo json_encode($raw);
 	}	
 
 	public function edit($id)
@@ -92,48 +102,48 @@ class Imeiorder extends FSD_Controller
 	{
 		$post = $this->input->post(NULL, TRUE);
 		## Refund Issue to selected codes ##
-        if(isset($post['refund']) && count($post['refund'])>0)
-        {
-            foreach ($post['refund'] as $id) 
-            {
-                $order = $this->imeiorder_model->get_where(array( 'ID' => $id, 'Status' => 'Pending' ));
-                if(isset($order[0]) && count($order) > 0)
-                {
-                    $data = array();
-                    $data['Code'] = empty($post['Code'][$id])? NULL: $post['Code'][$id];
-                    $data['Comments'] = empty($post['Comments'][$id])? NULL: $post['Comments'][$id];
-                    $data['Status'] = 'Canceled';
-                    $data['UpdatedDateTime'] = date("Y-m-d H:i:s");									
-                    $this->imeiorder_model->update($data, $id);
-                    
-                    ## Amount Refund ##
-                    $this->credit_model->refund($id, IMEI_CODE_REQUEST, $order[0]['MemberID']);
-                    ## Get Canceled Email Template ##
-                    $data = $this->autoresponder_model->get_where(array('Status' => 'Enabled', 'ID' => 2)); // IMEI Code Canceled
-                    ## Send Email with Template ## 		
-                    if(isset($data) && count($data)>0)
-                    {
-                        $from_name = $data[0]['FromName'];
-                        $from_email = $data[0]['FromEmail'];
-                        $to_email = $data[0]['ToEmail'];	
-                        $subject = $data[0]['Subject'];
-                        $message = html_entity_decode($data[0]['Message']);
-                        //get member information
-                        $member = $this->member_model->get_where(array('ID' => $order[0]['MemberID']));				
+		if(isset($post['refund']) && count($post['refund'])>0)
+		{
+			foreach ($post['refund'] as $id) 
+			{
+				$order = $this->imeiorder_model->get_where(array( 'ID' => $id, 'Status' => 'Pending' ));
+				if(isset($order[0]) && count($order) > 0)
+				{
+					$data = array();
+					$data['Code'] = empty($post['Code'][$id])? NULL: $post['Code'][$id];
+					$data['Comments'] = empty($post['Comments'][$id])? NULL: $post['Comments'][$id];
+					$data['Status'] = 'Canceled';
+					$data['UpdatedDateTime'] = date("Y-m-d H:i:s");									
+					$this->imeiorder_model->update($data, $id);
+					
+					## Amount Refund ##
+					$this->credit_model->refund($id, IMEI_CODE_REQUEST, $order[0]['MemberID']);
+					## Get Canceled Email Template ##
+					$data = $this->autoresponder_model->get_where(array('Status' => 'Enabled', 'ID' => 2)); // IMEI Code Canceled
+					## Send Email with Template ## 		
+					if(isset($data) && count($data)>0)
+					{
+						$from_name = $data[0]['FromName'];
+						$from_email = $data[0]['FromEmail'];
+						$to_email = $data[0]['ToEmail'];	
+						$subject = $data[0]['Subject'];
+						$message = html_entity_decode($data[0]['Message']);
+						//get member information
+						$member = $this->member_model->get_where(array('ID' => $order[0]['MemberID']));				
 
-                        //Information
+						//Information
 						$param['Code'] = empty($post['Code'][$id])? '': $post['Code'][$id];
-                        $param['IMEI'] = $order[0]['IMEI'];
-                        $param['FirstName'] = $member[0]['FirstName'];
-                        $param['LastName'] = $member[0]['LastName'];
+						$param['IMEI'] = $order[0]['IMEI'];
+						$param['FirstName'] = $member[0]['FirstName'];
+						$param['LastName'] = $member[0]['LastName'];
 						$param['Email'] = empty($order[0]['Email'])? $member[0]['Email']: $order[0]['Email'];
 
-                        $this->fsd->email_template($param, $from_email, $from_name, $to_email, $subject, $message );
-                        $this->fsd->sent_email($from_email, $from_name,$to_email, $subject, $message );
-                    }
-                }		
-            } // foreachend
-        }
+						$this->fsd->email_template($param, $from_email, $from_name, $to_email, $subject, $message );
+						$this->fsd->sent_email($from_email, $from_name,$to_email, $subject, $message );
+					}
+				}		
+			} // foreachend
+		}
 		## Bulk Isse code ##
 		foreach ($post['Code'] as $id => $code) 
 		{

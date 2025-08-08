@@ -22,7 +22,17 @@ class Member extends FSD_Controller
 	
 	public function listener()
 	{
-		echo $this->member_model->get_datatable($this->access);
+		$json = $this->member_model->get_datatable($this->access);
+		$raw = json_decode($json, true);
+		if (isset($raw['data']) && is_array($raw['data'])) {
+			foreach ($raw['data'] as &$row) {
+				$row['delete'] =
+					'<a href="'.site_url('admin/member/edit/'.$row['ID']).'" class="btn btn-warning btn-sm"><i class="fa fa-edit"></i></a>';
+				$row['delete'] .=
+					' <a href="'.site_url('admin/member/delete/'.$row['ID']).'" class="btn btn-danger btn-sm" onclick="return confirm(\'Delete this member?\')"><i class="fa fa-trash"></i></a>';
+			}
+		}
+		echo json_encode($raw);
 	}
 
 	public function add()
@@ -119,7 +129,7 @@ class Member extends FSD_Controller
 			$this->member_model->insert_method($insert);
 		}
 		$this->session->set_flashdata('success', 'Method Price edit successfully.');
-	    redirect("admin/member/");
+		redirect("admin/member/");
 		
 	}
 	
@@ -139,7 +149,7 @@ class Member extends FSD_Controller
 			$this->member_model->insert_filemethod($insert);
 		}
 		$this->session->set_flashdata('success', 'File Method Price edit successfully.');
-	    redirect("admin/member/");
+		redirect("admin/member/");
 	}
 
 	public function update()
