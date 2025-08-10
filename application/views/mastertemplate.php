@@ -232,7 +232,7 @@
                             <li class="nav-item topbar-user dropdown hidden-caret">
                                 <p class="opacity-100" style="color:dark-blue">
                                     <marquee behavior="scroll" direction="left">iCloud MEID / GSM BYPASS WITH SIGNAL SERVICE ON, iCloud MEID / GSM BYPASS WITH SIGNAL SERVICE ON</marquee>
-                                    <marquee behavior="scroll" direction="left"><?= $key['push_headline'] ?></marquee>
+                                    <marquee behavior="scroll" direction="left"><?= isset($key['push_headline']) ? $key['push_headline'] : '' ?></marquee>
 
                                 </p>
                             </li>
@@ -262,7 +262,7 @@
                                                             Admin send messages to you
                                                         </span>
                                                         <h6 class="p-3"><?= $key['push_notification'] ?></h6>
-                                                        <span class="time"><?= $key_updated['push_notification'] ?></span>
+                                                        <span class="time"><?= isset($key_updated['push_notification']) ? $key_updated['push_notification'] : '' ?></span>
                                                     </div>
                                                 </a>
                                                 
