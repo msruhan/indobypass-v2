@@ -233,7 +233,6 @@
                                 <p class="opacity-100" style="color:dark-blue">
                                     <marquee behavior="scroll" direction="left">iCloud MEID / GSM BYPASS WITH SIGNAL SERVICE ON, iCloud MEID / GSM BYPASS WITH SIGNAL SERVICE ON</marquee>
                                     <marquee behavior="scroll" direction="left"><?= isset($key['push_headline']) ? $key['push_headline'] : '' ?></marquee>
-
                                 </p>
                             </li>
                             <li class="nav-item topbar-icon dropdown hidden-caret">
