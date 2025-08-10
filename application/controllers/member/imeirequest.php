@@ -202,41 +202,52 @@ class imeirequest extends FSD_Controller
 			$method = $this->method_model->get_where(array('ID' => $id));			
 			$pricing = $this->method_model->get_user_price($member_id, $id);
 			
-			$data['field_type'] = $method[0]['FieldType'];
-			$data['price_fix'] = $method[0]['Price'];
-			$data['price'] = floatval($pricing[0]['Price']);
-			$data['delivery_time'] = $method[0]['DeliveryTime'];
-			$data['description'] = $method[0]['Description'];
-			
-			## DropDowns ##
-			$data['providers'] = $method[0]['Provider'] == 1? $this->provider_model->get_where(array('MethodID' => $id)):NULL;
-			$data['models'] = $method[0]['Mobile'] == 1? $this->servicemodel_model->get_where(array('MethodID' => $id)):NULL;
-			$data['meps'] = $method[0]['MEP'] == 1? $this->mep_model->get_where(array('MethodID' => $id)):NULL;
-			## Text Boxes ##
-			$data['pin'] = $method[0]['PIN'] == 1? TRUE:FALSE;
-			$data['kbh'] = $method[0]['KBH'] == 1? TRUE:FALSE;
-			$data['prd'] = $method[0]['PRD'] == 1? TRUE:FALSE;
-			$data['type'] = $method[0]['Type'] == 1? TRUE:FALSE;
-			$data['locks'] = $method[0]['Locks'] == 1? TRUE:FALSE;
-			$data['serial_number'] = $method[0]['SerialNumber'] == 1? TRUE:FALSE;
-			$data['reference'] = $method[0]['Reference'] == 1? TRUE:FALSE;
-			$data['extra_information'] = $method[0]['ExtraInformation'] == 1? TRUE:FALSE;
+			if (!empty($method) && isset($method[0])) {
+				$data['field_type'] = $method[0]['FieldType'];
+				$data['price_fix'] = $method[0]['Price'];
+				$data['delivery_time'] = $method[0]['DeliveryTime'];
+				$data['description'] = $method[0]['Description'];
 
-			$data['iCloudCarrierInfo'] = $method[0]['iCloudCarrierInfo'] == 1? TRUE:FALSE;
-			$data['iCloudAppleIDHint'] = $method[0]['iCloudAppleIDHint'] == 1? TRUE:FALSE;
-			$data['iCloudActivationLockScreenshot'] = $method[0]['iCloudActivationLockScreenshot'] == 1? TRUE:FALSE;
-			$data['iCloudIMEINumberScreenshot'] = $method[0]['iCloudIMEINumberScreenshot'] == 1? TRUE:FALSE;
-			$data['iCloudAppleIdEmail'] = $method[0]['iCloudAppleIdEmail'] == 1? TRUE:FALSE;
-			$data['iCloudAppleIdScreenshot'] = $method[0]['iCloudAppleIdScreenshot'] == 1? TRUE:FALSE;
-			$data['iCloudAppleIdInfo'] = $method[0]['iCloudAppleIdInfo'] == 1? TRUE:FALSE;
-			$data['iCloudPhoneNumber'] = $method[0]['iCloudPhoneNumber'] == 1? TRUE:FALSE;
-			$data['iCloudID'] = $method[0]['iCloudID'] == 1? TRUE:FALSE;
-			$data['iCloudPassword'] = $method[0]['iCloudPassword'] == 1? TRUE:FALSE;
-			$data['iCloudUDID'] = $method[0]['iCloudUDID'] == 1? TRUE:FALSE;
-			$data['iCloudICCID'] = $method[0]['iCloudICCID'] == 1? TRUE:FALSE;
-			$data['iCloudVideo'] = $method[0]['iCloudVideo'] == 1? TRUE:FALSE;
-			
-			//var_dump($data); exit;
+				## DropDowns ##
+				$data['providers'] = $method[0]['Provider'] == 1 ? $this->provider_model->get_where(array('MethodID' => $id)) : NULL;
+				$data['models'] = $method[0]['Mobile'] == 1 ? $this->servicemodel_model->get_where(array('MethodID' => $id)) : NULL;
+				$data['meps'] = $method[0]['MEP'] == 1 ? $this->mep_model->get_where(array('MethodID' => $id)) : NULL;
+
+				## Text Boxes ##
+				$data['pin'] = $method[0]['PIN'] == 1;
+				$data['kbh'] = $method[0]['KBH'] == 1;
+				$data['prd'] = $method[0]['PRD'] == 1;
+				$data['type'] = $method[0]['Type'] == 1;
+				$data['locks'] = $method[0]['Locks'] == 1;
+				$data['serial_number'] = $method[0]['SerialNumber'] == 1;
+				$data['reference'] = $method[0]['Reference'] == 1;
+				$data['extra_information'] = $method[0]['ExtraInformation'] == 1;
+
+				$data['iCloudCarrierInfo'] = $method[0]['iCloudCarrierInfo'] == 1;
+				$data['iCloudAppleIDHint'] = $method[0]['iCloudAppleIDHint'] == 1;
+				$data['iCloudActivationLockScreenshot'] = $method[0]['iCloudActivationLockScreenshot'] == 1;
+				$data['iCloudIMEINumberScreenshot'] = $method[0]['iCloudIMEINumberScreenshot'] == 1;
+				$data['iCloudAppleIdEmail'] = $method[0]['iCloudAppleIdEmail'] == 1;
+				$data['iCloudAppleIdScreenshot'] = $method[0]['iCloudAppleIdScreenshot'] == 1;
+				$data['iCloudAppleIdInfo'] = $method[0]['iCloudAppleIdInfo'] == 1;
+				$data['iCloudPhoneNumber'] = $method[0]['iCloudPhoneNumber'] == 1;
+				$data['iCloudID'] = $method[0]['iCloudID'] == 1;
+				$data['iCloudPassword'] = $method[0]['iCloudPassword'] == 1;
+				$data['iCloudUDID'] = $method[0]['iCloudUDID'] == 1;
+				$data['iCloudICCID'] = $method[0]['iCloudICCID'] == 1;
+				$data['iCloudVideo'] = $method[0]['iCloudVideo'] == 1;
+			} else {
+				// Handle jika data tidak ditemukan
+				$data = array();
+				// Bisa kasih pesan error ke view
+			}
+
+			if (!empty($pricing) && isset($pricing[0])) {
+				$data['price'] = floatval($pricing[0]['Price']);
+			} else {
+				$data['price'] = 0; // default value
+			}
+
 			$this->load->view("member/imei/loadrequiredfield", $data);
 		}
 	}
