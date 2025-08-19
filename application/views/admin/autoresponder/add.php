@@ -3,7 +3,7 @@
     	
         <div class="head clearfix">
             <div class="isw-documents"></div>
-            <h3 style="padding:10px;">Payment Update</h3>
+            <h3 style="padding:10px;">Email Update</h3>
         </div>
       <?php echo form_open_multipart("admin/autoresponder/insert",array('id'=>"autoresponder-validate")); ?>
             <div class="form-body">
