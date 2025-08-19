@@ -171,8 +171,7 @@
                 </li>
                 <li class="nav-section center-content">
                     <span class="sidebar-mini-icon">
-                    <span class="badge bg-warning">Versi v1.0</span>
-
+                    <span class="badge bg-warning">Versi v2.0</span>
                     </span>
                     <h4 class="text-section">Hak Cipta @2024 INDOBYPASS Team</h4>
                 </li>
@@ -350,7 +349,7 @@
             <footer class="footer">
                 <div class="container-fluid d-flex justify-content-between align-items-center">
                     <div class="copyright text-center font-weight-bold mx-auto">
-                        Copyrights © 2024 All Rights Reserved by INDOBYPASS Team
+                        Copyrights © 2025 All Rights Reserved by INDOBYPASS Team
                     </div>
                 </div>
             </footer>

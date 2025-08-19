@@ -133,7 +133,31 @@
             </div>
         </div>
     </div>
+
+    <!-- KANAN: Card Download & Video dalam satu kolom -->
     <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12">
+        <!-- Card Download -->
+        <div class="card mb-3">
+            <div class="card-header">
+                <div class="card-title">Download</div>
+            </div>
+            <div class="card-body pb-0 text-center card-download-body">
+                <span class="text-muted">No download available for this service.</span>
+                <div class="separator-dashed"></div>
+            </div>
+        </div>
+        <!-- Card Video -->
+        <div class="card">
+            <div class="card-header">
+                <div class="card-title">Tutorial Video</div>
+            </div>
+            <div class="card-body pb-0 text-center card-video-body">
+                <span class="text-muted">No video available for this service.</span>
+                <div class="separator-dashed"></div>
+            </div>
+        </div>
+    </div>
+    <!-- <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12">
         <div class="card">
             <div class="card-body pb-0">
                 <div class="mb-5">
@@ -158,13 +182,13 @@
                 </div>
             </div>
         </div>
-    </div>
+    </div> -->
  
 </div>
 
 <!-- modal for datatable imei history -->
 <!-- Modal -->
-<div class="modal fade" id="historyOrderModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+<!-- <div class="modal fade" id="historyOrderModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-xl">
         <div class="modal-content">
             <div class="modal-header">
@@ -173,7 +197,6 @@
             </div>
             <div class="modal-body">
                 <div class="table-responsive p-3">
-                    <!-- Projects table -->
                     <table id="table_data_imei" class="table table-sm table-striped table-hover" style="width:100%">
                         <thead>
                             <tr>
@@ -191,7 +214,7 @@
             </div>
         </div>
     </div>
-</div>
+</div> -->
 
 <!-- Modal Popup -->
 <div class="modal fade" id="orderSuccessModal" tabindex="-1" aria-labelledby="orderSuccessLabel" aria-hidden="true">
@@ -278,65 +301,82 @@ $(document).ready(function() {
                 success: function(data) {
                     $("#load-field-text").html('');
                     var html = '';
-                    if (data.price_fix) {
-                        // set html if data exist
+
+                    if (data.price_only || data.delivery_time) {
                         html +=
                             '<div class="form-group">' +
-                            '<label class="col-sm-3 control-label"><?php echo $this->lang->line('imei_fields_price') ?></label>' +
-                            '<div class="col-sm-9 text">' + '$' + data.price_fix +
-                            '</div>' +
-                            '</div>'
-                    }
-
-                     
-
-                    
-                    if (data.delivery_time) {
-                        // set html if data exist
-                        html +=
-                            '<div class="form-group">' +
-                            '<label class="col-sm-3 control-label"><?php echo $this->lang->line('imei_fields_delivery_time') ?></label>' +
-                            '<div class="col-sm-9 text">' + data.delivery_time +
-                            '</div>' +
-                            '</div>'
+                            '<div class="d-flex flex-wrap align-items-center gap-3">';
+                        if (data.price_only) {
+                            html +=
+                                '<div class="d-flex align-items-center">' +
+                                    '<span class="badge bg-secondary fs-6" style="font-size:1rem;padding:8px 16px;">' + data.price_only + '</span>' +
+                                '</div>';
+                        }
+                        if (data.delivery_time) {
+                            html +=
+                                '<div class="d-flex align-items-center">' +
+                                    '<span class="badge bg-warning fs-6" style="font-size:1rem;padding:8px 16px;">' + data.delivery_time + '</span>' +
+                                '</div>';
+                        }
+                        html += '</div></div>';
                     }
 
                     if (data.description) {
-                        // set html if data exist
                         html +=
                             '<div class="form-group">' +
-                            '<label class="col-sm-3 control-label"><?php echo $this->lang->line('imei_fields_description') ?></label>' +
-                            '<div class="col-sm-9 text"><textarea id="autoExpandTextarea"></textarea>' +
-                            '</div>' +
-                            '</div>'
+                            '<div class="col-sm-9 text"><div id="desc_service_html"></div></div>' +
+                            '</div>';
                     }
-
                     $("#load-field-text").html(html);
 
                     if (data.description) {
                         // Use setTimeout to ensure the DOM has been updated
                         setTimeout(() => {
-                            const textarea = document.getElementById('autoExpandTextarea');
-                            
-                            if (textarea) {
-                                function setTextAndResize(text) {
-                                    textarea.value = text;
-                                    textarea.style.height = 'auto';
-                                    textarea.style.height = textarea.scrollHeight + 'px';
-                                    textarea.style.overflow = 'hidden';
-                                    textarea.style.resize = 'none';
-                                    textarea.style.border = 'none';
-                                    textarea.style.width = '100%';
-                                    textarea.readOnly = true;
-                                }
-
-                                const longText = data.description;
-
-                                setTextAndResize(longText);
+                            const descDiv = document.getElementById('desc_service_html');
+                            if (descDiv) {
+                                descDiv.innerHTML = data.description;
                             } else {
-                                console.error('Textarea not found');
+                                console.error('desc_service_html not found');
                             }
                         }, 0);
+                    }
+                    // Update Download card
+                    if (typeof data.download !== 'undefined' && data.download) {
+                        $(".card-download-body").html(
+                            '<a href="' + data.download + '" target="_blank" class="btn btn-success mb-3">Download Tools <i class="fa fa-download"></i></a>' +
+                            '<div class="separator-dashed"></div>'
+                        );
+                    } else {
+                        $(".card-download-body").html(
+                            '<span class="text-muted">No download available for this service.</span><div class="separator-dashed"></div>'
+                        );
+                    }
+
+                    // Update Video card
+                    if (typeof data.video !== 'undefined' && data.video) {
+                        // Extract YouTube video ID
+                        function getYoutubeId(url) {
+                            var regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+                            var match = url.match(regExp);
+                            return (match && match[2].length == 11) ? match[2] : null;
+                        }
+                        var videoId = getYoutubeId(data.video);
+                        if (videoId) {
+                            var thumb = 'https://img.youtube.com/vi/' + videoId + '/hqdefault.jpg';
+                            var html = '<a href="' + data.video + '" target="_blank">' +
+                                '<div style="width:100%;aspect-ratio:16/9;overflow:hidden;">' +
+                                    '<img src="' + thumb + '" alt="Video Thumbnail" style="width:100%;height:100%;object-fit:cover;" class="rounded mb-2">' +
+                                '</div>' +
+                                '</a>';
+                            html += '<div class="mt-3"></div>';
+                            html += '<div><a href="' + data.video + '" target="_blank" class="btn btn-danger btn-sm mb-3">Watch Video <i class="fa fa-play"></i></a></div>';
+                            html += '<div class="separator-dashed"></div>';
+                            $(".card-video-body").html(html);
+                        } else {
+                            $(".card-video-body").html('<span class="text-muted">Invalid YouTube link.</span><div class="separator-dashed"></div>');
+                        }
+                    } else {
+                        $(".card-video-body").html('<span class="text-muted">No video available for this service.</span><div class="separator-dashed"></div>');
                     }
                 }
             });
