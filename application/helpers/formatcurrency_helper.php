@@ -17,6 +17,7 @@ function format_currency($amount) {
 
     $currency_info = $currencies[$sess_currency];
     $amount_count = $sess_currency == 'USD' ? $amount : $amount * $sess_IDR;
-    $formatted_amount = number_format($amount_count, $currency_info['decimals'], ',', $currency_info['thousand_separator']);
+    $thousand_separator = isset($currency_info['thousand_separator']) ? $currency_info['thousand_separator'] : ',';
+    $formatted_amount = number_format($amount_count, $currency_info['decimals'], ',', $thousand_separator);
     return $currency_info['symbol'] . $formatted_amount;
 }

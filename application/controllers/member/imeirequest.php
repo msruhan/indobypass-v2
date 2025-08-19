@@ -271,12 +271,10 @@ class imeirequest extends FSD_Controller
 			$data['description'] = isset($method[0]['Description']) ? $method[0]['Description'] : '';
 			$data['video'] = isset($method[0]['Video']) ? $method[0]['Video'] : '';
 
-			// Force price_label to always use Rupiah format (regardless of session)
+			// Gunakan format_currency() agar sesuai session (USD/IDR)
 			$this->load->helper('formatcurrency_helper');
-			$idr_rate = $this->session->userdata('IDR');
-			$price_rp = 'Rp ' . number_format($method[0]['Price'] * $idr_rate, 2, ',', '.');
-			$data['price_label'] = $method[0]['Title'].' - Only '.$price_rp.' credit required';
-			$data['price_only'] = $price_rp;
+			$data['price_label'] = $method[0]['Title'].' - Only '.format_currency($method[0]['Price']).' credit required';
+			$data['price_only'] = format_currency($method[0]['Price']);
 
 			## DropDowns ##
 			$data['providers'] = (isset($method[0]['Provider']) && $method[0]['Provider'] == 1) ? $this->provider_model->get_where(array('MethodID' => $id)) : NULL;
