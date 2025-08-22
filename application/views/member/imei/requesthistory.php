@@ -1,3 +1,31 @@
+</style>
+
+<!-- Debug script: Check if all DataTables Buttons JS files are loaded -->
+<script>
+// List of required DataTables Buttons JS files
+const requiredDTFiles = [
+  'dataTables.buttons.min.js',
+  'buttons.html5.min.js',
+  'buttons.print.min.js',
+  'jszip.min.js',
+  'pdfmake.min.js',
+  'vfs_fonts.js'
+];
+window.addEventListener('DOMContentLoaded', function() {
+  const loadedScripts = Array.from(document.getElementsByTagName('script')).map(s => s.src);
+  let missing = [];
+  requiredDTFiles.forEach(f => {
+    if (!loadedScripts.some(src => src.includes(f))) {
+      missing.push(f);
+    }
+  });
+  if (missing.length > 0) {
+    console.error('Missing DataTables Buttons JS files:', missing);
+  } else {
+    console.log('All DataTables Buttons JS files appear to be loaded.');
+  }
+});
+</script>
 <style>
     /* Responsif Breadcrumbs */
     @media screen and (max-width: 767px) {
@@ -144,23 +172,23 @@
                     <div class="d-flex gap-2">
                         <button id="applyFilter" class="btn btn-sm btn-secondary px-3">Filter</button>
                         <button id="resetFilter" class="btn btn-sm btn-outline-secondary px-3">Reset</button>
+                        <button id="exportData" class="btn btn-sm btn-primary px-3">Export</button>
                     </div>
-                </div>
-
             </div>
 
             <div class="card-body custom-card-body">
                 <div class="row">
                     <div class="table-responsive p-0">
                         <!-- Projects table -->
-                        <table id="table_data_imei" class="table table-sm table-striped table-hover" style="width:100%;font-size:32px">
+                        <table id="table_data_imei" class="table table-sm table-striped table-hover" style="width:98%;font-size:32px">
                             <thead>
                                 <tr>
                                     <th class="column-actions" style="width: 1%;"></th>
                                     <th style="width: 1%;">ID</th>
                                     <th style="width: 10%;">Date</th>
                                     <th style="width: 10%;">Device</th>
-                                    <th class="column-service" style="width: 40%;">Service</th>
+                                    <th class="column-service" style="width: 30%;">Service</th>
+                                    <th class="column-price" style="width: 5%;">Price</th>
                                     <th class="column-status" style="width: 5%;">Status</th>
                                     <th class="column-details" style="width: 5%;">Detail</th>
                                 </tr>
@@ -218,58 +246,112 @@
 </div>
 
 </style>
-<!-- Select2 -->
+
+
+
+<!-- RECOMMENDED CDN ORDER: (ALL 1.13.6) -->
+<!-- 1. jQuery (only ONCE, before everything else) -->
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script>console.log('[DEBUG] jQuery loaded:', typeof jQuery !== 'undefined' ? jQuery.fn.jquery : 'NOT LOADED'); window.jQuery = jQuery;</script>
+<!-- 2. DataTables CSS & JS (core) -->
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+<script>console.log('[DEBUG] DataTables core loaded:', typeof $.fn.dataTable !== 'undefined' ? $.fn.dataTable.version : 'NOT LOADED');</script>
+
+<!-- 3. DataTables Buttons CSS & JS (use 1.7.1, which is available) -->
+<link rel="stylesheet" href="https://cdn.datatables.net/buttons/1.7.1/css/buttons.dataTables.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script>console.log('[DEBUG] JSZip loaded:', typeof JSZip !== 'undefined');</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
+<script>console.log('[DEBUG] pdfmake loaded:', typeof pdfMake !== 'undefined');</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
+<script>console.log('[DEBUG] vfs_fonts loaded');</script>
+<script src="https://cdn.datatables.net/buttons/1.7.1/js/dataTables.buttons.min.js"></script>
+<script>console.log('[DEBUG] DataTables Buttons loaded (cdn.datatables.net 1.7.1):', typeof $.fn.dataTable !== 'undefined' && typeof $.fn.dataTable.Buttons !== 'undefined' ? 'LOADED' : 'NOT LOADED');</script>
+<script src="https://cdn.datatables.net/buttons/1.7.1/js/buttons.html5.min.js"></script>
+<script>console.log('[DEBUG] DataTables Buttons HTML5 loaded');</script>
+<script src="https://cdn.datatables.net/buttons/1.7.1/js/buttons.print.min.js"></script>
+<script>console.log('[DEBUG] DataTables Buttons Print loaded');</script>
+
 <script type="text/javascript">
+// DEBUG: Versi dan status jQuery/DataTables/Buttons
+console.log('jQuery version:', typeof jQuery !== 'undefined' ? jQuery.fn.jquery : 'NOT LOADED');
+console.log('DataTables core:', typeof $.fn.dataTable !== 'undefined' ? $.fn.dataTable.version : 'NOT LOADED');
+console.log('DataTables Buttons:', typeof $.fn.dataTable !== 'undefined' && typeof $.fn.dataTable.Buttons !== 'undefined' ? 'LOADED' : 'NOT LOADED');
 var base_url = "<?= base_url() ?>";
 $(document).ready(function () {
     var base_url = "<?= base_url() ?>";
 
+
     var table = $("#table_data_imei").DataTable({
-    ajax: {
-        url: base_url + "member/dashboard/listener_new",
-        type: 'POST',
-        data: function (d) {
-            d.status = $('#statusFilter').val();
-            d.startDate = $('#startDate').val();
-            d.endDate = $('#endDate').val();
-        },
-
-        dataSrc: function(json) {
-        return json.data;
-        }
-
-    },
-    columns: [
-        {
-            data: null,
-            className: 'details-control column-actions',
-            defaultContent: '<button class="btn btn-secondary btn-round btn-xs toggle-detail"><i class="fas fa-chevron-down"></i></button>',
-            orderable: false
-        },
-        { data: "no" },
-        { data: "created_at" },
-        { data: "imei" },
-        { data: "service", className: 'column-service' },
-        { data: "status", className: 'column-status',
-            render: function(data, type, row) {
-            return formatBadge(data);
+        ajax: {
+            url: base_url + "member/dashboard/listener_new",
+            type: 'POST',
+            data: function (d) {
+                d.status = $('#statusFilter').val();
+                d.startDate = $('#startDate').val();
+                d.endDate = $('#endDate').val();
+            },
+            dataSrc: function(json) {
+                return json.data;
             }
-         },
-        {
-            data: null,
-            className: 'column-details',
-            defaultContent: '<button class="btn btn-info btn-xs view-detail">View</button>',
-            orderable: false
         },
-    ],
-    pagingType: "input",
-    processing: true,
-    serverSide: true,
-    bInfo: false,
-    ordering: false,
-    deferRender: true,
-    searching: true
-});
+        columns: [
+            {
+                data: null,
+                className: 'details-control column-actions',
+                defaultContent: '<button class="btn btn-secondary btn-round btn-xs toggle-detail"><i class="fas fa-chevron-down"></i></button>',
+                orderable: false
+            },
+            { data: "no" },
+            { data: "created_at" },
+            { data: "imei" },
+            { data: "service", className: 'column-service' },
+            { data: "price", className: 'column-price' },
+            { data: "status", className: 'column-status',
+                render: function(data, type, row) {
+                    return formatBadge(data);
+                }
+            },
+            {
+                data: null,
+                className: 'column-details',
+                defaultContent: '<button class="btn btn-info btn-xs view-detail">View</button>',
+                orderable: false
+            },
+        ],
+        pagingType: "input",
+        processing: true,
+        serverSide: true,
+        bInfo: false,
+        ordering: false,
+        deferRender: true,
+        searching: true,
+        dom: 'Bfrtip',
+        buttons: [
+            {
+                extend: 'csvHtml5',
+                text: 'Export CSV',
+                title: 'IMEI_Order_History',
+                exportOptions: {
+                    columns: [1,2,3,4,5,6] // Exclude action columns
+                },
+                filename: 'IMEI_Order_History',
+                className: 'd-none' // Hide default button
+            },
+            {
+                extend: 'excelHtml5',
+                text: 'Export Excel',
+                title: 'IMEI_Order_History',
+                exportOptions: {
+                    columns: [1,2,3,4,5,6]
+                },
+                filename: 'IMEI_Order_History',
+                className: 'd-none' // Hide default button
+            }
+        ]
+    });
+
 
 
     // Tombol START FILTER
@@ -283,6 +365,45 @@ $(document).ready(function () {
         $('#startDate').val('');
         $('#endDate').val('');
         table.ajax.reload();
+    });
+
+    // Tombol EXPORT
+    $('#exportData').on('click', function () {
+        // Debug info for troubleshooting
+        if (typeof $.fn.dataTable === 'undefined') {
+            console.error('DataTables core is NOT loaded!');
+            return;
+        }
+        if (typeof $.fn.dataTable.Buttons === 'undefined') {
+            console.error('DataTables Buttons extension is NOT loaded!');
+            return;
+        }
+        if (typeof table.button !== 'function') {
+            alert('Export feature is not available. Please make sure DataTables Buttons extension is loaded.');
+            return;
+        }
+
+        // Ambil filter tanggal
+        var startDate = $('#startDate').val();
+        var endDate = $('#endDate').val();
+        if (!startDate && !endDate) {
+            if (!confirm('Anda belum memilih tanggal. Export semua data?')) return;
+        }
+
+        // Pastikan filter diterapkan sebelum export
+        table.ajax.reload(function() {
+            // Setelah reload, lakukan export
+            let format = prompt('Export as: CSV or Excel? (Type "csv" or "excel")', 'csv');
+            if (!format) return;
+            format = format.toLowerCase();
+            if (format === 'csv') {
+                table.button(0).trigger();
+            } else if (format === 'excel') {
+                table.button(1).trigger();
+            } else {
+                alert('Format not supported. Please type "csv" or "excel".');
+            }
+        }, false); // false = reset paging ke halaman 1
     });
 
     // Detail toggle & modal (tetap seperti sebelumnya)
@@ -342,6 +463,10 @@ $(document).ready(function () {
             $('#codeRawContainer').html(`<em>${replyCode}</em>`);
 
             if (/roamer/i.test(replyCode)) {
+                $('#codeTableContainer').html(formatReplyAsTable(replyCode));
+                $('#table-tab').parent().show();
+                $('#codeTab').show();
+            } else if (/check/i.test(replyCode)) {
                 $('#codeTableContainer').html(formatReplyAsTable(replyCode));
                 $('#table-tab').parent().show();
                 $('#codeTab').show();
