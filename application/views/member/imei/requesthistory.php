@@ -258,19 +258,20 @@ window.addEventListener('DOMContentLoaded', function() {
 <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
 <script>console.log('[DEBUG] DataTables core loaded:', typeof $.fn.dataTable !== 'undefined' ? $.fn.dataTable.version : 'NOT LOADED');</script>
 
-<!-- 3. DataTables Buttons CSS & JS (use 1.7.1, which is available) -->
-<link rel="stylesheet" href="https://cdn.datatables.net/buttons/1.7.1/css/buttons.dataTables.min.css">
+
+<!-- 3. DataTables Buttons CSS & JS (use 2.4.1, compatible with 1.13.6) -->
+<link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.4.1/css/buttons.dataTables.min.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 <script>console.log('[DEBUG] JSZip loaded:', typeof JSZip !== 'undefined');</script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
 <script>console.log('[DEBUG] pdfmake loaded:', typeof pdfMake !== 'undefined');</script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
 <script>console.log('[DEBUG] vfs_fonts loaded');</script>
-<script src="https://cdn.datatables.net/buttons/1.7.1/js/dataTables.buttons.min.js"></script>
-<script>console.log('[DEBUG] DataTables Buttons loaded (cdn.datatables.net 1.7.1):', typeof $.fn.dataTable !== 'undefined' && typeof $.fn.dataTable.Buttons !== 'undefined' ? 'LOADED' : 'NOT LOADED');</script>
-<script src="https://cdn.datatables.net/buttons/1.7.1/js/buttons.html5.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.4.1/js/dataTables.buttons.min.js"></script>
+<script>console.log('[DEBUG] DataTables Buttons loaded (cdn.datatables.net 2.4.1):', typeof $.fn.dataTable !== 'undefined' && typeof $.fn.dataTable.Buttons !== 'undefined' ? 'LOADED' : 'NOT LOADED');</script>
+<script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.html5.min.js"></script>
 <script>console.log('[DEBUG] DataTables Buttons HTML5 loaded');</script>
-<script src="https://cdn.datatables.net/buttons/1.7.1/js/buttons.print.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.print.min.js"></script>
 <script>console.log('[DEBUG] DataTables Buttons Print loaded');</script>
 
 <script type="text/javascript">
