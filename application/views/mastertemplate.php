@@ -339,7 +339,6 @@
             <!-- content -->
             <div class="container">
                 <div class="page-inner">
-                    <script src="<?= site_url() ?>assets/assets_members/js/core/jquery-3.7.1.min.js"></script>
 
                     <?php $this->load->view($content); ?>
                 </div>
@@ -365,8 +364,8 @@
     <!-- Chart JS -->
     <script src="<?= site_url() ?>assets/assets_members/js/plugin/chart.js/chart.min.js"></script>
 
-    <!-- Datatables -->
-    <script src="<?= site_url() ?>assets/assets_members/libs/dataTables/jquery.dataTables.min.js"></script>
+
+    <!-- Datatables input plugin only (keep if needed for custom input features, otherwise remove) -->
     <script src="<?= site_url() ?>assets/assets_members/libs/dataTables/dataTables-input.js"></script>
 
     <!-- Bootstrap Notify -->
