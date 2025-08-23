@@ -329,28 +329,79 @@ $(document).ready(function () {
         deferRender: true,
         searching: true,
         dom: 'Bfrtip',
+
         buttons: [
-            {
-                extend: 'csvHtml5',
-                text: 'Export CSV',
-                title: 'IMEI_Order_History',
-                exportOptions: {
-                    columns: [1,2,3,4,5,6] // Exclude action columns
-                },
-                filename: 'IMEI_Order_History',
-                className: 'd-none' // Hide default button
-            },
-            {
-                extend: 'excelHtml5',
-                text: 'Export Excel',
-                title: 'IMEI_Order_History',
-                exportOptions: {
-                    columns: [1,2,3,4,5,6]
-                },
-                filename: 'IMEI_Order_History',
-                className: 'd-none' // Hide default button
+        {
+            extend: 'csvHtml5',
+            text: 'Export CSV',
+            title: 'IMEI_Order_History',
+            exportOptions: {
+                columns: [1,2,3,4,5,6],
+                format: {
+                body: function (data, row, column, node) {
+                    if (!data) return '';
+
+                    // Hapus HTML
+                    let text = data.replace(/<[^>]*>/g, '').trim();
+
+                    // Bersihkan JSON-like array ["..."] -> ...
+                    text = text.replace(/^\[\"|\"\]$/g, '').replace(/\"/g, '');
+                    text = text.replace(/","/g, ' | '); // koma jadi separator aman
+
+                    // Gabungkan field harga/status biar tidak pecah kolom
+                    text = text.replace(/,\s*Rp/g, ' | Rp');
+                    text = text.replace(/,\s*Issued/g, ' | Issued');
+                    text = text.replace(/,\s*Canceled/g, ' | Canceled');
+
+                    // Rapikan format harga (Rp 1.233.700,00 → Rp 1233700.00)
+                    text = text.replace(/Rp\s([\d\.]+),(\d{2})/g, function(_, num, dec) {
+                        return 'Rp ' + num.replace(/\./g, '') + '.' + dec;
+                    });
+
+                    return text;
+                }
             }
-        ]
+
+            },
+            filename: 'IMEI_Order_History',
+            className: 'd-none'
+        },
+        {
+            extend: 'excelHtml5',
+            text: 'Export Excel',
+            title: 'IMEI_Order_History',
+            exportOptions: {
+            columns: [1,2,3,4,5,6],
+            format: {
+                    body: function (data, row, column, node) {
+                        if (!data) return '';
+
+                        // Hapus HTML
+                        let text = data.replace(/<[^>]*>/g, '').trim();
+
+                        // Bersihkan JSON-like array ["..."] -> ...
+                        text = text.replace(/^\[\"|\"\]$/g, '').replace(/\"/g, '');
+                        text = text.replace(/","/g, ' | '); // koma jadi separator aman
+
+                        // Gabungkan field harga/status biar tidak pecah kolom
+                        text = text.replace(/,\s*Rp/g, ' | Rp');
+                        text = text.replace(/,\s*Issued/g, ' | Issued');
+                        text = text.replace(/,\s*Canceled/g, ' | Canceled');
+
+                        // Rapikan format harga (Rp 1.233.700,00 → Rp 1233700.00)
+                        text = text.replace(/Rp\s([\d\.]+),(\d{2})/g, function(_, num, dec) {
+                            return 'Rp ' + num.replace(/\./g, '') + '.' + dec;
+                        });
+
+                        return text;
+                    }
+                }
+
+            },
+            filename: 'IMEI_Order_History',
+            className: 'd-none'
+        }
+    ]
     });
 
 
