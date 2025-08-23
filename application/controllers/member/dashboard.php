@@ -248,6 +248,12 @@ class dashboard extends FSD_Controller
 		// Ambil data dari model (tanpa limit/paging)
 		$orders = $this->imeiorder_model->get_imei_data_export($id, $status, $startDate, $endDate);
 
+		// Hitung total price (dalam angka)
+		$totalPrice = 0;
+		foreach ($orders as $row) {
+			$totalPrice += is_numeric($row['Price']) ? $row['Price'] : 0;
+		}
+
 		// Set header untuk download CSV
 		header('Content-Type: text/csv; charset=utf-8');
 		header('Content-Disposition: attachment; filename=IMEI_Order_History_' . date('Ymd_His') . '.csv');
@@ -260,11 +266,14 @@ class dashboard extends FSD_Controller
 				$row['CreatedDateTime'],
 				$row['IMEI'],
 				$row['Title'],
-				$row['Price'],
+				format_currency($row['Price']),
 				$row['Status'],
 				$row['Note']
 			]);
 		}
+		// Tambahkan baris kosong dan baris total price (format Rupiah)
+		fputcsv($output, []);
+		fputcsv($output, ['', '', '', '', 'Price Total = ' . format_currency($totalPrice)]);
 		fclose($output);
 		exit;
 	}
