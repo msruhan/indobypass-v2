@@ -1,3 +1,7 @@
+<!-- jQuery harus di-load PALING ATAS sebelum plugin lain -->
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<!-- DataTables core JS harus setelah jQuery -->
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
 <style>
     /* Responsif Breadcrumbs */
     @media screen and (max-width: 767px) {
@@ -69,6 +73,35 @@
         <div class="card">
             <div class="card-header">
                 <div class="card-title">Server Order History</div>
+            </div>
+            <!-- FILTER BAR -->
+            <div class="row mb-3 align-items-end g-3 filter-row" style="margin-left:5px;">
+                <div class="col-md-3">
+                    <label for="statusFilter" class="form-label fw-semibold">Status</label>
+                    <select id="statusFilter" class="form-select form-select-sm">
+                        <option value="">All</option>
+                        <option value="Issued">Success</option>
+                        <option value="Pending">Pending</option>
+                        <option value="In Process">In process</option>
+                        <option value="Cancelled">Rejected</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label for="startDate" class="form-label fw-semibold">Start</label>
+                    <input type="date" id="startDate" class="form-control form-control-sm">
+                </div>
+                <div class="col-md-3">
+                    <label for="endDate" class="form-label fw-semibold">End</label>
+                    <input type="date" id="endDate" class="form-control form-control-sm">
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label fw-semibold d-block">&nbsp;</label>
+                    <div class="d-flex gap-2">
+                        <button id="applyFilter" class="btn btn-sm btn-secondary px-3">Filter</button>
+                        <button id="resetFilter" class="btn btn-sm btn-outline-secondary px-3">Reset</button>
+                        <button id="exportData" class="btn btn-sm btn-primary px-3">Export</button>
+                    </div>
+                </div>
             </div>
             <div class="card-body">
                 <div class="row">
@@ -153,6 +186,7 @@
 </div>
 
 <script type="text/javascript">
+
     var base_url = "<?= base_url() ?>";
     $(document).ready(function() {
         // Initialize DataTable
@@ -160,7 +194,14 @@
             ajax: {
                 url: base_url + "member/dashboard/serverorder_new",
                 type: 'POST',
-                "data": {}
+                data: function (d) {
+                    d.status = $('#statusFilter').val();
+                    d.startDate = $('#startDate').val();
+                    d.endDate = $('#endDate').val();
+                },
+                dataSrc: function(json) {
+                    return json.data;
+                }
             },
             columns: [
                 {
@@ -182,12 +223,38 @@
                 },
             ],
             pagingType: "input",
-            "processing": true,
-            "serverSide": true,
+            processing: true,
+            serverSide: true,
             bInfo: false,
             ordering: false,
             deferRender: true,
             searching: true
+        });
+
+        // Tombol FILTER
+        $('#applyFilter').on('click', function () {
+            table.ajax.reload();
+        });
+
+        // Tombol RESET
+        $('#resetFilter').on('click', function () {
+            $('#statusFilter').val('');
+            $('#startDate').val('');
+            $('#endDate').val('');
+            table.ajax.reload();
+        });
+
+        // Tombol EXPORT (langsung download dari backend, semua data sesuai filter)
+        $('#exportData').on('click', function () {
+            var status = $('#statusFilter').val();
+            var startDate = $('#startDate').val();
+            var endDate = $('#endDate').val();
+            if (!startDate && !endDate) {
+                if (!confirm('Anda belum memilih tanggal. Export semua data?')) return;
+            }
+            // Build URL
+            var url = base_url + 'member/dashboard/export_server_orders?status=' + encodeURIComponent(status) + '&startDate=' + encodeURIComponent(startDate) + '&endDate=' + encodeURIComponent(endDate);
+            window.open(url, '_blank');
         });
 
         // Handle click event for the 'Toggle' button

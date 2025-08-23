@@ -19,11 +19,11 @@ window.addEventListener('DOMContentLoaded', function() {
       missing.push(f);
     }
   });
-  if (missing.length > 0) {
-    console.error('Missing DataTables Buttons JS files:', missing);
-  } else {
-    console.log('All DataTables Buttons JS files appear to be loaded.');
-  }
+  // if (missing.length > 0) {
+  //   console.error('Missing DataTables Buttons JS files:', missing);
+  // } else {
+  //   console.log('All DataTables Buttons JS files appear to be loaded.');
+  // }
 });
 </script>
 <style>
@@ -252,33 +252,33 @@ window.addEventListener('DOMContentLoaded', function() {
 <!-- RECOMMENDED CDN ORDER: (ALL 1.13.6) -->
 <!-- 1. jQuery (only ONCE, before everything else) -->
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-<script>console.log('[DEBUG] jQuery loaded:', typeof jQuery !== 'undefined' ? jQuery.fn.jquery : 'NOT LOADED'); window.jQuery = jQuery;</script>
+<!-- <script>console.log('[DEBUG] jQuery loaded:', typeof jQuery !== 'undefined' ? jQuery.fn.jquery : 'NOT LOADED'); window.jQuery = jQuery;</script> -->
 <!-- 2. DataTables CSS & JS (core) -->
 <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
 <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
-<script>console.log('[DEBUG] DataTables core loaded:', typeof $.fn.dataTable !== 'undefined' ? $.fn.dataTable.version : 'NOT LOADED');</script>
+<!-- <script>console.log('[DEBUG] DataTables core loaded:', typeof $.fn.dataTable !== 'undefined' ? $.fn.dataTable.version : 'NOT LOADED');</script> -->
 
 
 <!-- 3. DataTables Buttons CSS & JS (use 2.4.1, compatible with 1.13.6) -->
 <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.4.1/css/buttons.dataTables.min.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
-<script>console.log('[DEBUG] JSZip loaded:', typeof JSZip !== 'undefined');</script>
+<script>// console.log('[DEBUG] JSZip loaded:', typeof JSZip !== 'undefined');</script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
-<script>console.log('[DEBUG] pdfmake loaded:', typeof pdfMake !== 'undefined');</script>
+<script>// console.log('[DEBUG] pdfmake loaded:', typeof pdfMake !== 'undefined');</script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
-<script>console.log('[DEBUG] vfs_fonts loaded');</script>
+<script>// console.log('[DEBUG] vfs_fonts loaded');</script>
 <script src="https://cdn.datatables.net/buttons/2.4.1/js/dataTables.buttons.min.js"></script>
-<script>console.log('[DEBUG] DataTables Buttons loaded (cdn.datatables.net 2.4.1):', typeof $.fn.dataTable !== 'undefined' && typeof $.fn.dataTable.Buttons !== 'undefined' ? 'LOADED' : 'NOT LOADED');</script>
+<script>// console.log('[DEBUG] DataTables Buttons loaded (cdn.datatables.net 2.4.1):', typeof $.fn.dataTable !== 'undefined' && typeof $.fn.dataTable.Buttons !== 'undefined' ? 'LOADED' : 'NOT LOADED');</script>
 <script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.html5.min.js"></script>
-<script>console.log('[DEBUG] DataTables Buttons HTML5 loaded');</script>
+<script>// console.log('[DEBUG] DataTables Buttons HTML5 loaded');</script>
 <script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.print.min.js"></script>
-<script>console.log('[DEBUG] DataTables Buttons Print loaded');</script>
+<script>// console.log('[DEBUG] DataTables Buttons Print loaded');</script>
 
 <script type="text/javascript">
 // DEBUG: Versi dan status jQuery/DataTables/Buttons
-console.log('jQuery version:', typeof jQuery !== 'undefined' ? jQuery.fn.jquery : 'NOT LOADED');
-console.log('DataTables core:', typeof $.fn.dataTable !== 'undefined' ? $.fn.dataTable.version : 'NOT LOADED');
-console.log('DataTables Buttons:', typeof $.fn.dataTable !== 'undefined' && typeof $.fn.dataTable.Buttons !== 'undefined' ? 'LOADED' : 'NOT LOADED');
+// console.log('jQuery version:', typeof jQuery !== 'undefined' ? jQuery.fn.jquery : 'NOT LOADED');
+// console.log('DataTables core:', typeof $.fn.dataTable !== 'undefined' ? $.fn.dataTable.version : 'NOT LOADED');
+// console.log('DataTables Buttons:', typeof $.fn.dataTable !== 'undefined' && typeof $.fn.dataTable.Buttons !== 'undefined' ? 'LOADED' : 'NOT LOADED');
 var base_url = "<?= base_url() ?>";
 $(document).ready(function () {
     var base_url = "<?= base_url() ?>";
@@ -329,28 +329,79 @@ $(document).ready(function () {
         deferRender: true,
         searching: true,
         dom: 'Bfrtip',
+
         buttons: [
-            {
-                extend: 'csvHtml5',
-                text: 'Export CSV',
-                title: 'IMEI_Order_History',
-                exportOptions: {
-                    columns: [1,2,3,4,5,6] // Exclude action columns
-                },
-                filename: 'IMEI_Order_History',
-                className: 'd-none' // Hide default button
-            },
-            {
-                extend: 'excelHtml5',
-                text: 'Export Excel',
-                title: 'IMEI_Order_History',
-                exportOptions: {
-                    columns: [1,2,3,4,5,6]
-                },
-                filename: 'IMEI_Order_History',
-                className: 'd-none' // Hide default button
+        {
+            extend: 'csvHtml5',
+            text: 'Export CSV',
+            title: 'IMEI_Order_History',
+            exportOptions: {
+                columns: [1,2,3,4,5,6],
+                format: {
+                body: function (data, row, column, node) {
+                    if (!data) return '';
+
+                    // Hapus HTML
+                    let text = data.replace(/<[^>]*>/g, '').trim();
+
+                    // Bersihkan JSON-like array ["..."] -> ...
+                    text = text.replace(/^\[\"|\"\]$/g, '').replace(/\"/g, '');
+                    text = text.replace(/","/g, ' | '); // koma jadi separator aman
+
+                    // Gabungkan field harga/status biar tidak pecah kolom
+                    text = text.replace(/,\s*Rp/g, ' | Rp');
+                    text = text.replace(/,\s*Issued/g, ' | Issued');
+                    text = text.replace(/,\s*Canceled/g, ' | Canceled');
+
+                    // Rapikan format harga (Rp 1.233.700,00 → Rp 1233700.00)
+                    text = text.replace(/Rp\s([\d\.]+),(\d{2})/g, function(_, num, dec) {
+                        return 'Rp ' + num.replace(/\./g, '') + '.' + dec;
+                    });
+
+                    return text;
+                }
             }
-        ]
+
+            },
+            filename: 'IMEI_Order_History',
+            className: 'd-none'
+        },
+        {
+            extend: 'excelHtml5',
+            text: 'Export Excel',
+            title: 'IMEI_Order_History',
+            exportOptions: {
+            columns: [1,2,3,4,5,6],
+            format: {
+                    body: function (data, row, column, node) {
+                        if (!data) return '';
+
+                        // Hapus HTML
+                        let text = data.replace(/<[^>]*>/g, '').trim();
+
+                        // Bersihkan JSON-like array ["..."] -> ...
+                        text = text.replace(/^\[\"|\"\]$/g, '').replace(/\"/g, '');
+                        text = text.replace(/","/g, ' | '); // koma jadi separator aman
+
+                        // Gabungkan field harga/status biar tidak pecah kolom
+                        text = text.replace(/,\s*Rp/g, ' | Rp');
+                        text = text.replace(/,\s*Issued/g, ' | Issued');
+                        text = text.replace(/,\s*Canceled/g, ' | Canceled');
+
+                        // Rapikan format harga (Rp 1.233.700,00 → Rp 1233700.00)
+                        text = text.replace(/Rp\s([\d\.]+),(\d{2})/g, function(_, num, dec) {
+                            return 'Rp ' + num.replace(/\./g, '') + '.' + dec;
+                        });
+
+                        return text;
+                    }
+                }
+
+            },
+            filename: 'IMEI_Order_History',
+            className: 'd-none'
+        }
+    ]
     });
 
 
@@ -450,6 +501,8 @@ $(document).ready(function () {
                 $('#table-tab').parent().hide();
                 $('#raw-tab').tab('show');
             }
+            // Debug note value
+            // console.log('[DEBUG] note value:', row.data().note);
             $('#noteModal').text(row.data().note || 'N/A');
             $('#createdAtModal').text(row.data().created_at || 'N/A');
             $('#replyAtModal').text(row.data().updated_date_time || 'N/A');

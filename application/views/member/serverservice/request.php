@@ -149,7 +149,17 @@
     height: 40px !important;
 }
 </style>
-<!-- Select2 -->
+<!-- jQuery WAJIB PALING ATAS sebelum plugin lain -->
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+
+<!-- DataTables, Select2, dan plugin lain yang butuh jQuery -->
+<script src="<?= site_url() ?>assets/assets_members/libs/dataTables/jquery.dataTables.min.js"></script>
+<script src="<?= site_url() ?>assets/assets_members/js/select2.min.js"></script>
+<script src="<?= site_url() ?>assets/assets_members/js/kaiadmin.min.js"></script>
+<script src="<?= site_url() ?>assets/assets_members/js/plugin/bootstrap-notify/bootstrap-notify.min.js"></script>
+<script src="<?= site_url() ?>assets/assets_members/js/plugin/jquery-scrollbar/jquery.scrollbar.min.js"></script>
+<script src="<?= site_url() ?>assets/assets_members/libs/dataTables/dataTables-input.js"></script>
+
 <script type="text/javascript">
 var base_url = "<?= base_url() ?>";
 $(document).ready(function() {
