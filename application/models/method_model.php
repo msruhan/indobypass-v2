@@ -1,3 +1,4 @@
+
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
 class method_model extends CI_Model
@@ -12,6 +13,13 @@ class method_model extends CI_Model
 		$this->tbl_imei_orders = "gsm_imei_orders";
 		$this->tbl_members = "gsm_members";
 		$this->tbl_member_methods = "gsm_member_methods";
+	}
+
+	public function get_methods_by_network($network_id)
+	{
+		$this->db->where('NetworkID', $network_id);
+		$query = $this->db->get('gsm_methods');
+		return $query->result_array();
 	}
 
 	public function get_top10()
