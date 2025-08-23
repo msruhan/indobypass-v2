@@ -238,45 +238,52 @@ class dashboard extends FSD_Controller
 	echo json_encode($output);
 }
 
-	// Export semua data IMEI ke CSV (tanpa paging)
-	public function export_imei_orders() {
-		$id = $this->session->userdata('MemberID');
-		$status = $this->input->get('status');
-		$startDate = $this->input->get('startDate');
-		$endDate = $this->input->get('endDate');
+public function export_imei_orders() {
+	$id = $this->session->userdata('MemberID');
+	$status = $this->input->get('status');
+	$startDate = $this->input->get('startDate');
+	$endDate = $this->input->get('endDate');
+	// Ambil data dari model (tanpa limit/paging)
+	$orders = $this->imeiorder_model->get_imei_data_export($id, $status, $startDate, $endDate);
 
-		// Ambil data dari model (tanpa limit/paging)
-		$orders = $this->imeiorder_model->get_imei_data_export($id, $status, $startDate, $endDate);
-
-		// Hitung total price (dalam angka)
-		$totalPrice = 0;
-		foreach ($orders as $row) {
-			$totalPrice += is_numeric($row['Price']) ? $row['Price'] : 0;
-		}
-
-		// Set header untuk download CSV
-		header('Content-Type: text/csv; charset=utf-8');
-		header('Content-Disposition: attachment; filename=IMEI_Order_History_' . date('Ymd_His') . '.csv');
-		$output = fopen('php://output', 'w');
-		// Header kolom
-		fputcsv($output, ['ID', 'Date', 'IMEI', 'Service', 'Price', 'Status', 'Note']);
-		foreach ($orders as $row) {
-			fputcsv($output, [
-				$row['ID'],
-				$row['CreatedDateTime'],
-				$row['IMEI'],
-				$row['Title'],
-				format_currency($row['Price']),
-				$row['Status'],
-				$row['Note']
-			]);
-		}
-		// Tambahkan baris kosong dan baris total price (format Rupiah)
-		fputcsv($output, []);
-		fputcsv($output, ['', '', '', '', 'Price Total = ' . format_currency($totalPrice)]);
-		fclose($output);
-		exit;
+	// Hitung total price (dalam angka dari DB)
+	$totalPrice = 0;
+	foreach ($orders as $row) {
+		$totalPrice += is_numeric($row['Price']) ? $row['Price'] : 0;
 	}
+
+	// Set header untuk download CSV
+	header('Content-Type: text/csv; charset=utf-8');
+	header('Content-Disposition: attachment; filename=IMEI_Order_History_' . date('Ymd_His') . '.csv');
+	$output = fopen('php://output', 'w');
+
+	// Header kolom (selalu tampilkan Rupiah)
+	fputcsv($output, ['ID', 'Date', 'IMEI', 'Service', 'Price (IDR)', 'Status', 'Note']);
+
+	// Isi data (selalu format_currency)
+	foreach ($orders as $row) {
+		$priceExport = format_currency($row['Price']);
+		fputcsv($output, [
+			$row['ID'],
+			$row['CreatedDateTime'],
+			$row['IMEI'],
+			$row['Title'],
+			$priceExport,
+			$row['Status'],
+			$row['Note']
+		]);
+	}
+
+	// Baris kosong + Total
+	fputcsv($output, []);
+	$totalFormatted = format_currency($totalPrice);
+	fputcsv($output, ['', '', '', 'TOTAL', $totalFormatted, '', '']);
+
+	fclose($output);
+	exit;
+}
+
+
 	public function credit()
 	{
 		$id = $this->session->userdata('MemberID');
