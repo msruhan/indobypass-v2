@@ -238,7 +238,36 @@ class dashboard extends FSD_Controller
 	echo json_encode($output);
 }
 
+	// Export semua data IMEI ke CSV (tanpa paging)
+	public function export_imei_orders() {
+		$id = $this->session->userdata('MemberID');
+		$status = $this->input->get('status');
+		$startDate = $this->input->get('startDate');
+		$endDate = $this->input->get('endDate');
 
+		// Ambil data dari model (tanpa limit/paging)
+		$orders = $this->imeiorder_model->get_imei_data_export($id, $status, $startDate, $endDate);
+
+		// Set header untuk download CSV
+		header('Content-Type: text/csv; charset=utf-8');
+		header('Content-Disposition: attachment; filename=IMEI_Order_History_' . date('Ymd_His') . '.csv');
+		$output = fopen('php://output', 'w');
+		// Header kolom
+		fputcsv($output, ['ID', 'Date', 'IMEI', 'Service', 'Price', 'Status', 'Note']);
+		foreach ($orders as $row) {
+			fputcsv($output, [
+				$row['ID'],
+				$row['CreatedDateTime'],
+				$row['IMEI'],
+				$row['Title'],
+				$row['Price'],
+				$row['Status'],
+				$row['Note']
+			]);
+		}
+		fclose($output);
+		exit;
+	}
 	public function credit()
 	{
 		$id = $this->session->userdata('MemberID');

@@ -368,43 +368,17 @@ $(document).ready(function () {
         table.ajax.reload();
     });
 
-    // Tombol EXPORT
+    // Tombol EXPORT (langsung download dari backend, semua data sesuai filter)
     $('#exportData').on('click', function () {
-        // Debug info for troubleshooting
-        if (typeof $.fn.dataTable === 'undefined') {
-            console.error('DataTables core is NOT loaded!');
-            return;
-        }
-        if (typeof $.fn.dataTable.Buttons === 'undefined') {
-            console.error('DataTables Buttons extension is NOT loaded!');
-            return;
-        }
-        if (typeof table.button !== 'function') {
-            alert('Export feature is not available. Please make sure DataTables Buttons extension is loaded.');
-            return;
-        }
-
-        // Ambil filter tanggal
+        var status = $('#statusFilter').val();
         var startDate = $('#startDate').val();
         var endDate = $('#endDate').val();
         if (!startDate && !endDate) {
             if (!confirm('Anda belum memilih tanggal. Export semua data?')) return;
         }
-
-        // Pastikan filter diterapkan sebelum export
-        table.ajax.reload(function() {
-            // Setelah reload, lakukan export
-            let format = prompt('Export as: CSV or Excel? (Type "csv" or "excel")', 'csv');
-            if (!format) return;
-            format = format.toLowerCase();
-            if (format === 'csv') {
-                table.button(0).trigger();
-            } else if (format === 'excel') {
-                table.button(1).trigger();
-            } else {
-                alert('Format not supported. Please type "csv" or "excel".');
-            }
-        }, false); // false = reset paging ke halaman 1
+        // Build URL
+        var url = base_url + 'member/dashboard/export_imei_orders?status=' + encodeURIComponent(status) + '&startDate=' + encodeURIComponent(startDate) + '&endDate=' + encodeURIComponent(endDate);
+        window.open(url, '_blank');
     });
 
     // Detail toggle & modal (tetap seperti sebelumnya)
