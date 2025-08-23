@@ -2,6 +2,49 @@
 
 class imeiorder_model extends CI_Model
 {
+	// Ambil semua data IMEI untuk export (tanpa limit/paging)
+	public function get_imei_data_export($id, $status = '', $startDate = '', $endDate = '')
+	{
+		$params = array($id);
+		$sql = "
+			SELECT 
+				t1.ID, t1.IMEI, t2.Title, t2.Price, 
+				t1.Code, t1.Note, t1.Status, 
+				t1.CreatedDateTime, t1.UpdatedDateTime 
+			FROM {$this->tbl_name} t1 
+			INNER JOIN {$this->tbl_method} t2 ON t1.MethodID = t2.ID 
+			WHERE t1.MemberID = ?
+		";
+
+		// Status filter
+		if (!empty($status)) {
+			if ($status === "Success") {
+				$sql .= " AND t1.Status = ?";
+				$params[] = 'Issued';
+			} elseif ($status === "Rejected") {
+				$sql .= " AND t1.Status = ?";
+				$params[] = 'Canceled';
+			} else {
+				$sql .= " AND t1.Status = ?";
+				$params[] = $status;
+			}
+		}
+
+		// Date range filter
+		if (!empty($startDate)) {
+			$sql .= " AND DATE(t1.CreatedDateTime) >= ?";
+			$params[] = $startDate;
+		}
+		if (!empty($endDate)) {
+			$sql .= " AND DATE(t1.CreatedDateTime) <= ?";
+			$params[] = $endDate;
+		}
+
+		$sql .= " ORDER BY t1.ID DESC";
+
+		$query = $this->db->query($sql, $params);
+		return $query->result_array();
+	}
 
 	public function __construct()
 	{
@@ -13,9 +56,9 @@ class imeiorder_model extends CI_Model
 	
 	public function get_where($params) 
 	{
-        $query = $this->db->get_where($this->tbl_name, $params);
-        return $query->result_array();
-    }
+		$query = $this->db->get_where($this->tbl_name, $params);
+		return $query->result_array();
+	}
 
 	public function get_where_in(array $id) 
 	{
@@ -42,9 +85,9 @@ class imeiorder_model extends CI_Model
 		$this->db->join($this->tbl_method, "$this->tbl_name.MethodID=$this->tbl_method.ID", "inner");
 		
 		$this->db->where_in("$this->tbl_name.ID", $id);
-        $query = $this->db->get();
-        return $query->result_array();
-    }
+		$query = $this->db->get();
+		return $query->result_array();
+	}
 
 	public function get_order_details($params = False) 
 	{
@@ -53,17 +96,17 @@ class imeiorder_model extends CI_Model
 		$this->db->join($this->tbl_method, "$this->tbl_name.MethodID=$this->tbl_method.ID", "inner");
 		if($params)
 			$this->db->where($params);
-        $query = $this->db->get();
-        return $query->result_array();
-    }
+		$query = $this->db->get();
+		return $query->result_array();
+	}
 
-    public function get_all() 
-    {                
-        $query = $this->db->get($this->tbl_name);
-        return $query->result_array();
-    }
-    
-    public function get_percentage($id)
+	public function get_all() 
+	{                
+		$query = $this->db->get($this->tbl_name);
+		return $query->result_array();
+	}
+	
+	public function get_percentage($id)
 	{
 		$sql = "SELECT Status  FROM $this->tbl_name WHERE MemberID = $id 
 		UNION ALL
@@ -98,7 +141,7 @@ class imeiorder_model extends CI_Model
 		$result = $this->db->query($sql);
 		return $result->result_array();
 	}
-    
+	
 	public function get_dataStatistic($id, $param)
 	{
 		$sql = "SELECT Status, month_year, COUNT(*) AS count
@@ -134,11 +177,11 @@ class imeiorder_model extends CI_Model
 		return $result->result_array();
 	}
 
-    public function count_all() 
-    {
-        $query = $this->db->count_all($this->tbl_name);
-        return $query;
-    }
+	public function count_all() 
+	{
+		$query = $this->db->count_all($this->tbl_name);
+		return $query;
+	}
 
 	public function count_all_imei($id)
 	{
@@ -196,23 +239,23 @@ class imeiorder_model extends CI_Model
 
 
 	
-    public function count_where($params) 
-    {
+	public function count_where($params) 
+	{
 		$this->db->from($this->tbl_name)->where($params);
-        return  $this->db->count_all_results();
+		return  $this->db->count_all_results();
 	}
 
 	public function get_count_by($col)
 	{
 		$query = $this->db
-              ->select("{$col}, count({$col}) AS countof")
-              ->group_by($col)
-              ->get($this->tbl_name);
+			  ->select("{$col}, count({$col}) AS countof")
+			  ->group_by($col)
+			  ->get($this->tbl_name);
 		return $query->result();
 	}
 
 	public function get_duplicates($imeis, $member_id, $method_id) 
-    {
+	{
 		$this->db->select("IMEI")
 		->from($this->tbl_name)
 		->where('MemberID', $member_id)
@@ -220,30 +263,30 @@ class imeiorder_model extends CI_Model
 		->where('Status', 'Pending')
 		->where_in('IMEI', $imeis);
 		$query = $this->db->get();
-        return $query->result_array();
+		return $query->result_array();
 	}
 
-    public function insert($data) 
-    {
-        $this->db->insert($this->tbl_name, $data);
-        $id = $this->db->insert_id();
-        return intval($id);
-    }
+	public function insert($data) 
+	{
+		$this->db->insert($this->tbl_name, $data);
+		$id = $this->db->insert_id();
+		return intval($id);
+	}
 	
 	public function insert_bulk_imei($data)
 	{
 		$this->db->insert_batch($this->tbl_name, $data); 
 	}
 
-    public function update($data, $id)
-    {   
-        return $this->db->update($this->tbl_name, $data, array('ID' => $id));
-    }
+	public function update($data, $id)
+	{   
+		return $this->db->update($this->tbl_name, $data, array('ID' => $id));
+	}
 
-    public function delete($id)
-    {
-        return $this->db->delete($this->tbl_name, array('ID' => $id));                
-    }
+	public function delete($id)
+	{
+		return $this->db->delete($this->tbl_name, array('ID' => $id));                
+	}
 	
 	public function get_imei_history($id,$status)
 	{

@@ -19,11 +19,11 @@ window.addEventListener('DOMContentLoaded', function() {
       missing.push(f);
     }
   });
-  if (missing.length > 0) {
-    console.error('Missing DataTables Buttons JS files:', missing);
-  } else {
-    console.log('All DataTables Buttons JS files appear to be loaded.');
-  }
+  // if (missing.length > 0) {
+  //   console.error('Missing DataTables Buttons JS files:', missing);
+  // } else {
+  //   console.log('All DataTables Buttons JS files appear to be loaded.');
+  // }
 });
 </script>
 <style>
@@ -252,33 +252,33 @@ window.addEventListener('DOMContentLoaded', function() {
 <!-- RECOMMENDED CDN ORDER: (ALL 1.13.6) -->
 <!-- 1. jQuery (only ONCE, before everything else) -->
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-<script>console.log('[DEBUG] jQuery loaded:', typeof jQuery !== 'undefined' ? jQuery.fn.jquery : 'NOT LOADED'); window.jQuery = jQuery;</script>
+<!-- <script>console.log('[DEBUG] jQuery loaded:', typeof jQuery !== 'undefined' ? jQuery.fn.jquery : 'NOT LOADED'); window.jQuery = jQuery;</script> -->
 <!-- 2. DataTables CSS & JS (core) -->
 <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
 <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
-<script>console.log('[DEBUG] DataTables core loaded:', typeof $.fn.dataTable !== 'undefined' ? $.fn.dataTable.version : 'NOT LOADED');</script>
+<!-- <script>console.log('[DEBUG] DataTables core loaded:', typeof $.fn.dataTable !== 'undefined' ? $.fn.dataTable.version : 'NOT LOADED');</script> -->
 
 
 <!-- 3. DataTables Buttons CSS & JS (use 2.4.1, compatible with 1.13.6) -->
 <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.4.1/css/buttons.dataTables.min.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
-<script>console.log('[DEBUG] JSZip loaded:', typeof JSZip !== 'undefined');</script>
+<script>// console.log('[DEBUG] JSZip loaded:', typeof JSZip !== 'undefined');</script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
-<script>console.log('[DEBUG] pdfmake loaded:', typeof pdfMake !== 'undefined');</script>
+<script>// console.log('[DEBUG] pdfmake loaded:', typeof pdfMake !== 'undefined');</script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
-<script>console.log('[DEBUG] vfs_fonts loaded');</script>
+<script>// console.log('[DEBUG] vfs_fonts loaded');</script>
 <script src="https://cdn.datatables.net/buttons/2.4.1/js/dataTables.buttons.min.js"></script>
-<script>console.log('[DEBUG] DataTables Buttons loaded (cdn.datatables.net 2.4.1):', typeof $.fn.dataTable !== 'undefined' && typeof $.fn.dataTable.Buttons !== 'undefined' ? 'LOADED' : 'NOT LOADED');</script>
+<script>// console.log('[DEBUG] DataTables Buttons loaded (cdn.datatables.net 2.4.1):', typeof $.fn.dataTable !== 'undefined' && typeof $.fn.dataTable.Buttons !== 'undefined' ? 'LOADED' : 'NOT LOADED');</script>
 <script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.html5.min.js"></script>
-<script>console.log('[DEBUG] DataTables Buttons HTML5 loaded');</script>
+<script>// console.log('[DEBUG] DataTables Buttons HTML5 loaded');</script>
 <script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.print.min.js"></script>
-<script>console.log('[DEBUG] DataTables Buttons Print loaded');</script>
+<script>// console.log('[DEBUG] DataTables Buttons Print loaded');</script>
 
 <script type="text/javascript">
 // DEBUG: Versi dan status jQuery/DataTables/Buttons
-console.log('jQuery version:', typeof jQuery !== 'undefined' ? jQuery.fn.jquery : 'NOT LOADED');
-console.log('DataTables core:', typeof $.fn.dataTable !== 'undefined' ? $.fn.dataTable.version : 'NOT LOADED');
-console.log('DataTables Buttons:', typeof $.fn.dataTable !== 'undefined' && typeof $.fn.dataTable.Buttons !== 'undefined' ? 'LOADED' : 'NOT LOADED');
+// console.log('jQuery version:', typeof jQuery !== 'undefined' ? jQuery.fn.jquery : 'NOT LOADED');
+// console.log('DataTables core:', typeof $.fn.dataTable !== 'undefined' ? $.fn.dataTable.version : 'NOT LOADED');
+// console.log('DataTables Buttons:', typeof $.fn.dataTable !== 'undefined' && typeof $.fn.dataTable.Buttons !== 'undefined' ? 'LOADED' : 'NOT LOADED');
 var base_url = "<?= base_url() ?>";
 $(document).ready(function () {
     var base_url = "<?= base_url() ?>";
@@ -368,43 +368,17 @@ $(document).ready(function () {
         table.ajax.reload();
     });
 
-    // Tombol EXPORT
+    // Tombol EXPORT (langsung download dari backend, semua data sesuai filter)
     $('#exportData').on('click', function () {
-        // Debug info for troubleshooting
-        if (typeof $.fn.dataTable === 'undefined') {
-            console.error('DataTables core is NOT loaded!');
-            return;
-        }
-        if (typeof $.fn.dataTable.Buttons === 'undefined') {
-            console.error('DataTables Buttons extension is NOT loaded!');
-            return;
-        }
-        if (typeof table.button !== 'function') {
-            alert('Export feature is not available. Please make sure DataTables Buttons extension is loaded.');
-            return;
-        }
-
-        // Ambil filter tanggal
+        var status = $('#statusFilter').val();
         var startDate = $('#startDate').val();
         var endDate = $('#endDate').val();
         if (!startDate && !endDate) {
             if (!confirm('Anda belum memilih tanggal. Export semua data?')) return;
         }
-
-        // Pastikan filter diterapkan sebelum export
-        table.ajax.reload(function() {
-            // Setelah reload, lakukan export
-            let format = prompt('Export as: CSV or Excel? (Type "csv" or "excel")', 'csv');
-            if (!format) return;
-            format = format.toLowerCase();
-            if (format === 'csv') {
-                table.button(0).trigger();
-            } else if (format === 'excel') {
-                table.button(1).trigger();
-            } else {
-                alert('Format not supported. Please type "csv" or "excel".');
-            }
-        }, false); // false = reset paging ke halaman 1
+        // Build URL
+        var url = base_url + 'member/dashboard/export_imei_orders?status=' + encodeURIComponent(status) + '&startDate=' + encodeURIComponent(startDate) + '&endDate=' + encodeURIComponent(endDate);
+        window.open(url, '_blank');
     });
 
     // Detail toggle & modal (tetap seperti sebelumnya)
@@ -476,6 +450,8 @@ $(document).ready(function () {
                 $('#table-tab').parent().hide();
                 $('#raw-tab').tab('show');
             }
+            // Debug note value
+            // console.log('[DEBUG] note value:', row.data().note);
             $('#noteModal').text(row.data().note || 'N/A');
             $('#createdAtModal').text(row.data().created_at || 'N/A');
             $('#replyAtModal').text(row.data().updated_date_time || 'N/A');

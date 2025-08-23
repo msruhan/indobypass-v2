@@ -100,6 +100,17 @@
         </div>
     </div>
 </div>
+<!-- jQuery WAJIB PALING ATAS sebelum plugin lain -->
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+
+<!-- DataTables, Select2, dan plugin lain yang butuh jQuery -->
+<script src="<?= site_url() ?>assets/assets_members/libs/dataTables/jquery.dataTables.min.js"></script>
+<script src="<?= site_url() ?>assets/assets_members/js/select2.min.js"></script>
+<script src="<?= site_url() ?>assets/assets_members/js/kaiadmin.min.js"></script>
+<script src="<?= site_url() ?>assets/assets_members/js/plugin/bootstrap-notify/bootstrap-notify.min.js"></script>
+<script src="<?= site_url() ?>assets/assets_members/js/plugin/jquery-scrollbar/jquery.scrollbar.min.js"></script>
+<script src="<?= site_url() ?>assets/assets_members/libs/dataTables/dataTables-input.js"></script>
+
 <script>
 $(document).ready(function() {
 

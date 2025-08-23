@@ -135,6 +135,8 @@
                                 </a>
                             </li>
                         </ul>
+                    </div>
+                </li>
 
                 <li <?= $this->uri->uri_string(2) == 'member/imeirequest/history' || $this->uri->uri_string(2) == 'member/serverrequest/history' ? 'class="nav-item active submenu"' : 'class="nav-item submenu"'; ?>>
                     <a data-bs-toggle="collapse" href="#orderHistory" <?= $this->uri->uri_string(2) == 'member/imeirequest/history' || $this->uri->uri_string(2) == 'member/serverrequest/history' ? 'aria-expanded="true"' : 'aria-expanded="false" class="collapsed"'; ?>>
@@ -363,7 +365,6 @@
 
     <!-- Chart JS -->
     <script src="<?= site_url() ?>assets/assets_members/js/plugin/chart.js/chart.min.js"></script>
-
 
     <!-- Datatables input plugin only (keep if needed for custom input features, otherwise remove) -->
     <script src="<?= site_url() ?>assets/assets_members/libs/dataTables/dataTables-input.js"></script>
