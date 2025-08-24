@@ -311,21 +311,6 @@ $(document).ready(function() {
                     $("#load-field-text").html('');
                     var html = '';
 
-                    // Judul service baris baru
-                    if (data.title) {
-                            html +=
-                                '<div class="my-3">' +
-                                    '<div class="card bg-white shadow-sm mb-0 d-inline-block" style="max-width:100%; min-width:0; border:1.5px solid #d1d5dbff;">' +
-                                        '<div class="card-body py-3 px-4">' +
-                                            '<h5 style="font-weight:bold;font-size:1.5rem; margin-bottom:0.5rem; white-space:nowrap;">' +
-                                                data.title +
-                                            '</h5>' +
-                                        '</div>' +
-                                    '</div>' +
-                                '</div>';
-                        }
-                        html += '</div>';
-
                     if (data.price_only || data.delivery_time) {
                         html +=
                             '<div class="form-group">' +
@@ -333,7 +318,7 @@ $(document).ready(function() {
                         if (data.price_only) {
                             html +=
                                 '<div class="d-flex align-items-center">' +
-                                    '<span class="badge bg-secondary fs-6" style="font-size:1rem;padding:8px 16px;">' + data.price_only + '</span>' +
+                                    '<span class="badge bg-secondary fs-6" style="font-size:1rem;padding:8px 16px; margin-left:10px;">' + data.price_only + '</span>' +
                                 '</div>';
                         }
                         if (data.delivery_time) {
@@ -344,6 +329,15 @@ $(document).ready(function() {
                         }
                         html += '</div>';
             
+                    }
+                    
+                    if (data.title) {
+                        html +=
+                            '<div class="form-group">' +
+                            '<h5 style="font-weight:bold;font-size:1.5rem; margin-bottom:0; padding-bottom:0; margin-left:2px; max-width:100%; word-break:break-word;">' +
+                                     data.title +
+                            '</h5>' +
+                            '</div>';
                     }
 
                     if (data.description) {
