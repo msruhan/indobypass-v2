@@ -311,10 +311,25 @@ $(document).ready(function() {
                     $("#load-field-text").html('');
                     var html = '';
 
+                    // Judul service baris baru
+                    if (data.title) {
+                            html +=
+                                '<div class="my-3">' +
+                                    '<div class="card bg-white shadow-sm mb-0 d-inline-block" style="max-width:100%; min-width:0; border:1.5px solid #d1d5dbff;">' +
+                                        '<div class="card-body py-3 px-4">' +
+                                            '<h5 style="font-weight:bold;font-size:1.5rem; margin-bottom:0.5rem; white-space:nowrap;">' +
+                                                data.title +
+                                            '</h5>' +
+                                        '</div>' +
+                                    '</div>' +
+                                '</div>';
+                        }
+                        html += '</div>';
+
                     if (data.price_only || data.delivery_time) {
                         html +=
                             '<div class="form-group">' +
-                            '<div class="d-flex flex-wrap align-items-center gap-3">';
+                                '<div class="d-flex flex-wrap align-items-center gap-3">';
                         if (data.price_only) {
                             html +=
                                 '<div class="d-flex align-items-center">' +
@@ -327,7 +342,8 @@ $(document).ready(function() {
                                     '<span class="badge bg-warning fs-6" style="font-size:1rem;padding:8px 16px;">' + data.delivery_time + '</span>' +
                                 '</div>';
                         }
-                        html += '</div></div>';
+                        html += '</div>';
+            
                     }
 
                     if (data.description) {
