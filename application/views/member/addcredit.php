@@ -1,7 +1,8 @@
-<?php $this->load->view('chatbox_view'); ?>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <div class="page-header">
     <div class="d-flex justify-content-between">
-        <h3 class="fw-bold">Add Fund</h3>
+        <h3 class="fw-bold"><i class="fas fa-credit-card me-3"></i>Add Fund</h3>
         <ul class="breadcrumbs">
             <li class="nav-home">
                 <a href="#">
@@ -35,7 +36,7 @@
                             <select name="payment_type" id="payment_type" class="form-control" required onchange="changePaymentType()">
                                 <!-- <option value="midtrans">Indonesia Payment</option> -->
                                 <option value="">--Select payment type--</option>
-                                <option value="tripay">Tripay</option>
+                                <option value="tripay">Tripay (Auto Deposit)</option>
                                 <option value="paypal">PayPal</option>
                             </select>
                         </div>
@@ -141,12 +142,12 @@
                         <p> We Accept More Payments </p>
 
                         <ul>
-                            <li class="mt-2">Binance Payer ID : <b>171453088</b> </li>
-                            <li class="mt-2">Payoneer ID : <b>15259876</b></li>
-                            <li class="mt-2">Bitcoin Wallet Address : <b>1D8zbMuFWQTKN67itLR1ockph7oGQvRCT4</b> </li>
-                            <li class="mt-2">USDT (TRC20) : <b>TPCShHKkNu3ApAAXcT6ER643TiKxYq4vYu</b> </li>
+                            <li class="mt-2">Owner Name : <b>Masruhan Khotib</b> </li>
+                            <li class="mt-2">Binance ID : <b>82014648</b></li>
+                            <li class="mt-2">Binance Email Address : msrhn.khotib@gmail.com</b> </li>
+                            <li class="mt-2">BEP (BEP20) : 0xa0af7b7fc35354f3b8d666ce0cee9b91e8543b73</b> </li>
                             <li class="mt-2">VISA / MASTERCARD ACCEPT : <b>SEND YOUR FULL NAME , EMAIL , COUNTRY
-                                    <a href="https://wa.me/message/LLSDOI7LDKZUC1"><br>
+                                    <a href="https://wa.me/6285158856462"><br>
                                         <i class="fab fa-whatsapp"></i>WhatsApp</b>
                                 </a>
                             </li>
