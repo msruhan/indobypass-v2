@@ -270,6 +270,7 @@ class imeirequest extends FSD_Controller
 			$data['delivery_time'] = isset($method[0]['DeliveryTime']) ? $method[0]['DeliveryTime'] : '';
 			$data['description'] = isset($method[0]['Description']) ? $method[0]['Description'] : '';
 			$data['video'] = isset($method[0]['Video']) ? $method[0]['Video'] : '';
+			$data['title'] = isset($method[0]['Title']) ? $method[0]['Title'] : '';
 
 			// Gunakan format_currency() agar sesuai session (USD/IDR)
 			$this->load->helper('formatcurrency_helper');

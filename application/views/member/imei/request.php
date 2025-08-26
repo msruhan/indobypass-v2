@@ -314,11 +314,11 @@ $(document).ready(function() {
                     if (data.price_only || data.delivery_time) {
                         html +=
                             '<div class="form-group">' +
-                            '<div class="d-flex flex-wrap align-items-center gap-3">';
+                                '<div class="d-flex flex-wrap align-items-center gap-3">';
                         if (data.price_only) {
                             html +=
                                 '<div class="d-flex align-items-center">' +
-                                    '<span class="badge bg-secondary fs-6" style="font-size:1rem;padding:8px 16px;">' + data.price_only + '</span>' +
+                                    '<span class="badge bg-secondary fs-6" style="font-size:1rem;padding:8px 16px; margin-left:10px;">' + data.price_only + '</span>' +
                                 '</div>';
                         }
                         if (data.delivery_time) {
@@ -327,7 +327,17 @@ $(document).ready(function() {
                                     '<span class="badge bg-warning fs-6" style="font-size:1rem;padding:8px 16px;">' + data.delivery_time + '</span>' +
                                 '</div>';
                         }
-                        html += '</div></div>';
+                        html += '</div>';
+            
+                    }
+                    
+                    if (data.title) {
+                        html +=
+                            '<div class="form-group">' +
+                            '<h5 style="font-weight:bold;font-size:1.5rem; margin-bottom:0; padding-bottom:0; margin-left:2px; max-width:100%; word-break:break-word;">' +
+                                     data.title +
+                            '</h5>' +
+                            '</div>';
                     }
 
                     if (data.description) {
