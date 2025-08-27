@@ -1,4 +1,3 @@
-
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <div class="page-header">
     <div class="d-flex justify-content-between">
@@ -36,7 +35,7 @@
                             <select name="payment_type" id="payment_type" class="form-control" required onchange="changePaymentType()">
                                 <!-- <option value="midtrans">Indonesia Payment</option> -->
                                 <option value="">--Select payment type--</option>
-                                <option value="tripay">Tripay (Auto Deposit)</option>
+                                <option value="tripay">Bank Indonesia (Payment Gateway)</option>
                                 <option value="paypal">PayPal</option>
                             </select>
                         </div>
@@ -87,6 +86,13 @@
                         <div class="col-sm-offset-3 col-sm-9">
                             <button type="submit"
                                 class="btn btn-info btn-sm" onclick="processTripayPayment()">Add Credits</button>
+                        </div>
+                    </div>
+                     <div class="form-grou credit_tripay">
+                        <div class="col-12">
+                            <div class="alert alert-info mb-2" style="font-size:0.95rem;">
+                                Dengan memilih metode ini, verifikasi transaksi dan penambahan saldo akan diproses otomatis dalam estimasi 5–10 menit.
+                            </div>
                         </div>
                     </div>
 

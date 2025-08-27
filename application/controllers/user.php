@@ -101,11 +101,46 @@ class User extends FSD_Controller
 		$this->session->set_flashdata("fail", $this->lang->line('error_invalid_password'));
 		redirect('login');
 	}
-	
+
 	public function login()
 	{
 		if($this->input->server('REQUEST_METHOD') === 'POST')
 		{
+			// Verifikasi Google reCAPTCHA
+			$recaptcha_response = $this->input->post('g-recaptcha-response');
+			if (empty($recaptcha_response)) {
+				$this->session->set_flashdata('message', '<div class="alert alert-danger alert-dismissible fade show" role="alert"> Silakan verifikasi captcha terlebih dahulu. <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>');
+				redirect('login');
+			}
+
+			$recaptcha_secret = '6LdWw7QrAAAAAM-DXXUex0SckOThMxMnaa1339LL'; // Ganti dengan secret key Anda
+			$verify_url = 'https://www.google.com/recaptcha/api/siteverify';
+			$verify_data = array(
+				'secret' => $recaptcha_secret,
+				'response' => $recaptcha_response,
+				'remoteip' => $this->input->ip_address()
+			);
+
+			$ch = curl_init();
+			curl_setopt($ch, CURLOPT_URL, $verify_url);
+			curl_setopt($ch, CURLOPT_POST, true);
+			curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($verify_data));
+			curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+			$result = curl_exec($ch);
+			$curl_error = curl_error($ch);
+			curl_close($ch);
+
+			if ($result === false || !empty($curl_error)) {
+				$this->session->set_flashdata('message', '<div class="alert alert-danger alert-dismissible fade show" role="alert"> Gagal memverifikasi captcha. Silakan coba lagi. <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>');
+				redirect('login');
+			}
+
+			$resultData = json_decode($result, true);
+			if (!is_array($resultData) || !isset($resultData['success']) || $resultData['success'] !== true) {
+				$this->session->set_flashdata('message', '<div class="alert alert-danger alert-dismissible fade show" role="alert"> Captcha tidak valid. Silakan coba lagi. <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>');
+				redirect('login');
+			}
+
 			$this->form_validation->set_rules('Email', 'Email', 'required|valid_email');
 			$this->form_validation->set_rules('Password', 'Password', 'required|min_length[5]');
 			if ($this->form_validation->run() !== FALSE)

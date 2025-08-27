@@ -314,6 +314,7 @@ public function export_imei_orders() {
 				$data["amount"]      = format_currency($d['Amount']);
 				$data["description"] = $d['Description'];
 				$data["created_at"]  = $d['CreatedDateTime'];
+				$data["status"]      = $d['Status'];
 
 				array_push($array_data, $data);
 				$no++;

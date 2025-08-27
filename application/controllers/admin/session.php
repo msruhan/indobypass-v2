@@ -23,6 +23,24 @@ class Session extends CI_Controller
 		$this->form_validation->set_rules('Email', 'Email', 'trim|required|valid_email|min_length[4]');
 		$this->form_validation->set_rules('Password', 'Password', 'trim|required|min_length[4]|max_length[32]');
 
+		// --- Google reCAPTCHA validation ---
+		$recaptcha_response = $this->input->post('g-recaptcha-response');
+		$recaptcha_secret = '6LdWw7QrAAAAAM-DXXUex0SckOThMxMnaa1339LL'; // Ganti dengan secret key reCAPTCHA Anda
+		$recaptcha_url = 'https://www.google.com/recaptcha/api/siteverify';
+		$recaptcha_valid = false;
+		if (!empty($recaptcha_response)) {
+			$verify = file_get_contents($recaptcha_url . '?secret=' . $recaptcha_secret . '&response=' . $recaptcha_response . '&remoteip=' . $_SERVER['REMOTE_ADDR']);
+			$captcha_success = json_decode($verify);
+			if ($captcha_success && isset($captcha_success->success) && $captcha_success->success == true) {
+				$recaptcha_valid = true;
+			}
+		}
+		if (!$recaptcha_valid) {
+			$this->session->set_flashdata('error', 'Captcha tidak valid. Silakan coba lagi.');
+			redirect('admin/session');
+		}
+		// --- END Google reCAPTCHA validation ---
+
 		if ($this->form_validation->run() !== FALSE)
 		{
 			$data = $this->input->post(NULL, TRUE);

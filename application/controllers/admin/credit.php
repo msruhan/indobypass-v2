@@ -64,6 +64,11 @@ class credit extends FSD_Controller
 			$data['TransactionCode'] = CASH_PAYMENT_RECEIVED;
 			$data['CreatedDateTime'] = date("Y-m-d H:i:s");
 			
+			// Set kolom Status dari Actions jika ada
+			if (!empty($data['Actions'])) {
+				$data['Status'] = $data['Actions'];
+				unset($data['Actions']); // Remove Actions so it is not inserted to DB
+			}
 			$this->credit_model->insert($data);
 			$this->session->set_flashdata('success', 'Record added successfully.');
 			redirect("admin/credit/");

@@ -405,7 +405,8 @@ class imeirequest extends FSD_Controller
 					'TransactionID' => $insert_id,
 					'Description' => "IMEI Code request against imei:".$val,
 					'Amount' => -1 * abs($price),
-					'CreatedDateTime' => date("Y-m-d H:i:s")
+					'CreatedDateTime' => date("Y-m-d H:i:s"),
+					'Status' => 'Paid'
 				);
 				$this->credit_model->insert($credit_data);
 				
