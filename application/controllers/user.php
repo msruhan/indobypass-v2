@@ -106,6 +106,20 @@ class User extends FSD_Controller
 	{
 		if($this->input->server('REQUEST_METHOD') === 'POST')
 		{
+			// --- Rate limit by IP ---
+			$ip = $this->input->ip_address();
+			$max_attempts = 5;
+			$block_minutes = 15;
+			$attempts_key = 'user_login_attempts_' . md5($ip);
+			$block_key = 'user_login_block_' . md5($ip);
+			$attempts = $this->session->userdata($attempts_key) ?: 0;
+			$block_until = $this->session->userdata($block_key);
+			if ($block_until && time() < $block_until) {
+				$wait = ceil(($block_until - time()) / 60);
+				$this->session->set_flashdata('message', '<div class="alert alert-danger alert-dismissible fade show" role="alert"> Terlalu banyak percobaan login gagal. Silakan coba lagi dalam ' . $wait . ' menit. <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>');
+				redirect('login');
+			}
+
 			// Verifikasi Google reCAPTCHA
 			$recaptcha_response = $this->input->post('g-recaptcha-response');
 			if (empty($recaptcha_response)) {
@@ -144,6 +158,88 @@ class User extends FSD_Controller
 			$this->form_validation->set_rules('Email', 'Email', 'required|valid_email');
 			$this->form_validation->set_rules('Password', 'Password', 'required|min_length[5]');
 			if ($this->form_validation->run() !== FALSE)
+			{
+				$data = $this->input->post(NULL, TRUE);
+				$user = $this->member_model->get_where(array('Email' => $data['Email']));
+				$login_success = false;
+				if(count($user) > 0) {
+					$hash = $user[0]['Password'];
+					$input_password = $data['Password'];
+					$is_md5 = (strlen($hash) === 32 && ctype_xdigit($hash));
+					$valid = false;
+					if ($is_md5) {
+						// Cek password lama (MD5)
+						if (md5($input_password) === $hash) {
+							$valid = true;
+							// Upgrade ke hash baru
+							$this->member_model->update(['Password' => password_hash($input_password, PASSWORD_DEFAULT)], $user[0]['ID']);
+						}
+					} else {
+						// Cek password hash baru
+						if (password_verify($input_password, $hash)) {
+							$valid = true;
+						}
+					}
+					if ($valid) {
+						$login_success = true;
+						if($user[0]["Status"] == "Enabled") {
+							$settings = $this->setting_model->get_all();
+							foreach ($settings as $s)
+								$data['key'][$s['Key']] = $s['Value'];
+							if(isset($data['key']['OTP_verification']) && $data['key']['OTP_verification'] == 'Enabled') {
+								$session = array(
+									'MemberID' => $user[0]['ID'],
+									'MemberEmail' => $user[0]['Email'],
+									'MemberFirstName' => $user[0]['FirstName'],
+									'MemberLastName' => $user[0]['LastName'],
+									'MemberPhone' => $user[0]['Mobile'],
+									'MemberCurrency' => $user[0]['Currency'],
+									'IDR' => $data['key']['idr'],
+									'is_member_logged_in' => FALSE
+								);
+								$this->session->set_userdata($session);
+								$this->session->set_userdata('temp_user_id', $user[0]['ID']);
+								$this->session->set_userdata('temp_user_email', $user[0]['Email']);
+								$this->session->unset_userdata($attempts_key);
+								$this->session->unset_userdata($block_key);
+								$this->send_otp();
+								redirect('user/verify_otp');
+							} else {
+								$session = array(
+									'MemberID' => $user[0]['ID'],
+									'MemberEmail' => $user[0]['Email'],
+									'MemberFirstName' => $user[0]['FirstName'],
+									'MemberLastName' => $user[0]['LastName'],
+									'MemberPhone' => $user[0]['Mobile'],
+									'MemberCurrency' => $user[0]['Currency'],
+									'IDR' => $data['key']['idr'],
+									'is_member_logged_in' => TRUE
+								);
+								$this->session->set_userdata($session);
+								$this->session->unset_userdata($attempts_key);
+								$this->session->unset_userdata($block_key);
+								redirect('member/dashboard');
+							}
+						} else {
+							$this->session->set_flashdata('message', '<div class="alert alert-danger alert-dismissible fade show" role="alert" role="danger"> '.$this->lang->line('error_account_deactivated').'  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>');
+							redirect('login');
+						}
+					} else {
+						$login_success = false;
+					}
+				}
+				if (!$login_success) {
+					$attempts++;
+					$this->session->set_userdata($attempts_key, $attempts);
+					if ($attempts >= $max_attempts) {
+						$this->session->set_userdata($block_key, time() + ($block_minutes * 60));
+						$this->session->set_flashdata('message', '<div class="alert alert-danger alert-dismissible fade show" role="alert"> Terlalu banyak percobaan login gagal. Silakan coba lagi dalam ' . $block_minutes . ' menit. <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>');
+					} else {
+						$this->session->set_flashdata('message', '<div class="alert alert-danger alert-dismissible fade show" role="alert" role="danger"> '.$this->lang->line('error_invalid_login').'  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>');
+					}
+					redirect('login');
+				}
+			}
 			{
 				$data = $this->input->post(NULL, TRUE);
 				$user = $this->member_model->get_where(array('Email' => $data['Email']));
