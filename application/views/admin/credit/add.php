@@ -39,6 +39,16 @@
                         <?php echo form_textarea(array('name'=>"Description", 'class'=>"form-control", 'value'=>set_value('Description', ''))); ?>
                     </div>
                 </div>
+                <div class="form-group">
+                    <label class="col-md-3 control-label">Actions:</label>
+                    <div class="col-md-6">
+                        <select name="Actions" class="form-control">
+                            <option value="">Select Action</option>
+                            <option value="Added by Admin">Added by Admin</option>
+                            <option value="Removed by Admin">Removed by Admin</option>
+                        </select>
+                    </div>
+                </div>
             </div>
             <div class="form-actions">
                 <button type="submit" class="btn btn-info">Submit</button>

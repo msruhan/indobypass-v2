@@ -66,6 +66,10 @@
 								</div>
 							</div>
 						</div>
+						<div class="form-group mb-3 text-center">
+							<!-- Google reCAPTCHA widget -->
+							<div class="g-recaptcha d-inline-block" data-sitekey="6LdWw7QrAAAAAG-rmD7LKHSrLwfkiR-pwHU7XyS7"></div>
+						</div>
 						<div class="d-grid mb-2">
 							<button type="submit" class="btn btn-primary fw-bold">Login</button>
 						</div>
@@ -92,6 +96,7 @@
 	</div>
 	<script src="<?= site_url() ?>assets/assets_members/js/core/jquery-3.7.1.min.js"></script>
 	<script src="<?= site_url() ?>assets/assets_members/js/core/bootstrap.min.js"></script>
+	<script src="https://www.google.com/recaptcha/api.js" async defer></script>
 	<script>
 	$(document).ready(function() {
 		$('#show-forgot').click(function(e) {

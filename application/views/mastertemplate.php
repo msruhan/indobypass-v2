@@ -159,6 +159,27 @@
                         </ul>
                     </div>
                 </li>
+                <li <?= ($this->uri->uri_string(2) == 'member/dashboard/addfund' || $this->uri->uri_string(2) == 'member/dashboard/credits') ? 'class="nav-item active submenu"' : 'class="nav-item submenu"'; ?> >
+                    <a data-bs-toggle="collapse" href="#financeMenu" <?= ($this->uri->uri_string(2) == 'member/dashboard/addfund' || $this->uri->uri_string(2) == 'member/dashboard/credits') ? 'aria-expanded="true"' : 'aria-expanded="false" class="collapsed"'; ?> >
+                        <i class="fas fa-wallet"></i>
+                        <p>Finance</p>
+                        <span class="caret"></span>
+                    </a>
+                    <div id="financeMenu" <?= ($this->uri->uri_string(2) == 'member/dashboard/addfund' || $this->uri->uri_string(2) == 'member/dashboard/credits') ? 'class="collapse show"' : 'class="collapse"'; ?> >
+                        <ul class="nav nav-collapse">
+                            <li <?= $this->uri->uri_string(2) == 'member/dashboard/addfund' ? 'class="active"' : ''; ?> >
+                                <a href="<?= site_url() ?>member/dashboard/addfund">
+                                    <span class="sub-item">Add Fund</span>
+                                </a>
+                            </li>
+                            <li <?= $this->uri->uri_string(2) == 'member/dashboard/credits' ? 'class="active"' : ''; ?> >
+                                <a href="<?= site_url() ?>member/dashboard/credits">
+                                    <span class="sub-item">Payment History</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </li>
                    <li class="nav-section">
                     <span class="sidebar-mini-icon">
                         <i class="fa fa-ellipsis-h"></i>

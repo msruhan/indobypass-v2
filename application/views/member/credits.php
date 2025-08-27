@@ -14,7 +14,7 @@
 </style>
 <div class="page-header">
     <div class="d-flex justify-content-between">
-        <h3 class="fw-bold">Credits</h3>
+        <h3 class="fw-bold">Payment History</h3>
         <ul class="breadcrumbs">
             <li class="nav-home">
                 <a href="#">
@@ -25,7 +25,7 @@
                 <i class="icon-arrow-right"></i>
             </li>
             <li class="nav-item">
-                <a href="#">Credits </a>
+                <a href="#">Payment History </a>
             </li>
         </ul>
     </div>
@@ -52,10 +52,11 @@
                                 <thead>
                                     <tr>
                                         <th>No</th>
+                                        <th>Created at</th>
                                         <th>Code</th>
                                         <th>Amount</th>
                                         <th>Description</th>
-                                        <th>Created at</th>
+                                        <th>Status</th>
                                     </tr>
                                 </thead>
                             </table>
@@ -112,10 +113,24 @@ $(document).ready(function() {
         },
         columns: [
             { data: "no" },
+            { data: "created_at" },
             { data: "code" },
             { data: "amount" },
             { data: "description" },
-            { data: "created_at" },
+            {
+                data: "status",
+                render: function(data, type, row) {
+                    if (data === 'Paid') {
+                        return '<span class="badge bg-success">Paid</span>';
+                    } else if (data === 'Refunded') {
+                        return '<span class="badge bg-danger">Refunded</span>';
+                    } else if (data) {
+                        return '<span class="badge bg-secondary">' + data + '</span>';
+                    } else {
+                        return '';
+                    }
+                }
+            },
         ],
         pagingType: "input",
         processing: true,
@@ -146,7 +161,18 @@ $(document).ready(function() {
             { data: "OrderID" },
             { data: "Description" },
             { data: "Amount" },
-            { data: "TransactionStatus" },
+            {
+                data: "TransactionStatus",
+                render: function(data, type, row) {
+                    if (data === 'settlement') {
+                        return '<span class="badge bg-success">Success</span>';
+                    } else if (data) {
+                        return '<span class="badge bg-secondary">' + data + '</span>';
+                    } else {
+                        return '';
+                    }
+                }
+            },
             { data: "CreatedDateTime" },
         ],
         pagingType: "input",
