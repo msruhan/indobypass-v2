@@ -50,6 +50,10 @@
                                 </div>
                             </div>
                         </div>
+                        <div class="form-group">
+                            <!-- Google reCAPTCHA widget -->
+                            <div class="g-recaptcha mb-3" data-sitekey="6LdWw7QrAAAAAG-rmD7LKHSrLwfkiR-pwHU7XyS7"></div>
+                        </div>
                         <div class="form-group form-action-d-flex mb-3">
                             <div class="form-check">
                                 <input type="checkbox" class="form-check-input" id="rememberme">
@@ -68,6 +72,7 @@
         </div>
     </div>
 
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
     <script src="<?= site_url() ?>assets/assets_members/js/core/jquery-3.7.1.min.js"></script>
     <script src="<?= site_url() ?>assets/assets_members/js/core/popper.min.js"></script>
     <script src="<?= site_url() ?>assets/assets_members/js/core/bootstrap.min.js"></script>
