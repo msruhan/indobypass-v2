@@ -91,9 +91,12 @@ class Method extends FSD_Controller
 		$data['api_list'] = $api_list;
 		$data['network_list'] = $network_list;
 		$data['network'] = $this->network_model->get_all();
-		$data['data'] = $this->method_model->get_where(array('ID'=> $id));			
-		$data['template'] = "admin/method/edit";
-		$this->load->view('admin/master_template',$data);
+			$data['data'] = $this->method_model->get_where(array('ID'=> $id));			
+
+
+
+			$data['template'] = "admin/method/edit";
+			$this->load->view('admin/master_template',$data);
 	}
 		
 	public function delete($id)

@@ -35,6 +35,8 @@ class Imeiorder extends FSD_Controller
 					'<a href="'.site_url('admin/imeiorder/edit/'.$row['ID']).'" class="btn btn-warning btn-sm"><i class="fa fa-edit"></i></a>';
 				$row['delete'] .=
 					' <a href="'.site_url('admin/imeiorder/delete/'.$row['ID']).'" class="btn btn-danger btn-sm" onclick="return confirm(\'Delete this order?\')"><i class="fa fa-trash"></i></a>';
+				$row['delete'] .= 
+					' <a href="'.site_url('admin/imeiorder/cancel/'.$row['ID']).'" class="btn btn-danger btn-sm" onclick="return confirm(\'Cancel this order?\')"><i class="fa fa-times"></i> Cancel</a>';
 			}
 		}
 		echo json_encode($raw);
@@ -117,7 +119,19 @@ class Imeiorder extends FSD_Controller
 					$this->imeiorder_model->update($data, $id);
 					
 					## Amount Refund ##
-					$this->credit_model->refund($id, IMEI_CODE_REQUEST, $order[0]['MemberID']);
+		   $refund_result = $this->credit_model->refund($id, IMEI_CODE_REQUEST, $order[0]['MemberID']);
+		   // Jika refund gagal (tidak ada record credit awal), insert manual
+		   if (!$refund_result) {
+			   $refund_data = array(
+				   'TransactionCode' => IMEI_CODE_REQUEST,
+				   'TransactionID' => $id,
+				   'MemberID' => $order[0]['MemberID'],
+				   'Description' => 'Amount Refunded (manual)',
+				   'Amount' => abs(isset($order[0]['Amount']) ? $order[0]['Amount'] : 0),
+				   'CreatedDateTime' => date("Y-m-d H:i:s")
+			   );
+			   $this->credit_model->insert($refund_data);
+		   }
 					## Get Canceled Email Template ##
 					$data = $this->autoresponder_model->get_where(array('Status' => 'Enabled', 'ID' => 2)); // IMEI Code Canceled
 					## Send Email with Template ## 		
@@ -189,47 +203,46 @@ class Imeiorder extends FSD_Controller
 	
 	public function cancel($id)
 	{
-		$order = $this->imeiorder_model->get_where(array( 'ID' => $id, 'Status' =>'Pending' ));
-		if(isset($order[0]) && count($order) > 0)
-		{
-			$data['Code'] = 'Canceled';
-			$data['Comments'] = 'Canceled';
-			$data['Status'] = 'Canceled';
-			$data['UpdatedDateTime'] = date("Y-m-d H:i:s");									
-			$this->imeiorder_model->update($data, $id);
-			
-			## Amount Refund ##
-			$this->credit_model->refund($id, IMEI_CODE_REQUEST, $order[0]['MemberID']);
-			## Get Canceled Email Template ##
-			$data = $this->autoresponder_model->get_where(array('Status' => 'Enabled', 'ID' => 3)); // IMEI Code Canceled
-			## Send Email with Template ## 		
-			if(isset($data) && count($data)>0)
-			{
-				$from_name = $data[0]['FromName'];
-				$from_email = $data[0]['FromEmail'];
-				$to_email = $data[0]['ToEmail'];
-				$subject = $data[0]['Subject'];
-				$message = html_entity_decode($data[0]['Message']);
-				
-				//get member information
-				$member = $this->member_model->get_where(array('ID' => $order[0]['MemberID']));
-				
-				//Information
-				$post['Code'] = 'Cancelled';
-				$post['IMEI'] = $order[0]['IMEI'];
-				$post['FirstName'] = $member[0]['FirstName'];
-				$post['LastName'] = $member[0]['LastName'];
-				$post['Email'] = $order[0]['Email'];	
-				$post['Email'] = empty($order[0]['Email'])? $member[0]['Email']: $order[0]['Email'];									
+	   $order = $this->imeiorder_model->get_where(array('ID' => $id));
+	   if(isset($order[0]) && in_array(strtolower($order[0]['Status']), ['pending', 'issued', 'in process']))
+	   {
+		   $data['Code'] = 'Canceled';
+		   $data['Comments'] = 'Canceled';
+		   $data['Status'] = 'Canceled';
+		   $data['UpdatedDateTime'] = date("Y-m-d H:i:s");
+		   $this->imeiorder_model->update($data, $id);
 
-				$this->fsd->email_template($post, $from_email, $from_name, $to_email, $subject, $message );
-				$this->fsd->sent_email($from_email, $from_name,$to_email, $subject, $message );
-			}			
-			$this->session->set_flashdata('success', 'Order has been canceled successfully and a refund has been issued.');
-			redirect("admin/imeiorder/");
-		}
-		$this->session->set_flashdata('error', 'Only pending orders can be canncelled.');
-		redirect("admin/imeiorder/");		
+		   ## Amount Refund ##
+		   $this->credit_model->refund($id, IMEI_CODE_REQUEST, $order[0]['MemberID']);
+		   ## Get Canceled Email Template ##
+		   $emailData = $this->autoresponder_model->get_where(array('Status' => 'Enabled', 'ID' => 3)); // IMEI Code Canceled
+		   ## Send Email with Template ##
+		   if(isset($emailData) && count($emailData)>0)
+		   {
+			   $from_name = $emailData[0]['FromName'];
+			   $from_email = $emailData[0]['FromEmail'];
+			   $to_email = $emailData[0]['ToEmail'];
+			   $subject = $emailData[0]['Subject'];
+			   $message = html_entity_decode($emailData[0]['Message']);
+
+			   //get member information
+			   $member = $this->member_model->get_where(array('ID' => $order[0]['MemberID']));
+
+			   //Information
+			   $post['Code'] = 'Cancelled';
+			   $post['IMEI'] = $order[0]['IMEI'];
+			   $post['FirstName'] = $member[0]['FirstName'];
+			   $post['LastName'] = $member[0]['LastName'];
+			   $post['Email'] = empty($order[0]['Email'])? $member[0]['Email']: $order[0]['Email'];
+
+			   $this->fsd->email_template($post, $from_email, $from_name, $to_email, $subject, $message );
+			   $this->fsd->sent_email($from_email, $from_name,$to_email, $subject, $message );
+		   }
+		   $this->session->set_flashdata('success', 'Order has been canceled successfully and a refund has been issued.');
+		   redirect("admin/imeiorder/");
+	   }
+	   $this->session->set_flashdata('error', 'Order can only be canceled if status is Pending, Issued, or In Process.');
+	   redirect("admin/imeiorder/");
 	}
 	
 	public function delete($id)

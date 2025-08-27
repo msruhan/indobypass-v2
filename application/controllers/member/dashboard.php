@@ -1,3 +1,5 @@
+
+
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
 class dashboard extends FSD_Controller 
@@ -390,7 +392,20 @@ public function export_imei_orders() {
 		else {
 			$data = $this->input->post(NULL,TRUE);
 			$member_data = $this->member_model->get_where(array('ID' => $data['ID']));
-			if($member_data[0]['Password'] == md5($data['CurrentPassword']))
+			$hash = $member_data[0]['Password'];
+			$input_password = $data['CurrentPassword'];
+			$is_md5 = (strlen($hash) === 32 && ctype_xdigit($hash));
+			$valid = false;
+			if ($is_md5) {
+				if (md5($input_password) === $hash) {
+					$valid = true;
+				}
+			} else {
+				if (password_verify($input_password, $hash)) {
+					$valid = true;
+				}
+			}
+			if($valid)
 			{
 				unset($data['CurrentPassword']);
 				
@@ -416,6 +431,67 @@ public function export_imei_orders() {
 			$this->session->set_flashdata("message",'<div class="alert alert-danger alert-dismissible fade show" role="alert" role="danger"> '.$this->lang->line('error_wrong_password').'  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>');
 			redirect(site_url('member/dashboard/profile'));
 		}
+	}
+
+	public function upload_profile_image()
+	{
+		$id = $this->session->userdata('MemberID');
+		if (!$id) {
+			redirect(site_url('member/dashboard/profile'));
+		}
+		if (isset($_FILES['profile_image']) && $_FILES['profile_image']['error'] == 0) {
+			$config['upload_path'] = './assets/assets_members/img/profile_upload/';
+			$config['allowed_types'] = 'jpg|jpeg|png|gif';
+			$config['max_size'] = 2048;
+			$config['file_name'] = 'profile_' . $id . '_' . time();
+			$this->load->library('upload', $config);
+			if (!is_dir($config['upload_path'])) {
+				mkdir($config['upload_path'], 0755, true);
+			}
+			if ($this->upload->do_upload('profile_image')) {
+				$upload_data = $this->upload->data();
+				$filename = $upload_data['file_name'];
+				// Update ke database
+				$this->member_model->update(['ProfileImage' => $filename], $id);
+				// Simpan nama file di session jika ingin
+				$this->session->set_userdata('ProfileImage', $filename);
+				$this->session->set_flashdata('message', '<div class="alert alert-success">Profile image updated!</div>');
+			} else {
+				$this->session->set_flashdata('message', '<div class="alert alert-danger">'.$this->upload->display_errors().'</div>');
+			}
+		}
+		redirect(site_url('member/dashboard/profile'));
+	}
+
+		public function deposit_history()
+	{
+		$id = $this->session->userdata('MemberID');
+		$start      =  $_REQUEST['start'] ?? 0;
+		$length     = $_REQUEST['length'] ?? 10;
+		$cari_data  = $_REQUEST['search']['value'] ?? '';
+
+		$this->load->model('midtrans_model');
+		$datas = $this->midtrans_model->get_deposit_data($id, $start, $length, $cari_data);
+
+		$array_data = array();
+		foreach ($datas as $d) {
+			$data = array();
+			$data["ID"] = $d['ID'];
+			$data["OrderID"] = $d['OrderID'];
+			$data["Description"] = $d['Description'];
+			$data["Amount"] = isset($d['Amount']) ? number_format($d['Amount'],0,',','.') : '';
+			$data["TransactionStatus"] = $d['TransactionStatus'];
+			$data["CreatedDateTime"] = $d['CreatedDateTime'];
+			$array_data[] = $data;
+		}
+
+		$output = array(
+			"draw" => intval($_REQUEST['draw'] ?? 1),
+			"recordsTotal" => count($array_data),
+			"recordsFiltered" => count($array_data),
+			"data" => $array_data
+		);
+		echo json_encode($output);
 	}
 
 	
