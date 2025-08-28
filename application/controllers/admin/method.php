@@ -52,6 +52,12 @@ class Method extends FSD_Controller
 					'<a href="'.site_url('admin/method/edit/'.$row['ID']).'" class="btn btn-warning btn-sm"><i class="fa fa-edit"></i></a>';
 				$row['delete'] .=
 					' <a href="'.site_url('admin/method/delete/'.$row['ID']).'" class="btn btn-danger btn-sm" onclick="return confirm(\'Delete this method?\')"><i class="fa fa-trash"></i></a>';
+				$isEnabled = (isset($row['Status']) && $row['Status'] == 'Enabled');
+				$toggleClass = $isEnabled ? 'btn-success' : 'btn-secondary';
+				$toggleIcon = $isEnabled ? 'fa-toggle-on' : 'fa-toggle-off';
+				$toggleTitle = $isEnabled ? 'Disable' : 'Enable';
+				$row['delete'] .=
+					' <button type="button" class="btn '.$toggleClass.' btn-sm" title="'.$toggleTitle.'" onclick="editStatus('.$row['ID'].')"><i class="fa '.$toggleIcon.'"></i></button>';
 			}
 		}
 		echo json_encode($raw);
