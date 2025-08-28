@@ -14,14 +14,14 @@ class credit_model extends CI_Model
 	
 	public function get_where($params) 
 	{
-        $query = $this->db->get_where($this->tbl_name, $params);
-        return $query->result_array();
-    }    	
+		$query = $this->db->get_where($this->tbl_name, $params);
+		return $query->result_array();
+	}    	
 	
-    public function get_all() 
-    {                
-        $query = $this->db->get($this->tbl_name);
-        return $query->result_array();
+	public function get_all() 
+	{                
+		$query = $this->db->get($this->tbl_name);
+		return $query->result_array();
 	}
 	
 	public function get_sum($params)
@@ -34,8 +34,8 @@ class credit_model extends CI_Model
 	
 	public function refund($order_id, $transaction_code, $member_id) 
 	{
-        $query = $this->db->get_where($this->tbl_name, array('TransactionCode' => $transaction_code, 'TransactionID' => $order_id, 'MemberID' => $member_id));
-        $result = $query->result_array();
+		$query = $this->db->get_where($this->tbl_name, array('TransactionCode' => $transaction_code, 'TransactionID' => $order_id, 'MemberID' => $member_id));
+		$result = $query->result_array();
 		if( is_array($result) && count($result) > 0 )
 		{
 			unset($result[0]['ID']);
@@ -45,46 +45,46 @@ class credit_model extends CI_Model
 			return $this->insert($result[0]);
 		}
 		return FALSE;
-    } 
+	} 
 		
 	public function get_max_transaction_id($param) 
-    {
+	{
 		$this->db->select_max('TransactionID')
 		->from($this->tbl_name)
 		->where($param);
-        $query = $this->db->get();
-        $result = $query->result_array();
+		$query = $this->db->get();
+		$result = $query->result_array();
 		return empty($result[0]['TransactionID'])?0:$result[0]['TransactionID'];
-    }
-    
-    public function count_all() 
-    {
-        $query = $this->db->count_all($this->tbl_name);
-        return $query;
+	}
+	
+	public function count_all() 
+	{
+		$query = $this->db->count_all($this->tbl_name);
+		return $query;
 	}
 	
 	public function count_where($params) 
-    {
+	{
 		$this->db->from($this->tbl_name)->where($params);
-        return  $this->db->count_all_results();
+		return  $this->db->count_all_results();
 	}
 
-    public function insert($data) 
-    {
-        $this->db->insert($this->tbl_name, $data);
-        $id = $this->db->insert_id();
-        return intval($id);
-    }
+	public function insert($data) 
+	{
+		$this->db->insert($this->tbl_name, $data);
+		$id = $this->db->insert_id();
+		return intval($id);
+	}
 
-    public function update($data, $id)
-    {   
-        return $this->db->update($this->tbl_name, $data, array('ID' => $id));
-    }
+	public function update($data, $id)
+	{   
+		return $this->db->update($this->tbl_name, $data, array('ID' => $id));
+	}
 
-    public function delete($id)
-    {
-        return $this->db->delete($this->tbl_name, array('ID' => $id));                
-    }
+	public function delete($id)
+	{
+		return $this->db->delete($this->tbl_name, array('ID' => $id));                
+	}
 	
 	public function get_credit($id)
 	{
@@ -130,11 +130,11 @@ class credit_model extends CI_Model
 
 	public function get_credit_data_new($id, $start, $length, $cari_data)
 	{
-		$sql = "SELECT t1.ID, CONCAT(t1.TransactionCode, t1.TransactionID) AS Code, t1.Amount, t1.Description, t1.CreatedDateTime FROM $this->tbl_name t1 INNER JOIN $this->mem_tbl t2 ON t1.MemberID = t2.ID WHERE t1.MemberID = $id AND (t1.TransactionCode LIKE '%$cari_data%' OR t1.Amount LIKE '%$cari_data%' OR t1.Description LIKE '%$cari_data%' OR t1.CreatedDateTime LIKE '%$cari_data%') ORDER BY t1.ID DESC LIMIT $start, $length";
+		$sql = "SELECT t1.ID, CONCAT(t1.TransactionCode, t1.TransactionID) AS Code, t1.Amount, t1.Description, t1.CreatedDateTime, t1.Status FROM $this->tbl_name t1 INNER JOIN $this->mem_tbl t2 ON t1.MemberID = t2.ID WHERE t1.MemberID = $id AND (t1.TransactionCode LIKE '%$cari_data%' OR t1.Amount LIKE '%$cari_data%' OR t1.Description LIKE '%$cari_data%' OR t1.CreatedDateTime LIKE '%$cari_data%') ORDER BY t1.ID DESC LIMIT $start, $length";
 
 		$result = $this->db->query($sql);
 		return $result->result_array();
-	}	
+	} 
 	
 	public function get_datatable()
 	{

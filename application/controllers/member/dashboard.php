@@ -324,18 +324,8 @@ public function export_imei_orders() {
 			$data["amount"]      = format_currency($d['Amount']);
 			$data["description"] = $d['Description'];
 			$data["created_at"]  = $d['CreatedDateTime'];
-			// Status: jika ada di query pakai, jika tidak, tentukan dari Amount
-			if (isset($d['Status'])) {
-				$data["status"] = $d['Status'];
-			} else {
-				if ($d['Amount'] < 0) {
-					$data["status"] = 'Paid';
-				} else if ($d['Amount'] > 0) {
-					$data["status"] = 'Refunded';
-				} else {
-					$data["status"] = '';
-				}
-			}
+			// Ambil nilai status apa adanya dari kolom Status database
+			$data["status"] = isset($d['Status']) ? $d['Status'] : '';
 			$array_data[] = $data;
 			$no++;
 		}
