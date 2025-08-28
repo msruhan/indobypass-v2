@@ -149,6 +149,25 @@ public function __construct()
 		echo json_encode(['status' => 'success', 'updated' => $updated]);
 	}
 
+	public function bulk_update_services_status()
+	{
+		$input = json_decode(file_get_contents('php://input'), true);
+		if (!$input || !isset($input['ids']) || !is_array($input['ids']) || !isset($input['Status'])) {
+			http_response_code(400);
+			echo json_encode(['success' => false, 'message' => 'Invalid input']);
+			return;
+		}
+		$ids = $input['ids'];
+		$status = $input['Status'];
+		$this->load->model('method_model');
+		$updated = 0;
+		foreach ($ids as $id) {
+			$this->method_model->update(['Status' => $status], $id);
+			$updated++;
+		}
+		echo json_encode(['success' => true, 'updated' => $updated]);
+	}
+
 	// Tukar nilai ID antar group
 	public function swap_id() {
 		$id1 = $this->input->post('id1');
