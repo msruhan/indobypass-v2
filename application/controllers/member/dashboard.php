@@ -293,45 +293,62 @@ public function export_imei_orders() {
 	}
 
 	public function credit_new()
-	{
-		$id = $this->session->userdata('MemberID');
-
-		$start      =  $_REQUEST['start'];
-		$length     = $_REQUEST['length'];
-		$cari_data  = $_REQUEST['search']['value'];
-
-		$datas = $this->credit_model->get_credit_data_new($id, $start, $length, $cari_data);
-
-		$total = 9999999;
-		$array_data = array();
-		$no = $start + 1;
-		if (!empty($datas) && $datas != null) {
-
-			foreach ($datas as $d) {
-
-				$data["no"]          = $no;
-				$data["code"] 		 = $d['Code'];
-				$data["amount"]      = format_currency($d['Amount']);
-				$data["description"] = $d['Description'];
-				$data["created_at"]  = $d['CreatedDateTime'];
-				$data["status"]      = $d['Status'];
-
-				array_push($array_data, $data);
-				$no++;
-			}
-		}
-
-		$output = array(
-
-			"draw" => intval($_REQUEST['draw']),
-			"recordsTotal" => intval($total),
-			"recordsFiltered" => intval($total),
-			"data" => $array_data
-		);
-
-
-		echo json_encode($output);
+{
+	header('Content-Type: application/json');
+	$id = $this->session->userdata('MemberID');
+	if (!$id) {
+		echo json_encode([
+			"draw" => 0,
+			"recordsTotal" => 0,
+			"recordsFiltered" => 0,
+			"data" => [],
+			"error" => "Session expired. Please login again."
+		]);
+		return;
 	}
+
+	$start      =  isset($_REQUEST['start']) ? $_REQUEST['start'] : 0;
+	$length     = isset($_REQUEST['length']) ? $_REQUEST['length'] : 10;
+	$cari_data  = isset($_REQUEST['search']['value']) ? $_REQUEST['search']['value'] : '';
+
+	$datas = $this->credit_model->get_credit_data_new($id, $start, $length, $cari_data);
+
+	$total = 9999999;
+	$array_data = array();
+	$no = $start + 1;
+	if (!empty($datas) && $datas != null) {
+		foreach ($datas as $d) {
+			$data = [];
+			$data["no"]          = $no;
+			$data["code"]        = $d['Code'];
+			$data["amount"]      = format_currency($d['Amount']);
+			$data["description"] = $d['Description'];
+			$data["created_at"]  = $d['CreatedDateTime'];
+			// Status: jika ada di query pakai, jika tidak, tentukan dari Amount
+			if (isset($d['Status'])) {
+				$data["status"] = $d['Status'];
+			} else {
+				if ($d['Amount'] < 0) {
+					$data["status"] = 'Paid';
+				} else if ($d['Amount'] > 0) {
+					$data["status"] = 'Refunded';
+				} else {
+					$data["status"] = '';
+				}
+			}
+			$array_data[] = $data;
+			$no++;
+		}
+	}
+
+	$output = array(
+		"draw" => intval(isset($_REQUEST['draw']) ? $_REQUEST['draw'] : 0),
+		"recordsTotal" => intval($total),
+		"recordsFiltered" => intval($total),
+		"data" => $array_data
+	);
+	echo json_encode($output);
+}
 
 	public function addfund()
 	{
@@ -465,35 +482,46 @@ public function export_imei_orders() {
 	}
 
 		public function deposit_history()
-	{
-		$id = $this->session->userdata('MemberID');
-		$start      =  $_REQUEST['start'] ?? 0;
-		$length     = $_REQUEST['length'] ?? 10;
-		$cari_data  = $_REQUEST['search']['value'] ?? '';
-
-		$this->load->model('midtrans_model');
-		$datas = $this->midtrans_model->get_deposit_data($id, $start, $length, $cari_data);
-
-		$array_data = array();
-		foreach ($datas as $d) {
-			$data = array();
-			$data["ID"] = $d['ID'];
-			$data["OrderID"] = $d['OrderID'];
-			$data["Description"] = $d['Description'];
-			$data["Amount"] = isset($d['Amount']) ? number_format($d['Amount'],0,',','.') : '';
-			$data["TransactionStatus"] = $d['TransactionStatus'];
-			$data["CreatedDateTime"] = $d['CreatedDateTime'];
-			$array_data[] = $data;
-		}
-
-		$output = array(
-			"draw" => intval($_REQUEST['draw'] ?? 1),
-			"recordsTotal" => count($array_data),
-			"recordsFiltered" => count($array_data),
-			"data" => $array_data
-		);
-		echo json_encode($output);
+{
+	header('Content-Type: application/json');
+	$id = $this->session->userdata('MemberID');
+	if (!$id) {
+		echo json_encode([
+			"draw" => 0,
+			"recordsTotal" => 0,
+			"recordsFiltered" => 0,
+			"data" => [],
+			"error" => "Session expired. Please login again."
+		]);
+		return;
 	}
+	$start      =  isset($_REQUEST['start']) ? $_REQUEST['start'] : 0;
+	$length     = isset($_REQUEST['length']) ? $_REQUEST['length'] : 10;
+	$cari_data  = isset($_REQUEST['search']['value']) ? $_REQUEST['search']['value'] : '';
+
+	$this->load->model('midtrans_model');
+	$datas = $this->midtrans_model->get_deposit_data($id, $start, $length, $cari_data);
+
+	$array_data = array();
+	foreach ($datas as $d) {
+		$data = array();
+		$data["ID"] = $d['ID'];
+		$data["OrderID"] = $d['OrderID'];
+		$data["Description"] = $d['Description'];
+		$data["Amount"] = isset($d['Amount']) ? number_format($d['Amount'],0,',','.') : '';
+		$data["TransactionStatus"] = $d['TransactionStatus'];
+		$data["CreatedDateTime"] = $d['CreatedDateTime'];
+		$array_data[] = $data;
+	}
+
+	$output = array(
+		"draw" => intval(isset($_REQUEST['draw']) ? $_REQUEST['draw'] : 0),
+		"recordsTotal" => count($array_data),
+		"recordsFiltered" => count($array_data),
+		"data" => $array_data
+	);
+	echo json_encode($output);
+}
 
 	
 }	
