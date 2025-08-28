@@ -70,6 +70,53 @@
                     <button type="button" class="btn btn-warning btn-sm mt-2" id="copy-desc-btn" style="margin-top:12px;">
                         <i class="fa fa-copy"></i> Copy Description
                     </button>
+                    <?php
+                    // Toggle ON/OFF seluruh status service dalam grup
+                    $allEnabled = true;
+                    if (!empty($services_in_group)) {
+                        foreach ($services_in_group as $svc) {
+                            if (!isset($svc['Status']) || $svc['Status'] != 'Enabled') {
+                                $allEnabled = false;
+                                break;
+                            }
+                        }
+                    }
+                    $toggleClass = $allEnabled ? 'btn-success' : 'btn-secondary';
+                    $toggleIcon = $allEnabled ? 'fa-toggle-on' : 'fa-toggle-off';
+                    $toggleTitle = $allEnabled ? 'Disable All Services' : 'Enable All Services';
+                    $toggleText = $allEnabled ? 'Enabled All' : 'Disabled All';
+                    ?>
+                    <button type="button" class="btn <?php echo $toggleClass; ?> btn-sm mt-2" id="toggle-all-services-btn" style="margin-left:8px;margin-top:12px;" title="<?php echo $toggleTitle; ?>">
+                        <i class="fa <?php echo $toggleIcon; ?>"></i> <?php echo $toggleText; ?> Services
+                    </button>
+                    <script>
+                    document.addEventListener('DOMContentLoaded', function() {
+                        var toggleAllBtn = document.getElementById('toggle-all-services-btn');
+                        if(toggleAllBtn) {
+                            toggleAllBtn.onclick = function() {
+                                var services = <?php echo json_encode($services_in_group); ?>;
+                                if(services.length === 0) return;
+                                var idsToUpdate = services.map(function(svc){ return svc.ID; });
+                                var newStatus = <?php echo $allEnabled ? '\'Disabled\'' : '\'Enabled\''; ?>;
+                                toggleAllBtn.disabled = true;
+                                fetch('<?php echo site_url('admin/network/bulk_update_services_status'); ?>', {
+                                    method: 'POST',
+                                    headers: { 'Content-Type': 'application/json' },
+                                    body: JSON.stringify({ ids: idsToUpdate, Status: newStatus })
+                                })
+                                .then(response => response.json())
+                                .then(function(res) {
+                                    if(res && res.success) {
+                                        // Reload page or update UI
+                                        location.reload();
+                                    }
+                                    toggleAllBtn.disabled = false;
+                                })
+                                .catch(function(){ toggleAllBtn.disabled = false; });
+                            }
+                        }
+                    });
+                    </script>
                     <script>
                     document.addEventListener('DOMContentLoaded', function() {
                         var btn = document.getElementById('copy-desc-btn');
