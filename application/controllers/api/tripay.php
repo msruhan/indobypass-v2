@@ -2,41 +2,42 @@
 
 class Tripay extends FSD_Controller 
 {
-    public function __construct() {
-        parent::__construct();
-        $this->load->model('credit_model');
+	public function __construct() {
+		parent::__construct();
+		$this->load->model('credit_model');
 		$this->load->library('tripay_lib');
-    }
+		$this->load->helper('log_activity_helper'); // Tambahkan helper log_activity
+	}
 
 	public function index() {
-        // Check if this is a GET request (browser access)
-        if ($this->input->server('REQUEST_METHOD') === 'GET') {
-            $this->show_api_info();
-            return;
-        }
-        
-        // Handle POST request (actual callback)
-        $this->handle_callback();
-    }
+		// Check if this is a GET request (browser access)
+		if ($this->input->server('REQUEST_METHOD') === 'GET') {
+			$this->show_api_info();
+			return;
+		}
+		
+		// Handle POST request (actual callback)
+		$this->handle_callback();
+	}
 
 	private function show_api_info() {
-        $response = [
-            'status' => 'success',
-            'message' => 'Tripay Payment Gateway API Endpoint',
-            'description' => 'This endpoint is used for receiving payment callbacks from Tripay',
-            'version' => '1.0',
-            'methods' => [
-                'POST' => 'Receive payment callback from Tripay'
-            ],
-            'documentation' => 'https://tripay.co.id/developer',
-            'timestamp' => date('Y-m-d H:i:s'),
-            'server_time' => time()
-        ];
-        
-        echo json_encode($response, JSON_PRETTY_PRINT);
-    }
+		$response = [
+			'status' => 'success',
+			'message' => 'Tripay Payment Gateway API Endpoint',
+			'description' => 'This endpoint is used for receiving payment callbacks from Tripay',
+			'version' => '1.0',
+			'methods' => [
+				'POST' => 'Receive payment callback from Tripay'
+			],
+			'documentation' => 'https://tripay.co.id/developer',
+			'timestamp' => date('Y-m-d H:i:s'),
+			'server_time' => time()
+		];
+		
+		echo json_encode($response, JSON_PRETTY_PRINT);
+	}
 
-    private function handle_callback() {
+	private function handle_callback() {
 		$json = file_get_contents('php://input');
 		$data = json_decode($json, true);
 		
@@ -70,9 +71,9 @@ class Tripay extends FSD_Controller
 	public function tripay_return() {
 
 		if ($this->input->server('REQUEST_METHOD') === 'GET' && !$this->input->get('tripay_reference')) {
-            $this->show_api_info();
-            return;
-        }
+			$this->show_api_info();
+			return;
+		}
 
 		$reference = $this->input->get('tripay_reference');
 		
@@ -98,28 +99,41 @@ class Tripay extends FSD_Controller
 
 	private function add_credit_to_user($member_id, $amount, $data) {
 
-        $this->db->trans_start();
-        
-        $result_sql = $this->db->query("SELECT `value` FROM app_settings WHERE `key` = 'idr'");
-        $idr = $result_sql->row()->value;
+		$this->db->trans_start();
+		
+		$result_sql = $this->db->query("SELECT `value` FROM app_settings WHERE `key` = 'idr'");
+		$idr = $result_sql->row()->value;
 
-        // insert amount
-        $transaction_id = 1 + $this->credit_model->get_max_transaction_id(array('TransactionCode' => CASH_PAYMENT_RECEIVED));
-        
-        $ins['MemberID']          = $member_id;
-        $ins['TransactionCode']   = CASH_PAYMENT_RECEIVED;
-        $ins['TransactionID']     = $transaction_id;
-        $ins['Description']       = "Added By Tripay - Method: " . $data['payment_method']; // Deskripsi dengan bank
-        $ins['Amount']            = $amount / $idr;
-        $ins['CreatedDateTime']   = date("Y-m-d H:i:s");
-        $result_insert = $this->db->insert('gsm_credits', $ins);
-    
-        if ($result_insert && $idr) {
-            $this->db->trans_complete();
-            echo json_encode(['success' => true]);
-        } else {
-            $this->db->trans_rollback();
-            echo json_encode(['success' => false]);
-        }
+		// insert amount
+		$transaction_id = 1 + $this->credit_model->get_max_transaction_id(array('TransactionCode' => CASH_PAYMENT_RECEIVED));
+		
+		$ins['MemberID']          = $member_id;
+		$ins['TransactionCode']   = CASH_PAYMENT_RECEIVED;
+		$ins['TransactionID']     = $transaction_id;
+		$ins['Description']       = "Added By Tripay - Method: " . $data['payment_method']; // Deskripsi dengan bank
+		$ins['Amount']            = $amount / $idr;
+		$ins['CreatedDateTime']   = date("Y-m-d H:i:s");
+		$result_insert = $this->db->insert('gsm_credits', $ins);
+
+		// Log aktivitas add fund Tripay
+		if ($result_insert && $idr) {
+			// Ambil username member
+			$username = '';
+			$CI =& get_instance();
+			$CI->load->model('member_model');
+			$member = $CI->member_model->get_where(array('ID' => $member_id));
+			if (!empty($member[0]['FirstName']) || !empty($member[0]['LastName'])) {
+				$username = trim($member[0]['FirstName'] . ' ' . $member[0]['LastName']);
+			} else if (!empty($member[0]['Username'])) {
+				$username = $member[0]['Username'];
+			}
+			log_activity('Menambah saldo via Tripay (Metode: ' . $data['payment_method'] . ', Amount: ' . $amount . ')', $member_id, $username);
+
+			$this->db->trans_complete();
+			echo json_encode(['success' => true]);
+		} else {
+			$this->db->trans_rollback();
+			echo json_encode(['success' => false]);
+		}
 	}
 }

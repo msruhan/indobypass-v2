@@ -16,6 +16,7 @@ class Imeiorder extends FSD_Controller
 		$this->load->model('autoresponder_model');
 		$this->load->model('member_model');
 		$this->status = array(''=>'', 'Pending'=>'Pending', 'In Process'=>'In Process', 'Issued'=>'Issued', 'Canceled'=>'Canceled');
+		$this->load->helper('log_activity_helper');
 	}
 	
 	public function index()

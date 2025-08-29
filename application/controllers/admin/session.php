@@ -7,6 +7,7 @@ class Session extends CI_Controller
 		parent::__construct();
 		$this->load->model('employee_model');
 		$this->load->model('autoresponder_model');
+		$this->load->helper('log_activity_helper');
 	}
 
 	public function index()
@@ -140,6 +141,8 @@ class Session extends CI_Controller
 					'is_admin_logged_in' => TRUE
 				);
 				$this->session->set_userdata($session);
+				// Log aktivitas login admin
+				log_activity('Login Admin', $admin_id, $this->session->userdata('admin_name'));
 				$this->session->set_flashdata('success', 'OTP verified successfully');
 				redirect('admin');
 			} else {
@@ -249,6 +252,10 @@ class Session extends CI_Controller
 	
 	public function logout()
 	{
+		// Log aktivitas logout admin
+		$admin_id = $this->session->userdata('admin_id');
+		$admin_name = $this->session->userdata('admin_name');
+		log_activity('Logout Admin', $admin_id, $admin_name);
 		$this->session->sess_destroy();
 		$this->index();
 	}
