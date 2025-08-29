@@ -18,6 +18,7 @@ class dashboard extends FSD_Controller
 		$this->load->model('credit_model');
 		$this->load->model('payment_model');
 		$this->load->helper('formatcurrency_helper');
+		$this->load->helper('log_activity_helper');
 	}
 	
 	public function index()

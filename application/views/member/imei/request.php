@@ -1,3 +1,21 @@
+<!-- Modal Popup Not Enough Credit -->
+<div class="modal fade" id="notEnoughCreditModal" tabindex="-1" aria-labelledby="notEnoughCreditLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-sm">
+    <div class="modal-content border-0 shadow rounded-4">
+      <div class="modal-header bg-danger text-white border-0 rounded-top-4">
+        <h5 class="modal-title fw-semibold" id="notEnoughCreditLabel">Not Enough Credit</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body text-center py-5">
+        <h5 class="mb-3">You have not enough credit for the request.</h5>
+        <div class="d-flex justify-content-center gap-3">
+          <a href="<?= site_url('member/dashboard/addfund'); ?>" class="btn btn-danger px-4">Add Fund</a>
+          <button type="button" class="btn btn-outline-secondary px-4" data-bs-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 <style>
    @media screen and (max-width: 767px) {
     .main-panel .page-header .breadcrumbs {
@@ -265,6 +283,12 @@
 <script type="text/javascript">
 var base_url = "<?= base_url() ?>";
 $(document).ready(function() {
+    // Tampilkan modal jika flashdata 'message' berisi error_not_enough_credit
+    var flashMessage = "<?= trim($this->session->flashdata('message')) ?>";
+    if (flashMessage === "You have not enough credit for the request") {
+      var notEnoughModal = new bootstrap.Modal(document.getElementById('notEnoughCreditModal'));
+      notEnoughModal.show();
+    }
 
     loading_processing();
     openLoading = function() {

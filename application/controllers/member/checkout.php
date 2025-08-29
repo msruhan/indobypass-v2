@@ -88,7 +88,7 @@ class checkout extends FSD_Controller
 		$paypal_settings = $this->payment_model->get_where(array('ID'=>1));
 		$member_id = $this->session->userdata('MemberID');
 
-	    ### Initilize settings	      		
+		### Initilize settings	      		
 		$settings = array(
 			'username' => $paypal_settings[0]['UserName'],
 			'password' => $paypal_settings[0]['Password'],
@@ -109,7 +109,7 @@ class checkout extends FSD_Controller
 		$response = $this->merchant->purchase_return($params);
 		if ($response->status() == Merchant_response::COMPLETE)
 		{
-		    if ($response->success())
+			if ($response->success())
 			{
 				$credits = $this->credit_model->get_where(['Description like' => '%'.$response->reference().'%']);
 				if( empty($credits) )
@@ -216,9 +216,13 @@ class checkout extends FSD_Controller
 					'status' => 'UNPAID',
 					'created_at' => date('Y-m-d H:i:s')
 				];
-				
 				$this->db->insert('tripay_transactions', $transaction_data);
-				
+
+				// Log activity for Tripay deposit
+				$member_id = $this->session->userdata('MemberID');
+				$username = $this->session->userdata('MemberFirstName') . ' ' . $this->session->userdata('MemberLastName');
+				log_activity('Membuat permintaan deposit (Tripay) sejumlah Rp ' . number_format($amount,0,',','.'), $member_id, $username);
+
 				echo json_encode([
 					'success' => true,
 					'checkout_url' => $response['data']['checkout_url']
