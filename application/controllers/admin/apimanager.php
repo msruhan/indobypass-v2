@@ -330,7 +330,7 @@ class Apimanager extends FSD_Controller
 					$data[$service_id]['DeliveryTime'] = $post['Time'][$service_id];
 					$data[$service_id]['Price'] = $post['Price'][$service_id];
 					$data[$service_id]['AllowExtension'] = $post['AllowExtension'][$service_id];
-					
+                    
 					$data[$service_id]['Status'] = 'Enabled';
 					$data[$service_id]['CreatedDateTime'] = date("y-m-d H:i:s");
 					$data[$service_id]['UpdatedDateTime'] = date("y-m-d H:i:s");
@@ -340,9 +340,12 @@ class Apimanager extends FSD_Controller
 				redirect(site_url('admin/apimanager/'));				
 			}	
 		}
-		$this->session->set_flashdata('error', 'No service selected.');
-		redirect('admin/apimanager');        
-	}          	
+		// Ambil log aktivitas
+		$this->load->model('Log_model');
+		$data['logs'] = $this->Log_model->get_logs(100);
+		$data['template'] = 'admin/apimanager/file_service_list';
+		$this->load->view('admin/master_template', $data);
+	} 
 }
 
 /* End of file apimanager.php */

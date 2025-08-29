@@ -192,7 +192,7 @@
 						<li <?php echo($this->uri->segment(2)=='fileservices'?'class="active"':''); ?>>
 							<a href="<?php echo site_url("admin/fileservices"); ?>">
 							<i class="icon-doc"></i>
-							File Services</a>
+							Log Aktivitas</a>
 						</li>
 						<li <?php echo($this->uri->segment(2)=='fileorder'?'class="active"':''); ?>>
 							<a href="<?php echo site_url("admin/fileorder"); ?>">
