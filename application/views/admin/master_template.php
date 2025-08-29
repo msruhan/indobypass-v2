@@ -66,10 +66,10 @@
 	<div class="header-inner">
 		<!-- BEGIN LOGO -->
 		<div class="page-logo">
-          <!--  <a href="<?php echo site_url(); ?>">
-                <img src="<?php echo $this->config->item('assets_url');?>img/fsd-solutions-logo.png" alt="logo"/>
-            </a>-->
-        </div>
+		  <!--  <a href="<?php echo site_url(); ?>">
+				<img src="<?php echo $this->config->item('assets_url');?>img/fsd-solutions-logo.png" alt="logo"/>
+			</a>-->
+		</div>
 		<!-- END LOGO -->
 		<!-- BEGIN RESPONSIVE MENU TOGGLER -->
 		<a href="javascript:;" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
@@ -142,62 +142,62 @@
 					</a>
 					<ul class="sub-menu">
 						<li <?php echo($this->uri->segment(2)=='apimanager'?'class="active"':''); ?>>
-                        	<a href="<?php echo site_url("admin/apimanager"); ?>">
+							<a href="<?php echo site_url("admin/apimanager"); ?>">
 							<i class="fa fa-rss"></i>
-                            Api Manager</a>
+							Api Manager</a>
 						</li>
 						<li <?php echo($this->uri->segment(2)=='brand'?'class="active"':''); ?>>
-                        	<a href="<?php echo site_url("admin/brand"); ?>">
+							<a href="<?php echo site_url("admin/brand"); ?>">
 							<i class="fa fa-mobile"></i>
-                            Mobile Brands</a>
+							Mobile Brands</a>
 						</li>
-                        <li <?php echo($this->uri->segment(2)=='servicemodel'?'class="active"':''); ?>>
-                        	<a href="<?php echo site_url("admin/servicemodel"); ?>">
+						<li <?php echo($this->uri->segment(2)=='servicemodel'?'class="active"':''); ?>>
+							<a href="<?php echo site_url("admin/servicemodel"); ?>">
 							<i class="fa fa-codepen"></i>
-                            Brand Models</a>
+							Brand Models</a>
 						</li>
 					</ul>
 				</li>
-                <li <?php echo( in_array($this->uri->segment(2), ['network','method','imeiorder'])?'class="active"':''); ?>>
+				<li <?php echo( in_array($this->uri->segment(2), ['network','method','imeiorder'])?'class="active"':''); ?>>
 					<a href="javascript:;">
 						<i class="icon-share"></i>
 						<span class="title">IMEI Service</span>
-                        <span class="arrow "></span>
+						<span class="arrow "></span>
 					</a>
 					<ul class="sub-menu">
 						<li <?php echo($this->uri->segment(2)=='network'?'class="active"':''); ?>>
-                        	<a href="<?php echo site_url("admin/network"); ?>">
+							<a href="<?php echo site_url("admin/network"); ?>">
 							<i class="icon-shuffle"></i>
-                            Service Groups</a>
+							Service Groups</a>
 						</li>
 						<li <?php echo($this->uri->segment(2)=='method'?'class="active"':''); ?>>
-                        	<a href="<?php echo site_url("admin/method"); ?>">
+							<a href="<?php echo site_url("admin/method"); ?>">
 							<i class="icon-target"></i>
-                            Services</a>
+							Services</a>
 						</li>
-                        <li <?php echo($this->uri->segment(2)=='imeiorder'?'class="active"':''); ?>>
-                        	<a href="<?php echo site_url("admin/imeiorder"); ?>">
+						<li <?php echo($this->uri->segment(2)=='imeiorder'?'class="active"':''); ?>>
+							<a href="<?php echo site_url("admin/imeiorder"); ?>">
 							<i class="icon-basket"></i>
-                            Orders</a>
+							Orders</a>
 						</li>
 					</ul>
 				</li>
-                <li <?php echo( in_array($this->uri->segment(2), ['fileservices','fileorder'])?'class="active"':''); ?>>
+				<li <?php echo( in_array($this->uri->segment(2), ['fileservices','fileorder'])?'class="active"':''); ?>>
 					<a href="javascript:;">
 						<i class="icon-docs"></i>
 						<span class="title">File Service</span>
-                        <span class="arrow "></span>
+						<span class="arrow "></span>
 					</a>
 					<ul class="sub-menu">
 						<li <?php echo($this->uri->segment(2)=='fileservices'?'class="active"':''); ?>>
-                        	<a href="<?php echo site_url("admin/fileservices"); ?>">
+							<a href="<?php echo site_url("admin/fileservices"); ?>">
 							<i class="icon-doc"></i>
-                            File Services</a>
+							File Services</a>
 						</li>
 						<li <?php echo($this->uri->segment(2)=='fileorder'?'class="active"':''); ?>>
-                        	<a href="<?php echo site_url("admin/fileorder"); ?>">
+							<a href="<?php echo site_url("admin/fileorder"); ?>">
 							<i class="icon-cloud-upload"></i>
-                            File Service Orders</a>
+							File Service Orders</a>
 						</li>
 					</ul>
 				</li>
@@ -205,64 +205,70 @@
 					<a href="javascript:;">
 						<i class="icon-screen-desktop"></i>
 						<span class="title">Server Service</span>
-                        <span class="arrow "></span>
+						<span class="arrow "></span>
 					</a>
 					<ul class="sub-menu">
 						<li <?php echo($this->uri->segment(2)=='serverbox'?'class="active"':''); ?>>
-                        	<a href="<?php echo site_url("admin/serverbox"); ?>">
+							<a href="<?php echo site_url("admin/serverbox"); ?>">
 							<i class="icon-shuffle"></i>
-                            Boxes / Tools</a>
+							Boxes / Tools</a>
 						</li>
 						<li <?php echo($this->uri->segment(2)=='serverservice'?'class="active"':''); ?>>
-                        	<a href="<?php echo site_url("admin/serverservice"); ?>">
+							<a href="<?php echo site_url("admin/serverservice"); ?>">
 							<i class="icon-target"></i>
-                            Services</a>
+							Services</a>
 						</li>
 						<li <?php echo($this->uri->segment(2)=='serverorder'?'class="active"':''); ?>>
-                        	<a href="<?php echo site_url("admin/serverorder"); ?>">
+							<a href="<?php echo site_url("admin/serverorder"); ?>">
 							<i class="icon-basket"></i>
-                            Orders</a>
+							Orders</a>
 						</li>
 					</ul>
 				</li>
-                <li <?php echo( in_array($this->uri->segment(2), ['group','member'])?'class="active"':''); ?>>
+				<li <?php echo( in_array($this->uri->segment(2), ['group','member'])?'class="active"':''); ?>>
 					<a href="javascript:;">
 						<i class="icon-users"></i>
 						<span class="title">Members & Groups</span>
-                        <span class="arrow "></span>
+						<span class="arrow "></span>
 					</a>
 					<ul class="sub-menu">
 						<li <?php echo($this->uri->segment(2)=='group'?'class="active"':''); ?>>
-                        	<a href="<?php echo site_url("admin/group"); ?>">
+							<a href="<?php echo site_url("admin/group"); ?>">
 							<i class="icon-user-following"></i>
-                            Groups</a>
+							Groups</a>
 						</li>
 						<li <?php echo($this->uri->segment(2)=='member'?'class="active"':''); ?>>
-                        	<a href="<?php echo site_url("admin/member"); ?>">
+							<a href="<?php echo site_url("admin/member"); ?>">
 							<i class="fa fa-users"></i>
-                            Members</a>
+							Members</a>
 						</li>
 					</ul>
 				</li>
-                <li <?php echo($this->uri->segment(2)=='employee'?'class="active"':''); ?>>
+				<li <?php echo($this->uri->segment(2)=='employee'?'class="active"':''); ?>>
 					<a href="<?php echo site_url("admin/employee"); ?>">
 						<i class="icon-key"></i>
 						<span class="title">Employees Access</span>
 					</a>
 				</li>
-                <li <?php echo($this->uri->segment(2)=='credit'?'class="active"':''); ?>>
+				<li <?php echo($this->uri->segment(2)=='credit'?'class="active"':''); ?>>
 					<a href="<?php echo site_url("admin/credit"); ?>">
 						<i class="icon-calendar"></i>
 						<span class="title">Credits Management</span>
 					</a>
 				</li>
-                <li <?php echo($this->uri->segment(2)=='payment'?'class="active"':''); ?>>
+				<li <?php echo($this->uri->segment(2)=='payment'?'class="active"':''); ?>>
 					<a href="<?php echo site_url("admin/payment"); ?>">
 						<i class="fa fa-money"></i>
 						<span class="title">Payment Methods</span>
 					</a>
 				</li>
-                <li <?php echo($this->uri->segment(2)=='autoresponder'?'class="active"':''); ?>>
+				<li <?php echo($this->uri->segment(2)=='log'?'class="active"':''); ?> >
+					<a href="<?php echo site_url("admin/log"); ?>">
+						<i class="fa fa-list"></i>
+						<span class="title">Log Aktivitas</span>
+					</a>
+				</li>
+				<li <?php echo($this->uri->segment(2)=='autoresponder'?'class="active"':''); ?>>
 					<a href="<?php echo site_url("admin/autoresponder"); ?>">
 						<i class="icon-envelope"></i>
 						<span class="title">Email Templates</span>
@@ -282,9 +288,9 @@
 	<!-- BEGIN CONTENT -->
 	<div class="page-content-wrapper">
 		<div class="page-content">
-        	<h3 class="page-title">
-			<?php echo $this->module_name ?> 
-			</h3>
+		   <h3 class="page-title">
+		   <?php echo isset($module_name) ? $module_name : '' ?> 
+		   </h3>
 			<div class="page-bar">
 				<ul class="page-breadcrumb">
 					<li>
