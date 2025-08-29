@@ -19,6 +19,7 @@ class imeirequest extends FSD_Controller
 		$this->load->model("autoresponder_model");
 		$this->load->helper('formatcurrency_helper');
 		$this->load->helper('string');
+		$this->load->helper('log_activity_helper');
 	}
 	
 	########### IMEI Order Request Form display #######################################
@@ -397,6 +398,15 @@ class imeirequest extends FSD_Controller
 				$insert['CreatedDateTime'] = date("Y-m-d H:i:s");
 
 				$insert_id = $this->imeiorder_model->insert($insert);
+
+				// Log activity for IMEI order placement
+				$username = '';
+				if ($this->session->userdata('MemberFirstName') || $this->session->userdata('MemberLastName')) {
+					$username = $this->session->userdata('MemberFirstName') . ' ' . $this->session->userdata('MemberLastName');
+				} else if ($this->session->userdata('username')) {
+					$username = $this->session->userdata('username');
+				}
+				log_activity('Melakukan pemesanan IMEI: ' . $val . ' (Layanan: ' . (isset($pricing[0]['Title']) ? $pricing[0]['Title'] : $method_id) . ')', $member_id, $username);
 				
 				#####Deduct Credits from available credits
 				$credit_data = array(
