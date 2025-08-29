@@ -10,7 +10,8 @@ class User extends FSD_Controller
 		$this->load->model('method_model');
 		$this->load->model('fileservices_model');
 		$this->load->model('autoresponder_model');
-		$this->load->model('otp_model');
+	   $this->load->model('otp_model');
+	   $this->load->helper('log_activity_helper');
 	}
 	
 	public function forgot_password()
@@ -218,6 +219,11 @@ class User extends FSD_Controller
 								$this->session->set_userdata($session);
 								$this->session->unset_userdata($attempts_key);
 								$this->session->unset_userdata($block_key);
+
+								// Log member login activity
+								$username = $user[0]['FirstName'] . ' ' . $user[0]['LastName'];
+								log_activity('Login member', $user[0]['ID'], $username);
+								
 								redirect('member/dashboard');
 							}
 						} else {
