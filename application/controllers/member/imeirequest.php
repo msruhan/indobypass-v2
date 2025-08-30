@@ -86,28 +86,37 @@ class imeirequest extends FSD_Controller
 		$flattenedData = [];
 		foreach ($datas as $network) {
 			if (!empty($network['methods'])) {
-
+				// Baris network (header group), tidak tampilkan tombol View
 				$flattenedData[] = [
 					'title' => '<p style="padding:10px;margin:0px;background-color:lightgrey"><b>'.$network['Title'].'</b></p>',
+					'DeliveryTime' => '',
+					'methodPrice' => '',
+					'slug' => '',
+					'ID' => '',
+					'show_view' => false
 				];
-
 				foreach ($network['methods'] as $method) {
 					$slug = url_title($method['Title']);
 					$flattenedData[] = [
 						'title' => '<p style="padding:10px;margin:0px;cursor:pointer" onclick="detail_service(\''.$slug.'\',\''.$method['ID'].'\')">'.$method['Title'].'</p>',
 						'DeliveryTime' => '<p style="padding:10px;margin:0px">'.$method['DeliveryTime'].'</p>',
-						'methodPrice' => '<p style="padding:10px;margin:0px">'.format_currency($method['Price']).'</p>'
+						'methodPrice' => '<p style="padding:10px;margin:0px">'.format_currency($method['Price']).'</p>',
+						'slug' => $slug,
+						'ID' => $method['ID'],
+						'show_view' => true
 					];
 				}
 			}
 		}
 
-		foreach ($flattenedData as $method) {
 
+		foreach ($flattenedData as $method) {
 			$data['title'] = isset($method['title']) ? $method['title'] : '';
 			$data['delivery_time'] = isset($method['DeliveryTime']) ? $method['DeliveryTime'] : '';
 			$data['price'] = isset($method['methodPrice']) ? $method['methodPrice'] : '';
-
+			$data['slug'] = isset($method['slug']) ? $method['slug'] : '';
+			$data['id'] = isset($method['ID']) ? $method['ID'] : '';
+			$data['show_view'] = isset($method['show_view']) ? $method['show_view'] : false;
 			array_push($array_data, $data);
 		}
 
@@ -626,9 +635,10 @@ class imeirequest extends FSD_Controller
 		$id_gsm_method = $this->uri->segment(5);
 		$data = array();
 		$data['Title'] = "Imei Request Detail";
-		$data['data'] = $this->method_model->get_where(array('ID'=> $id_gsm_method));			
+		$data['data'] = $this->method_model->get_where(array('ID'=> $id_gsm_method));            
+		$data['download'] = !empty($data['data'][0]['Download']) ? $data['data'][0]['Download'] : '';
+		$data['video'] = !empty($data['data'][0]['Video']) ? $data['data'][0]['Video'] : '';
 		$data['template'] = "member/imei/request";
-
 		$settings = $this->setting_model->get_all();
 		foreach ($settings as $s)
 			$data['notif'][$s['Key']] = $s['Value'];

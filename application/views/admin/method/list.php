@@ -95,3 +95,28 @@ function editStatus(id){
 	});
 }
 </script>      
+<script type="text/javascript">
+function sendService(id) {
+	// Ambil Title dari row DataTable
+	var table = $('#TableDeferLoading').DataTable();
+	var rowData = table.row(function(idx, data, node) {
+		return data.ID == id;
+	}).data();
+	var title = rowData ? rowData.Title : '';
+	if (!title) {
+		alert('Title not found');
+		return;
+	}
+	$.ajax({
+		url: "<?php echo site_url('admin/method/send_telegram'); ?>",
+		type: 'POST',
+		data: {
+			"Title": title
+		},
+		dataType: 'json',
+		success: function(data) {
+			alert(data.message);
+		}
+	});
+}
+</script>

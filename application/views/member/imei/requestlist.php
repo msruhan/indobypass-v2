@@ -90,6 +90,7 @@
                                     <th style="width: 40%;">Service</th>
                                     <th style="width: 10%;">Delivery Time</th>
                                     <th style="width: 10%;">Price (<?= $this->session->userdata('MemberCurrency') ?>)</th>
+                                    <th style="width: 10%;">Details</th>
                                 </tr>
                             </thead>
                         </table>
@@ -139,6 +140,17 @@ $(document).ready(function() {
             {
                 data: "price",
                 orderable: false
+            },
+            {
+                data: null,
+                orderable: false,
+                render: function(data, type, row, meta) {
+                    if (row.show_view) {
+                        return '<button class="btn btn-primary btn-sm" onclick="detail_service(\'' + row.slug + '\',' + row.id + ')"><i class="fa fa-eye"></i></button>';
+                    } else {
+                        return '';
+                    }
+                }
             }
         ],
         pagingType: "input",
@@ -147,7 +159,6 @@ $(document).ready(function() {
         bInfo: false,
         ordering: true,
         deferRender: true,
-        searching: true,
         lengthChange: false,
         language: {
             search: "",

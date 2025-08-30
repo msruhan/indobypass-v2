@@ -1,3 +1,5 @@
+
+
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
 class Method extends FSD_Controller 
@@ -52,6 +54,8 @@ class Method extends FSD_Controller
 					'<a href="'.site_url('admin/method/edit/'.$row['ID']).'" class="btn btn-warning btn-sm"><i class="fa fa-edit"></i></a>';
 				$row['delete'] .=
 					' <a href="'.site_url('admin/method/delete/'.$row['ID']).'" class="btn btn-danger btn-sm" onclick="return confirm(\'Delete this method?\')"><i class="fa fa-trash"></i></a>';
+				$row['delete'] .=
+					' <button type="button" class="btn btn-info btn-sm" onclick="sendService('.$row['ID'].')"><i class="fa fa-paper-plane"></i> Send</button>';
 				$isEnabled = (isset($row['Status']) && $row['Status'] == 'Enabled');
 				$toggleClass = $isEnabled ? 'btn-success' : 'btn-secondary';
 				$toggleIcon = $isEnabled ? 'fa-toggle-on' : 'fa-toggle-off';
@@ -264,6 +268,34 @@ class Method extends FSD_Controller
 		$this->session->set_flashdata('success', 'Sync updated successfully.');
 		redirect("admin/method/");
 	}	
+
+	public function send_telegram()
+	{
+		$title = $this->input->post('Title');
+		if (!$title) {
+			echo json_encode(['success' => false, 'message' => 'Title not found']);
+			return;
+		}
+
+		// Telegram config
+		$token = '8280957977:AAGs0lUGlfMpJ59Lhj9kApVq9zwFHgaN-Do';
+		$chat_id = '@indobypassforwardchannel';
+		$text = urlencode("🟢 New Service Active\n\n" . $title);
+		$url = "https://api.telegram.org/bot{$token}/sendMessage?chat_id={$chat_id}&text={$text}";
+
+		$ch = curl_init();
+		curl_setopt($ch, CURLOPT_URL, $url);
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+		$result = curl_exec($ch);
+		$httpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+		curl_close($ch);
+
+		if ($httpcode == 200 && strpos($result, '"ok":true') !== false) {
+			echo json_encode(['success' => true, 'message' => 'Terkirim ke Telegram']);
+		} else {
+			echo json_encode(['success' => false, 'message' => 'Gagal kirim']);
+		}
+	}
 }
 
 /* End of file method.php */
