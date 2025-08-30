@@ -1,3 +1,5 @@
+
+	
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
 class Member extends FSD_Controller 
@@ -197,25 +199,28 @@ class Member extends FSD_Controller
 	public function get_price_services_ajax($id)
 	{
 		$services = $this->member_model->get_all_method_member($id);
-			   $html = '<form id="form-edit-prices"><div class="table-responsive"><table class="table table-bordered table-striped"><thead><tr><th>Service</th><th>Price</th></tr></thead><tbody>';
-			   if ($services && is_array($services)) {
-					   foreach ($services as $srv) {
-							   $html .= '<tr>';
-							   $html .= '<td>' . htmlspecialchars($srv['Title']) . '<input type="hidden" name="MethodID[]" value="' . htmlspecialchars($srv['MethodID']) . '"></td>';
-							   $html .= '<td><input type="text" class="form-control input-sm" name="Price[]" value="' . htmlspecialchars($srv['Price']) . '" /></td>';
-							   $html .= '</tr>';
-					   }
-			   } else {
-					   $html .= '<tr><td colspan="2" class="text-center">No services found.</td></tr>';
-			   }
-			   $html .= '</tbody></table>';
-			   $html .= '<input type="hidden" name="MemberID" value="' . intval($id) . '">';
-			   $html .= '<button type="submit" class="btn btn-primary" id="btn-save-prices">Simpan</button>';
-			   $html .= '</div></form>';
-			   echo $html;
+		$html = '<form id="form-edit-prices"><div class="table-responsive"><table class="table table-bordered table-striped"><thead><tr><th>Service</th><th>Price</th></tr></thead><tbody>';
+		if ($services && is_array($services)) {
+			foreach ($services as $srv) {
+				$html .= '<tr>';
+				$html .= '<td>' . htmlspecialchars($srv['Title']) . '<input type="hidden" name="MethodID[]" value="' . htmlspecialchars($srv['MethodID']) . '"></td>';
+				$html .= '<td><input type="text" class="form-control input-sm" name="Price[]" value="' . htmlspecialchars($srv['Price']) . '" /></td>';
+				$html .= '</tr>';
+			}
+		} else {
+			$html .= '<tr><td colspan="2" class="text-center">No services found.</td></tr>';
+		}
+		$html .= '</tbody></table>';
+		$html .= '<input type="hidden" name="MemberID" value="' . intval($id) . '">';
+		$html .= '<div class="d-flex" style="gap:8px;">';
+		$html .= '<button type="submit" class="btn btn-primary" id="btn-save-prices" style="margin-right:8px;">Simpan</button>';
+		$html .= '<button type="button" class="btn btn-default" id="btn-default-prices" style="background:#eee;">Default Price</button>';
+		$html .= '</div>';
+		$html .= '</div></form>';
+		echo $html;
 	}
 
-		public function update_method_prices()
+	public function update_method_prices()
 	{
 		$member_id = $this->input->post('MemberID');
 		$method_ids = $this->input->post('MethodID');
@@ -242,7 +247,27 @@ class Member extends FSD_Controller
 		}
 		echo json_encode(['success' => true, 'inserted' => $inserted]);
 	}
-	
+
+
+	public function get_default_prices_ajax($id)
+	{
+		// Ambil semua service yang tersedia untuk member ini
+		$services = $this->member_model->get_all_method_member($id);
+		$default_prices = [];
+		if ($services && is_array($services)) {
+			foreach ($services as $srv) {
+				// Ambil harga default dari method_model (bukan custom)
+				$default = $this->method_model->get_where(['ID' => $srv['MethodID']]);
+				$default_price = isset($default[0]['Price']) ? $default[0]['Price'] : '';
+				$default_prices[] = [
+					'MethodID' => $srv['MethodID'],
+					'Price' => $default_price
+				];
+			}
+		}
+		echo json_encode(['success' => true, 'data' => $default_prices]);
+	}
+
 }
 
 /* End of file member.php */

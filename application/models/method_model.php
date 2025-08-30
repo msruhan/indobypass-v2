@@ -317,4 +317,13 @@ class method_model extends CI_Model
 				->add_column('delete', $oprations, 'ID, ToggleStatus');		
 		return $this->datatables->generate();
 	}	
+	// Get multiple services by array of IDs (moved inside class)
+	public function get_where_in_ids($ids)
+	{
+		if (empty($ids)) return [];
+		$this->db->where_in('ID', $ids);
+		$query = $this->db->get($this->tbl_name);
+		return $query->result_array();
+	}
+
 }

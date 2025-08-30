@@ -29,6 +29,7 @@
 
 	</div> -->
 
+
 <div class="row">
 	<div class="col-md-12">
 		<div class="portlet box blue">
@@ -39,7 +40,7 @@
 			</div>
 			<div class="portlet-body">
 				<div class="table-responsive">
-					<table class="table table-striped table-bordered table-hover">
+					<table class="table table-striped table-bordered table-hover" id="TableLogAktivitas">
 						<thead>
 							<tr>
 								<th>No</th>
@@ -100,38 +101,39 @@
 </div>
 </div>
 
+<link rel="stylesheet" href="//cdn.datatables.net/1.10.16/css/dataTables.bootstrap.min.css"/>
 <script type="text/javascript" src="//cdn.datatables.net/1.10.16/js/jquery.dataTables.min.js"></script>
-<script type="text/javascript" src="<?php echo $this->config->item('assets_url');?>plugins/datatables/extensions/TableTools/js/dataTables.tableTools.min.js"></script>
-<script type="text/javascript" src="<?php echo $this->config->item('assets_url');?>plugins/datatables/extensions/ColReorder/js/dataTables.colReorder.min.js"></script>
-<script type="text/javascript" src="<?php echo $this->config->item('assets_url');?>plugins/datatables/extensions/Scroller/js/dataTables.scroller.min.js"></script>
-<script type="text/javascript" src="<?php echo $this->config->item('assets_url');?>plugins/datatables/plugins/bootstrap/dataTables.bootstrap.js"></script>
-<script type="text/javascript" charset="utf-8">
+<script type="text/javascript" src="//cdn.datatables.net/1.10.16/js/dataTables.bootstrap.min.js"></script>
+<style>
+  /* Agar pagination sejajar info entries */
+  .dataTables_wrapper .dataTables_paginate {
+	float: right;
+	margin-top: -32px;
+  }
+  .dataTables_wrapper .dataTables_info {
+	float: left;
+	margin-top: 8px;
+  }
+</style>
+<script type="text/javascript">
 $(document).ready(function() {
-<?php if($this->config->item('csrf_protection') === TRUE){	?>	
-	$.ajaxSetup({
-		headers: {
-			'<?php echo $this->config->item('csrf_token_name'); ?>': '<?php echo $this->config->item('csrf_cookie_name'); ?>'
+	$('#TableLogAktivitas').DataTable({
+		"paging": true,
+		"lengthChange": true,
+		"searching": true,
+		"ordering": true,
+		"info": true,
+		"autoWidth": false,
+		"pageLength": 10,
+		"lengthMenu": [ [10, 25, 50, 100], [10, 25, 50, 100] ],
+		// dom: l - length, f - filter, r - processing, t - table, i - info, p - pagination
+		"dom": '<"row"<"col-sm-6"l><"col-sm-6"f>>rt<"row"<"col-sm-6"i><"col-sm-6"p>>',
+		"language": {
+			"paginate": {
+				"previous": "<span class='btn btn-default btn-sm'>&laquo; Previous</span>",
+				"next": "<span class='btn btn-default btn-sm'>Next &raquo;</span>"
+			}
 		}
 	});
-<?php }	?>	
-    $('#TableDeferLoading').DataTable( {
-        "processing": true,
-		"serverSide": true,
-		"deferRender": true,
-		"ajax": "<?php echo site_url('admin/fileservices/listener'); ?>",
-		"order": [[ 0, 'asc' ]],
-        "columnDefs": [
-            { "orderable": false, "targets": [-1] },
-            { "searchable": false, "targets": [-1] }
-        ],
-		"columns": [
-            { "data": "ID" },
-            { "data": "Title" },
-			{ "data": "Price" },
-			{ "data": "Status" },
-			{ "data": "CreatedDateTime" },
-            { "data": "delete" }
-		]
-    } );
-} );		
+});
 </script>

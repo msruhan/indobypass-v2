@@ -107,6 +107,25 @@ $(document).on('click', '.btn-details', function() {
 });
 
 // Handle submit edit prices
+// Modal Notifikasi
+if ($('#notifModal').length === 0) {
+  $("<div class='modal fade' id='notifModal' tabindex='-1' role='dialog' aria-labelledby='notifModalLabel' aria-hidden='true'>"
+	+"<div class='modal-dialog' role='document'>"
+	+"<div class='modal-content'>"
+	+"<div class='modal-header'>"
+	+"<h5 class='modal-title' id='notifModalLabel'>Notifikasi</h5>"
+	+"<button type='button' class='close' data-dismiss='modal' aria-label='Close'><span aria-hidden='true'>&times;</span></button>"
+	+"</div>"
+	+"<div class='modal-body' id='notifModalBody'></div>"
+	+"<div class='modal-footer'><button type='button' class='btn btn-secondary' data-dismiss='modal'>Tutup</button></div>"
+	+"</div></div></div>").appendTo('body');
+}
+
+function showNotif(msg) {
+  $('#notifModalBody').html(msg);
+  $('#notifModal').modal('show');
+}
+
 $(document).on('submit', '#form-edit-prices', function(e) {
 	   e.preventDefault();
 	   var form = $(this);
@@ -116,18 +135,40 @@ $(document).on('submit', '#form-edit-prices', function(e) {
 			   url: '<?php echo site_url('admin/member/update_method_prices'); ?>',
 			   type: 'POST',
 			   data: form.serialize(),
+			   dataType: 'json',
 			   success: function(res) {
 					   btn.prop('disabled', false).text('Simpan');
 					   if(res && res.success){
-							   alert('Harga berhasil disimpan!');
+							   showNotif('Harga berhasil disimpan!');
 					   }else{
-							   alert('Gagal menyimpan harga!');
+							   showNotif('Gagal menyimpan harga!');
 					   }
 			   },
 			   error: function(){
 					   btn.prop('disabled', false).text('Simpan');
-					   alert('Terjadi kesalahan saat menyimpan!');
+					   showNotif('Terjadi kesalahan saat menyimpan!');
 			   }
 	   });
+});
+
+// Default Price button handler
+$(document).on('click', '#btn-default-prices', function() {
+	var form = $('#form-edit-prices');
+	var memberId = form.find('input[name="MemberID"]').val();
+	if (!memberId) return;
+	$.getJSON('<?php echo site_url('admin/member/get_default_prices_ajax'); ?>/' + memberId, function(res) {
+		if (res && res.success && Array.isArray(res.data)) {
+			res.data.forEach(function(item, idx) {
+				// Cari input dengan MethodID yang sesuai
+				var methodId = item.MethodID;
+				var price = item.Price;
+				// Temukan input harga yang sesuai urutan MethodID[]
+				var input = form.find('input[name="MethodID[]"][value="'+methodId+'"]').closest('tr').find('input[name="Price[]"]');
+				if (input.length) {
+					input.val(price);
+				}
+			});
+		}
+	});
 });
 </script>
