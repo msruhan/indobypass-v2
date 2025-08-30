@@ -97,20 +97,57 @@ class method_model extends CI_Model
 		return $data;
 	}      
 	
-	public function method_with_networks_list($cari_data = NULL, $order_dir = NULL) 
+	public function method_with_networks_list($cari_data = NULL, $order_dir = NULL, $member_id = NULL)
 	{
 		$data = array();
 
-		// First, get all networks
+		// Get all networks
 		$network_query = $this->db->get($this->tbl_networks);
 		$networks = $network_query->result_array();
-	
-		// Then, get all methods
-		$this->db->like('Title', $cari_data);
-		$this->db->where('Status', 'Enabled');
-		$method_query = $this->db->get($this->tbl_name);
+
+		// Get member's group and discount (if any)
+			   $group_discount = 0;
+			   if ($member_id) {
+					   // Ambil MemberGroupID dari tabel gsm_members
+					   $this->db->select('MemberGroupID');
+					   $this->db->from('gsm_members');
+					   $this->db->where('ID', $member_id);
+					   $member = $this->db->get()->row_array();
+					   if ($member && !empty($member['MemberGroupID'])) {
+							   $this->db->select('Discount');
+							   $this->db->from('gsm_member_groups');
+							   $this->db->where('ID', $member['MemberGroupID']);
+							   $group = $this->db->get()->row_array();
+							   if ($group && isset($group['Discount'])) {
+									   $group_discount = floatval($group['Discount']);
+							   }
+					   }
+			   }
+
+		// Get all methods with possible custom price for this member
+			   $this->db->select('gsm_methods.*, COALESCE(gsm_member_methods.Price, gsm_methods.Price) AS FinalPrice', FALSE);
+		$this->db->from($this->tbl_name);
+		$this->db->where("{$this->tbl_name}.Status", 'Enabled');
+		if ($cari_data) {
+			$this->db->like('Title', $cari_data);
+		}
+		if ($member_id) {
+			$this->db->join('gsm_member_methods', "{$this->tbl_name}.ID = gsm_member_methods.MethodID AND gsm_member_methods.MemberID = " . intval($member_id), 'left');
+		} else {
+			$this->db->join('gsm_member_methods', "{$this->tbl_name}.ID = gsm_member_methods.MethodID", 'left');
+		}
+		$method_query = $this->db->get();
 		$methods = $method_query->result_array();
-	
+
+		// Apply group discount if any
+		foreach ($methods as &$method) {
+			$price = floatval($method['FinalPrice']);
+			if ($group_discount > 0) {
+				$price = $price - ($price * $group_discount / 100);
+			}
+			$method['Price'] = round($price, 2);
+		}
+
 		// Group methods by NetworkID
 		$grouped_methods = array();
 		foreach ($methods as $method) {
@@ -120,7 +157,7 @@ class method_model extends CI_Model
 			}
 			$grouped_methods[$network_id][] = $method;
 		}
-	
+
 		// Combine networks and methods
 		foreach ($networks as $network) {
 			$network_id = $network['ID'];
@@ -130,16 +167,16 @@ class method_model extends CI_Model
 				'methods' => isset($grouped_methods[$network_id]) ? $grouped_methods[$network_id] : array()
 			);
 		}
-	
+
 		// Sort the final array based on ID
 		if (strtoupper($order_dir) === 'ASC') {
 			krsort($data);
 		} else {
 			ksort($data);
 		}
-	
+
 		return $data;
-	} 
+	}
 	
 	public function get_api_credentials($id) 
 	{

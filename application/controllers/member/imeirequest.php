@@ -28,7 +28,8 @@ class imeirequest extends FSD_Controller
 	{
 		$data = array();
 		$data['Title'] = "Imei Request";
-		$data['imeimethods'] = $this->method_model->method_with_networks();
+			   $id = $this->session->userdata('MemberID');
+			   $data['imeimethods'] = $this->method_model->method_with_networks_list(null, null, $id);
 		$data['template'] = "member/imei/request";
 		$id = $this->session->userdata('MemberID');
 		$data['credit'] = $this->credit_model->get_credit($id);
@@ -75,7 +76,8 @@ class imeirequest extends FSD_Controller
 		// Get sorting parameters
 		$order_dir = $this->input->post('order')[0]['dir'];
 
-		$datas = $this->method_model->method_with_networks_list($cari_data, $order_dir);
+		$member_id = $this->session->userdata('MemberID');
+		$datas = $this->method_model->method_with_networks_list($cari_data, $order_dir, $member_id);
 
 		$total = 9999999;
 		$array_data = array();
@@ -338,115 +340,131 @@ class imeirequest extends FSD_Controller
 		}
 		else 
 		{
-			$member_id = $this->session->userdata('MemberID');
-			$credit = $this->credit_model->get_credit($member_id);
-			$pricing = $this->method_model->get_user_price_new($method_id);
+			   $member_id = $this->session->userdata('MemberID');
+			   $credit = $this->credit_model->get_credit($member_id);
+			   // Ambil harga custom+diskon group sesuai member
+			   $all_methods = $this->method_model->method_with_networks_list(null, null, $member_id);
+			   $price = null;
+			   // Cari harga method yang sesuai
+			   foreach ($all_methods as $network) {
+					   if (!empty($network['methods'])) {
+							   foreach ($network['methods'] as $method) {
+									   if ($method['ID'] == $method_id) {
+											   $price = floatval($method['Price']);
+											   break 2;
+									   }
+							   }
+					   }
+			   }
+			   if ($price === null) {
+					   // fallback: ambil harga default
+					   $pricing = $this->method_model->get_user_price_new($method_id);
+					   $price = floatval($pricing[0]['Price']);
+			   }
 
-			$price = floatval($pricing[0]['Price']);
-			
-			#### Get IMEI CODES,Count Requests For Orders check Credit
-			$imei_data = explode(PHP_EOL, $data['IMEI']);			
-			$total_price = count($imei_data) * $price;
+			   #### Get IMEI CODES,Count Requests For Orders check Credit
+			   $imei_data = explode(PHP_EOL, $data['IMEI']);           
+			   $total_price = count($imei_data) * $price;
 
-			if($total_price > $credit )
-			{
-				$this->session->set_flashdata('message', $this->lang->line('error_not_enough_credit'));
-				redirect("member/imeirequest/");
-			}
-			
-			#### Place Order			
-			foreach($imei_data as $key => $val)
-			{
-				$insert = array();
-				$insert['MethodID'] = $method_id;
-				$insert['IMEI'] = $val;
-				$insert['Email'] = isset($data['Email']) ? $data['Email'] : '';
+			   if($total_price > $credit )
+			   {
+					   $this->session->set_flashdata('message', $this->lang->line('error_not_enough_credit'));
+					   redirect("member/imeirequest/");
+			   }
 
-				$insert['MemberID'] = $member_id;
-				$insert['Maker'] = array_key_exists("Maker", $data)? $data['Maker']: NULL;
-				$insert['Model'] = array_key_exists("Model", $data)? $data['Model']: NULL;				
-				## API Fields ##
-				$insert['ExtraInformation'] = array_key_exists("ExtraInformation", $data)? $data['ExtraInformation']:NULL;
-				$insert['SerialNumber'] = array_key_exists("SerialNumber", $data)? $data['SerialNumber']: NULL;
-				$insert['ModelID'] = array_key_exists("ModelID", $data)? $data['ModelID']: NULL;				
-				$insert['ProviderID'] = array_key_exists("ProviderID", $data)? $data['ProviderID']: NULL;
-				$insert['MEPID'] = array_key_exists("MEPID", $data)? $data['MEPID']: NULL;
-				$insert['PIN'] = array_key_exists("PIN", $data)? $data['PIN']: NULL;
-				$insert['KBH'] = array_key_exists("KBH", $data)? $data['KBH']: NULL;
-				$insert['PRD'] = array_key_exists("PRD", $data)? $data['PRD']: NULL;
-				$insert['Type'] = array_key_exists("Type", $data)? $data['Type']: NULL;
-				$insert['Locks'] = array_key_exists("Locks", $data)? $data['Locks']: NULL;
-				$insert['Reference'] = array_key_exists("Reference", $data)? $data['Reference']: NULL;
+			   #### Place Order                 
+			   foreach($imei_data as $key => $val)
+			   {
+					   $insert = array();
+					   $insert['MethodID'] = $method_id;
+					   $insert['IMEI'] = $val;
+					   $insert['Email'] = isset($data['Email']) ? $data['Email'] : '';
+					   $insert['Price'] = $price; // simpan harga custom ke order
 
-				$insert['iCloudCarrierInfo'] = array_key_exists('iCloudCarrierInfo', $data)? $data['iCloudCarrierInfo']: NULL;
-				$insert['iCloudAppleIDHint'] = array_key_exists('iCloudAppleIDHint', $data)? $data['iCloudAppleIDHint']: NULL;
-				$insert['iCloudActivationLockScreenshot'] = array_key_exists('iCloudActivationLockScreenshot', $data)? $data['iCloudActivationLockScreenshot']: NULL;
-				$insert['iCloudIMEINumberScreenshot'] = array_key_exists('iCloudIMEINumberScreenshot', $data)? $data['iCloudIMEINumberScreenshot']: NULL;
-				$insert['iCloudAppleIdEmail'] = array_key_exists('iCloudAppleIdEmail', $data)? $data['iCloudAppleIdEmail']: NULL;
-				$insert['iCloudAppleIdScreenshot'] = array_key_exists('iCloudAppleIdScreenshot', $data)? $data['iCloudAppleIdScreenshot']: NULL;
-				$insert['iCloudAppleIdInfo'] = array_key_exists('iCloudAppleIdInfo', $data)? $data['iCloudAppleIdInfo']: NULL;
-				$insert['iCloudPhoneNumber'] = array_key_exists('iCloudPhoneNumber', $data)? $data['iCloudPhoneNumber']: NULL;
-				$insert['iCloudID'] = array_key_exists('iCloudID', $data)? $data['iCloudID']: NULL;
-				$insert['iCloudPassword'] = array_key_exists('iCloudPassword', $data)? $data['iCloudPassword']: NULL;
-				$insert['iCloudUDID'] = array_key_exists('iCloudUDID', $data)? $data['iCloudUDID']: NULL;
-				$insert['iCloudICCID'] = array_key_exists('iCloudICCID', $data)? $data['iCloudICCID']: NULL;
-				$insert['iCloudVideo'] = array_key_exists('iCloudVideo', $data)? $data['iCloudVideo']: NULL;
-				
-				$insert['Note'] = $data['Note'];
-				$insert['Status'] = 'Pending';
-				$insert['UpdatedDateTime'] = date("Y-m-d H:i:s");
-				$insert['CreatedDateTime'] = date("Y-m-d H:i:s");
+					   $insert['MemberID'] = $member_id;
+					   $insert['Maker'] = array_key_exists("Maker", $data)? $data['Maker']: NULL;
+					   $insert['Model'] = array_key_exists("Model", $data)? $data['Model']: NULL;                 
+					   ## API Fields ##
+					   $insert['ExtraInformation'] = array_key_exists("ExtraInformation", $data)? $data['ExtraInformation']:NULL;
+					   $insert['SerialNumber'] = array_key_exists("SerialNumber", $data)? $data['SerialNumber']: NULL;
+					   $insert['ModelID'] = array_key_exists("ModelID", $data)? $data['ModelID']: NULL;           
+					   $insert['ProviderID'] = array_key_exists("ProviderID", $data)? $data['ProviderID']: NULL;
+					   $insert['MEPID'] = array_key_exists("MEPID", $data)? $data['MEPID']: NULL;
+					   $insert['PIN'] = array_key_exists("PIN", $data)? $data['PIN']: NULL;
+					   $insert['KBH'] = array_key_exists("KBH", $data)? $data['KBH']: NULL;
+					   $insert['PRD'] = array_key_exists("PRD", $data)? $data['PRD']: NULL;
+					   $insert['Type'] = array_key_exists("Type", $data)? $data['Type']: NULL;
+					   $insert['Locks'] = array_key_exists("Locks", $data)? $data['Locks']: NULL;
+					   $insert['Reference'] = array_key_exists("Reference", $data)? $data['Reference']: NULL;
 
-				$insert_id = $this->imeiorder_model->insert($insert);
+					   $insert['iCloudCarrierInfo'] = array_key_exists('iCloudCarrierInfo', $data)? $data['iCloudCarrierInfo']: NULL;
+					   $insert['iCloudAppleIDHint'] = array_key_exists('iCloudAppleIDHint', $data)? $data['iCloudAppleIDHint']: NULL;
+					   $insert['iCloudActivationLockScreenshot'] = array_key_exists('iCloudActivationLockScreenshot', $data)? $data['iCloudActivationLockScreenshot']: NULL;
+					   $insert['iCloudIMEINumberScreenshot'] = array_key_exists('iCloudIMEINumberScreenshot', $data)? $data['iCloudIMEINumberScreenshot']: NULL;
+					   $insert['iCloudAppleIdEmail'] = array_key_exists('iCloudAppleIdEmail', $data)? $data['iCloudAppleIdEmail']: NULL;
+					   $insert['iCloudAppleIdScreenshot'] = array_key_exists('iCloudAppleIdScreenshot', $data)? $data['iCloudAppleIdScreenshot']: NULL;
+					   $insert['iCloudAppleIdInfo'] = array_key_exists('iCloudAppleIdInfo', $data)? $data['iCloudAppleIdInfo']: NULL;
+					   $insert['iCloudPhoneNumber'] = array_key_exists('iCloudPhoneNumber', $data)? $data['iCloudPhoneNumber']: NULL;
+					   $insert['iCloudID'] = array_key_exists('iCloudID', $data)? $data['iCloudID']: NULL;
+					   $insert['iCloudPassword'] = array_key_exists('iCloudPassword', $data)? $data['iCloudPassword']: NULL;
+					   $insert['iCloudUDID'] = array_key_exists('iCloudUDID', $data)? $data['iCloudUDID']: NULL;
+					   $insert['iCloudICCID'] = array_key_exists('iCloudICCID', $data)? $data['iCloudICCID']: NULL;
+					   $insert['iCloudVideo'] = array_key_exists('iCloudVideo', $data)? $data['iCloudVideo']: NULL;
+					   
+					   $insert['Note'] = $data['Note'];
+					   $insert['Status'] = 'Pending';
+					   $insert['UpdatedDateTime'] = date("Y-m-d H:i:s");
+					   $insert['CreatedDateTime'] = date("Y-m-d H:i:s");
 
-				// Log activity for IMEI order placement
-				$username = '';
-				if ($this->session->userdata('MemberFirstName') || $this->session->userdata('MemberLastName')) {
-					$username = $this->session->userdata('MemberFirstName') . ' ' . $this->session->userdata('MemberLastName');
-				} else if ($this->session->userdata('username')) {
-					$username = $this->session->userdata('username');
-				}
-				log_activity('Melakukan pemesanan IMEI: ' . $val . ' (Layanan: ' . (isset($pricing[0]['Title']) ? $pricing[0]['Title'] : $method_id) . ')', $member_id, $username);
-				
-				#####Deduct Credits from available credits
-				$credit_data = array(
-					'MemberID' => $member_id,
-					'TransactionCode' => IMEI_CODE_REQUEST,
-					'TransactionID' => $insert_id,
-					'Description' => "IMEI Code request against imei:".$val,
-					'Amount' => -1 * abs($price),
-					'CreatedDateTime' => date("Y-m-d H:i:s"),
-					'Status' => 'Paid'
-				);
-				$this->credit_model->insert($credit_data);
-				
-				## Send Email with Template ## 		
-				$data = $this->autoresponder_model->get_where(array('Status' => 'Enabled', 'ID' => 10)); // New order notification
-				if( count($data) > 0 )
-				{
-					$from_name = $data[0]['FromName'];
-					$from_email = $data[0]['FromEmail'];
-					$to_email = $data[0]['ToEmail'];
-					$subject = $data[0]['Subject'];
-					$message = html_entity_decode($data[0]['Message']);
+					   $insert_id = $this->imeiorder_model->insert($insert);
 
-					//Information
-					$post['IMEI'] = $insert['IMEI'];
-					// Use member data if not present in $insert
-					$member = $this->member_model->get_where(array('ID' => $member_id));
-					$post['FirstName'] = isset($insert['FirstName']) ? $insert['FirstName'] : (isset($member[0]['FirstName']) ? $member[0]['FirstName'] : '');
-					$post['LastName'] = isset($insert['LastName']) ? $insert['LastName'] : (isset($member[0]['LastName']) ? $member[0]['LastName'] : '');
-					$post['Email'] = isset($insert['Email']) ? $insert['Email'] : (isset($member[0]['Email']) ? $member[0]['Email'] : '');
+					   // Log activity for IMEI order placement
+					   $username = '';
+					   if ($this->session->userdata('MemberFirstName') || $this->session->userdata('MemberLastName')) {
+							   $username = $this->session->userdata('MemberFirstName') . ' ' . $this->session->userdata('MemberLastName');
+					   } else if ($this->session->userdata('username')) {
+							   $username = $this->session->userdata('username');
+					   }
+					   log_activity('Melakukan pemesanan IMEI: ' . $val . ' (Layanan: ' . $method_id . ')', $member_id, $username);
+					   
+					   #####Deduct Credits from available credits
+					   $credit_data = array(
+							   'MemberID' => $member_id,
+							   'TransactionCode' => IMEI_CODE_REQUEST,
+							   'TransactionID' => $insert_id,
+							   'Description' => "IMEI Code request against imei:".$val,
+							   'Amount' => -1 * abs($price),
+							   'CreatedDateTime' => date("Y-m-d H:i:s"),
+							   'Status' => 'Paid'
+					   );
+					   $this->credit_model->insert($credit_data);
+					   
+					   ## Send Email with Template ##           
+					   $data = $this->autoresponder_model->get_where(array('Status' => 'Enabled', 'ID' => 10)); // New order notification
+					   if( count($data) > 0 )
+					   {
+							   $from_name = $data[0]['FromName'];
+							   $from_email = $data[0]['FromEmail'];
+							   $to_email = $data[0]['ToEmail'];
+							   $subject = $data[0]['Subject'];
+							   $message = html_entity_decode($data[0]['Message']);
 
-					$this->fsd->email_template($post, $from_email, $from_name, $to_email, $subject, $message );
-					$this->fsd->sent_email($from_email, $from_name,$to_email, $subject, $message );
-				}
+							   //Information
+							   $post['IMEI'] = $insert['IMEI'];
+							   // Use member data if not present in $insert
+							   $member = $this->member_model->get_where(array('ID' => $member_id));
+							   $post['FirstName'] = isset($insert['FirstName']) ? $insert['FirstName'] : (isset($member[0]['FirstName']) ? $member[0]['FirstName'] : '');
+							   $post['LastName'] = isset($insert['LastName']) ? $insert['LastName'] : (isset($member[0]['LastName']) ? $member[0]['LastName'] : '');
+							   $post['Email'] = isset($insert['Email']) ? $insert['Email'] : (isset($member[0]['Email']) ? $member[0]['Email'] : '');
 
-			}						
-			// $this->session->set_flashdata('message', '<div class="alert alert-success alert-dismissible fade show" role="alert" role="danger"> '.$this->lang->line('error_record_addes_successfully').'  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>');
-			$this->session->set_flashdata('success_order', $this->lang->line('error_record_addes_successfully'));
+							   $this->fsd->email_template($post, $from_email, $from_name, $to_email, $subject, $message );
+							   $this->fsd->sent_email($from_email, $from_name,$to_email, $subject, $message );
+					   }
 
-			redirect("member/imeirequest/");
+			   }                                               
+			   $this->session->set_flashdata('success_order', $this->lang->line('error_record_addes_successfully'));
+
+			   redirect("member/imeirequest/");
 		}
 	}
 	

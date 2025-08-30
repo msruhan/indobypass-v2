@@ -114,15 +114,25 @@ class member_model extends CI_Model
 	
 	############### Get IMEI Method Price Individually ###################
 	
-	public function get_all_method_member($id)
-	{
-		$this->db->select("$this->tbl_member_methods.*, $this->tbl_methods.Title");
-		$this->db->from($this->tbl_member_methods);
-		$this->db->join($this->tbl_methods,"$this->tbl_methods.ID = $this->tbl_member_methods.MethodID","inner");
-		$this->db->where("$this->tbl_member_methods.MemberID", $id);
-		$query = $this->db->get();
-		return $query->result_array();		
-	}
+	   public function get_all_method_member($id)
+	   {
+			   // Ambil semua services, join ke custom price jika ada
+			   $this->db->select([
+					   $this->tbl_methods . ".ID as MethodID",
+					   $this->tbl_methods . ".Title",
+					   "COALESCE(" . $this->tbl_member_methods . ".Price, " . $this->tbl_methods . ".Price) AS Price"
+			   ]);
+			   $this->db->from($this->tbl_methods);
+			   $this->db->where("$this->tbl_methods.Status", 'Enabled');
+			   $this->db->join(
+					   $this->tbl_member_methods,
+					   $this->tbl_methods . ".ID = " . $this->tbl_member_methods . ".MethodID AND " . $this->tbl_member_methods . ".MemberID = " . intval($id),
+					   "left"
+			   );
+			   $this->db->order_by("$this->tbl_methods.Title", "asc");
+			   $query = $this->db->get();
+			   return $query->result_array();
+	   }
 	
 
 	public function get_imei_service_list($member_id)
