@@ -1,5 +1,5 @@
 <div class="row">
-	<div class="col-md-12">
+    <div class="col-md-12">
         <!-- BEGIN SAMPLE FORM PORTLET-->
         <div class="portlet ">
             <div class="portlet-title">
@@ -50,22 +50,23 @@
             </div>
         </div>
         <!-- END SAMPLE FORM PORTLET-->
-		<!-- BEGIN SAMPLE TABLE PORTLET-->
-		<div class="portlet">
-			<?php echo form_open('admin/network/add', array('method' => 'post', 'id'=>'form')); ?>
-			<div class="portlet-title">
-				<div class="caption">
-					<i class="fa fa-cogs"></i>IMEI Orders
-				</div>
-			</div>
-			<div class="portlet-body">
-				<div class="table-responsive">
-					<table class="table table-hover" cellpadding="0" cellspacing="0" width="100%" id="TableDeferLoading">
+        <!-- BEGIN SAMPLE TABLE PORTLET-->
+        <div class="portlet">
+            <?php echo form_open('admin/network/add', array('method' => 'post', 'id'=>'form')); ?>
+            <div class="portlet-title">
+                <div class="caption">
+                    <i class="fa fa-cogs"></i>IMEI Orders
+                </div>
+            </div>
+            <div class="portlet-body">
+                <div class="table-responsive">
+                    <table class="table table-hover" cellpadding="0" cellspacing="0" width="100%" id="TableDeferLoading">
                         <thead>
                             <tr>
                               <th width="5%">ID</th>
                               <th width="13%">IMEI</th>
                               <th width="23%">Method</th>
+                              <th width="10%">Price</th>
                               <th width="15%">Email</th>
                               <th>Reply</th>
                               <th width="5%">Status</th>
@@ -78,6 +79,7 @@
                             <th>ID</th>
                             <th>IMEI</th>
                             <th>Method</th>
+                            <th>Price</th>
                             <th>Email</th>
                             <th>Reply</th>
                             <th>Status</th>
@@ -85,16 +87,16 @@
                             <th>Options</th>   
                           </tr>                            
                         </tfoot>
-					</table>
-				</div>
+                    </table>
+                </div>
                 <button id="select_all" type="button" class="btn btn-success"> Select All</button>
                 <button id="select_none" type="button" class="btn btn-success"> Clear Selected</button>
                 <button id="bulk_issue" type="button" class="btn btn-success"> Reply Selected</button>
-			</div>
-			<?php echo form_close(); ?>
-		</div>
-		<!-- END SAMPLE TABLE PORTLET-->
-	</div>
+            </div>
+            <?php echo form_close(); ?>
+        </div>
+        <!-- END SAMPLE TABLE PORTLET-->
+    </div>
 </div>
 
 <script type="text/javascript" src="//cdn.datatables.net/1.10.16/js/jquery.dataTables.min.js"></script>
@@ -106,34 +108,35 @@
 <script type="text/javascript" charset="utf-8">
 $(document).ready(function() {
 <?php if($this->config->item('csrf_protection') === TRUE){	?>	
-	$.ajaxSetup({
-		headers: {
-			'<?php echo $this->config->item('csrf_token_name'); ?>': '<?php echo $this->config->item('csrf_cookie_name'); ?>'
-		}
-	});
+    $.ajaxSetup({
+        headers: {
+            '<?php echo $this->config->item('csrf_token_name'); ?>': '<?php echo $this->config->item('csrf_cookie_name'); ?>'
+        }
+    });
 <?php }	?>	
     var table = $('#TableDeferLoading').DataTable( {
         "processing": true,
-		"serverSide": true,
-		"deferRender": true,
+        "serverSide": true,
+        "deferRender": true,
         "select": true,
         "aLengthMenu": [25, 50, 100, 200, 500, 1000],
-		"ajax": "<?php echo site_url('admin/imeiorder/listener'); ?>",
-		"order": [[ 0, 'desc' ]],
+        "ajax": "<?php echo site_url('admin/imeiorder/listener'); ?>",
+        "order": [[ 0, 'desc' ]],
         "columnDefs": [
             { "orderable": false, "targets": [-1] },
             { "searchable": false, "targets": [-1] }
         ],
-		"columns": [
+        "columns": [
             { "data": "ID" },
             { "data": "IMEI" },
-			{ "data": "Title" },
+            { "data": "Title" },
+            { "data": "Price", "render": function(data){ return data ? parseFloat(data).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2}) : '-'; } },
             { "data": "Email" },
             { "data": "Comments" },
             { "data": "Status" },
             { "data": "CreatedDateTime" },
             { "data": "delete" }
-		]
+        ]
     } );
     $('#imei').keyup(function(){
         table.columns( 1 ).search( jQuery(this).val() ).draw();

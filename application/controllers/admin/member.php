@@ -27,9 +27,11 @@ class Member extends FSD_Controller
 		if (isset($raw['data']) && is_array($raw['data'])) {
 			foreach ($raw['data'] as &$row) {
 				$row['delete'] =
-					'<a href="'.site_url('admin/member/edit/'.$row['ID']).'" class="btn btn-warning btn-sm"><i class="fa fa-edit"></i></a>';
+					'<a href="'.site_url('admin/member/detail/'.$row['ID']).'" class="btn btn-info btn-sm" style="margin-right:4px;"><i class="fa fa-search"></i> Details</a>';
 				$row['delete'] .=
-					' <a href="'.site_url('admin/member/delete/'.$row['ID']).'" class="btn btn-danger btn-sm" onclick="return confirm(\'Delete this member?\')"><i class="fa fa-trash"></i></a>';
+					'<a href="'.site_url('admin/member/edit/'.$row['ID']).'" class="btn btn-warning btn-sm" style="margin-right:4px;"><i class="fa fa-edit"></i></a>';
+				$row['delete'] .=
+					'<a href="'.site_url('admin/member/delete/'.$row['ID']).'" class="btn btn-danger btn-sm" onclick="return confirm(\'Delete this member?\')"><i class="fa fa-trash"></i></a>';
 			}
 		}
 		echo json_encode($raw);
@@ -191,6 +193,56 @@ class Member extends FSD_Controller
 		else
 			echo 'All parameters are required.';
 	}
+
+	public function get_price_services_ajax($id)
+	{
+		$services = $this->member_model->get_all_method_member($id);
+			   $html = '<form id="form-edit-prices"><div class="table-responsive"><table class="table table-bordered table-striped"><thead><tr><th>Service</th><th>Price</th></tr></thead><tbody>';
+			   if ($services && is_array($services)) {
+					   foreach ($services as $srv) {
+							   $html .= '<tr>';
+							   $html .= '<td>' . htmlspecialchars($srv['Title']) . '<input type="hidden" name="MethodID[]" value="' . htmlspecialchars($srv['MethodID']) . '"></td>';
+							   $html .= '<td><input type="text" class="form-control input-sm" name="Price[]" value="' . htmlspecialchars($srv['Price']) . '" /></td>';
+							   $html .= '</tr>';
+					   }
+			   } else {
+					   $html .= '<tr><td colspan="2" class="text-center">No services found.</td></tr>';
+			   }
+			   $html .= '</tbody></table>';
+			   $html .= '<input type="hidden" name="MemberID" value="' . intval($id) . '">';
+			   $html .= '<button type="submit" class="btn btn-primary" id="btn-save-prices">Simpan</button>';
+			   $html .= '</div></form>';
+			   echo $html;
+	}
+
+		public function update_method_prices()
+	{
+		$member_id = $this->input->post('MemberID');
+		$method_ids = $this->input->post('MethodID');
+		$prices = $this->input->post('Price');
+		if (!$member_id || !is_array($method_ids) || !is_array($prices)) {
+			echo json_encode(['success' => false, 'msg' => 'Data tidak valid']);
+			return;
+		}
+		// Hapus semua custom price lama user ini
+		$this->member_model->delete_method($member_id);
+		// Insert ulang custom price baru
+		$inserted = 0;
+		for ($i = 0; $i < count($method_ids); $i++) {
+			$method_id = $method_ids[$i];
+			$price = $prices[$i];
+			if ($price !== '' && is_numeric($price)) {
+				$this->member_model->insert_method([
+					'MemberID' => $member_id,
+					'MethodID' => $method_id,
+					'Price' => $price
+				]);
+				$inserted++;
+			}
+		}
+		echo json_encode(['success' => true, 'inserted' => $inserted]);
+	}
+	
 }
 
 /* End of file member.php */

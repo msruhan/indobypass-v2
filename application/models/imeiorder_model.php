@@ -8,7 +8,7 @@ class imeiorder_model extends CI_Model
 		$params = array($id);
 		$sql = "
 			SELECT 
-				t1.ID, t1.IMEI, t2.Title, t2.Price, 
+			   t1.ID, t1.IMEI, t2.Title, t1.Price, 
 				t1.Code, t1.Note, t1.Status, 
 				t1.CreatedDateTime, t1.UpdatedDateTime 
 			FROM {$this->tbl_name} t1 
@@ -315,7 +315,7 @@ class imeiorder_model extends CI_Model
 		$params = array($id); // untuk binding ID member
 		$sql = "
 			SELECT 
-				t1.ID, t1.IMEI, t2.Title, t2.Price, 
+			   t1.ID, t1.IMEI, t2.Title, t1.Price, 
 				t1.Code, t1.Note, t1.Status, 
 				t1.CreatedDateTime, t1.UpdatedDateTime 
 			FROM {$this->tbl_name} t1 
@@ -386,9 +386,9 @@ class imeiorder_model extends CI_Model
 	public function get_imei_data_select_new($id, $param, $start, $length, $cari_data)
 	{
 		if(!empty($cari_data)){
-			$sql = "SELECT $this->tbl_name.ID, $this->tbl_name.IMEI, $this->tbl_method.Title, $this->tbl_name.Code, $this->tbl_name.Note, $this->tbl_name.Status,  $this->tbl_name.CreatedDateTime FROM $this->tbl_name INNER JOIN $this->tbl_method ON $this->tbl_name.MethodID=$this->tbl_method.ID WHERE $this->tbl_name.MemberID = '$id' AND $this->tbl_name.Status = '$param' AND($this->tbl_name.IMEI LIKE '%$cari_data%' OR $this->tbl_method.Title LIKE '%$cari_data%' OR $this->tbl_name.Code LIKE '%$cari_data%' OR $this->tbl_name.Note LIKE '%$cari_data%') ORDER BY $this->tbl_name.ID DESC LIMIT $start, $length";
+			   $sql = "SELECT $this->tbl_name.ID, $this->tbl_name.IMEI, $this->tbl_method.Title, $this->tbl_name.Price, $this->tbl_name.Code, $this->tbl_name.Note, $this->tbl_name.Status,  $this->tbl_name.CreatedDateTime FROM $this->tbl_name INNER JOIN $this->tbl_method ON $this->tbl_name.MethodID=$this->tbl_method.ID WHERE $this->tbl_name.MemberID = '$id' AND $this->tbl_name.Status = '$param' AND($this->tbl_name.IMEI LIKE '%$cari_data%' OR $this->tbl_method.Title LIKE '%$cari_data%' OR $this->tbl_name.Code LIKE '%$cari_data%' OR $this->tbl_name.Note LIKE '%$cari_data%') ORDER BY $this->tbl_name.ID DESC LIMIT $start, $length";
 		}else{
-			$sql = "SELECT $this->tbl_name.ID, $this->tbl_name.IMEI, $this->tbl_method.Title, $this->tbl_name.Code, $this->tbl_name.Note, $this->tbl_name.Status,  $this->tbl_name.CreatedDateTime FROM $this->tbl_name INNER JOIN $this->tbl_method ON $this->tbl_name.MethodID=$this->tbl_method.ID WHERE $this->tbl_name.MemberID = '$id' AND $this->tbl_name.Status = '$param' ORDER BY $this->tbl_name.ID DESC LIMIT $start, $length";
+			   $sql = "SELECT $this->tbl_name.ID, $this->tbl_name.IMEI, $this->tbl_method.Title, $this->tbl_name.Price, $this->tbl_name.Code, $this->tbl_name.Note, $this->tbl_name.Status,  $this->tbl_name.CreatedDateTime FROM $this->tbl_name INNER JOIN $this->tbl_method ON $this->tbl_name.MethodID=$this->tbl_method.ID WHERE $this->tbl_name.MemberID = '$id' AND $this->tbl_name.Status = '$param' ORDER BY $this->tbl_name.ID DESC LIMIT $start, $length";
 		}
 
 		$result = $this->db->query($sql);
@@ -420,7 +420,7 @@ class imeiorder_model extends CI_Model
 			$oprations .= '<a href="'.site_url("admin/imeiorder/delete/$1").'" title="Delete this record" class="tip" onclick="return confirm(\'Are sure want to delete this record?\');"><i class="fa fa-trash-o" aria-hidden="true"></i></a>';
 		
 		$this->datatables				
-				->select("$this->tbl_name.ID, $this->tbl_name.IMEI, $this->tbl_method.Title, $this->tbl_members.Email, $this->tbl_name.Comments, $this->tbl_name.Status, $this->tbl_name.CreatedDateTime", TRUE)
+			   ->select("$this->tbl_name.ID, $this->tbl_name.IMEI, $this->tbl_method.Title, $this->tbl_members.Email, $this->tbl_name.Comments, $this->tbl_name.Status, $this->tbl_name.Price, $this->tbl_name.CreatedDateTime", TRUE)
 				->from($this->tbl_name)
 				->join($this->tbl_method, "$this->tbl_name.MethodID=$this->tbl_method.ID", "left")
 				->join($this->tbl_members, "$this->tbl_name.MemberID=$this->tbl_members.ID", "left")

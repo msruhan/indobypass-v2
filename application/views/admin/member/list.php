@@ -31,6 +31,8 @@
 		</div>
 		<!-- END SAMPLE TABLE PORTLET-->
 	</div>
+	<!-- Price services table will be loaded here -->
+	<div id="price-services-container"></div>
 </div>
 <script src="//cdn.datatables.net/1.10.16/js/jquery.dataTables.min.js"  type="text/javascript"></script>
 <script src="<?php echo $this->config->item('assets_url');?>plugins/datatables/extensions/TableTools/js/dataTables.tableTools.min.js"  type="text/javascript"></script>
@@ -47,19 +49,19 @@ $(document).ready(function() {
 		}
 	});
 <?php }	?>	
-    $('#TableDeferLoading').DataTable( {
-        "processing": true,
+	$('#TableDeferLoading').DataTable( {
+		"processing": true,
 		"serverSide": true,
 		"deferRender": true,
 		"ajax": "<?php echo site_url('admin/member/listener'); ?>",
 		"order": [[ 0, 'asc' ]],
-        "columnDefs": [
-            { "orderable": false, "targets": [-1,-4] },
-            { "searchable": false, "targets": [-1,-3,-4] }
-        ],
+		"columnDefs": [
+			{ "orderable": false, "targets": [-1,-4] },
+			{ "searchable": false, "targets": [-1,-3,-4] }
+		],
 		"columns": [
-            { "data": "ID" },
-            { "data": "FirstName" },
+			{ "data": "ID" },
+			{ "data": "FirstName" },
 			{ "data": "LastName" },
 			{ "data": "Mobile" },
 			{ "data": "Email" },
@@ -70,7 +72,11 @@ $(document).ready(function() {
 				return '<input type="checkbox" name="Status" class="make-switch" value="'+row.ID+'" data-size="small" '+checked+'>';
 			}},
 			{ "data": "CreatedDateTime" },
-            { "data": "delete"}
+			{ "data": null, render: function(data, type, row) {
+				var detailBtn = '<button type="button" class="btn btn-info btn-sm btn-details" data-id="'+row.ID+'" style="margin-right:4px;"><i class="fa fa-search"></i> Details</button>';
+				var editBtn = row.delete ? row.delete.replace(/Details.+?<\/a>/, '') : '';
+				return detailBtn + editBtn;
+			}}
 		],
 		"initComplete": function( settings, json ) {
 		},
@@ -85,6 +91,43 @@ $(document).ready(function() {
 				$.get( "<?php echo site_url('admin/member/status') ?>?id="+e.target.value+"&status="+status );
 			});
 		}
-    } );
+	} );
 } );	
-</script>   
+
+$(document).on('click', '.btn-details', function() {
+	   var memberId = $(this).data('id');
+	   var btn = $(this);
+	   btn.prop('disabled', true).html('<i class="fa fa-spinner fa-spin"></i> Loading');
+	   $.get('<?php echo site_url('admin/member/get_price_services_ajax'); ?>/' + memberId, function(res) {
+			   $('#price-services-container').html('<div class="panel panel-info"><div class="panel-heading"><b>Price Services for User ID '+memberId+'</b></div><div class="panel-body">'+res+'</div></div>');
+			   btn.prop('disabled', false).html('<i class="fa fa-search"></i> Details');
+			   // Scroll to price table
+			   $('html,body').animate({scrollTop: $('#price-services-container').offset().top-100}, 400);
+	   });
+});
+
+// Handle submit edit prices
+$(document).on('submit', '#form-edit-prices', function(e) {
+	   e.preventDefault();
+	   var form = $(this);
+	   var btn = $('#btn-save-prices');
+	   btn.prop('disabled', true).text('Menyimpan...');
+	   $.ajax({
+			   url: '<?php echo site_url('admin/member/update_method_prices'); ?>',
+			   type: 'POST',
+			   data: form.serialize(),
+			   success: function(res) {
+					   btn.prop('disabled', false).text('Simpan');
+					   if(res && res.success){
+							   alert('Harga berhasil disimpan!');
+					   }else{
+							   alert('Gagal menyimpan harga!');
+					   }
+			   },
+			   error: function(){
+					   btn.prop('disabled', false).text('Simpan');
+					   alert('Terjadi kesalahan saat menyimpan!');
+			   }
+	   });
+});
+</script>
