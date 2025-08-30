@@ -223,7 +223,7 @@ class User extends FSD_Controller
 								// Log member login activity
 								$username = $user[0]['FirstName'] . ' ' . $user[0]['LastName'];
 								log_activity('Login member', $user[0]['ID'], $username);
-								
+
 								redirect('member/dashboard');
 							}
 						} else {
@@ -477,8 +477,15 @@ class User extends FSD_Controller
 
 	public function logout()
 	{
+		// Log aktivitas logout member
+		$user_id = $this->session->userdata('user_id');
+		$username = $this->session->userdata('username');
+		if (!function_exists('log_activity')) {
+			$this->load->helper('log_activity_helper');
+		}
+		log_activity('Logout member', $user_id, $username);
 		$this->session->sess_destroy();
-		redirect('login');	
+		redirect('login');
 	}
 
 	public function services_list()
