@@ -17,8 +17,8 @@ class fileservices extends FSD_Controller
 	
 	public function index()
 	{
-		$this->load->model('Log_model');
-		$data['logs'] = $this->Log_model->get_logs(100);
+	$this->load->model('catatan_aktivitas');
+	$data['logs'] = $this->catatan_aktivitas->get_logs(100);
 		$data['template'] = "admin/fileservices/list";
 		$this->load->view('admin/master_template',$data);
 	}
