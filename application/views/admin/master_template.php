@@ -184,8 +184,8 @@
 				</li>
 				<li <?php echo( in_array($this->uri->segment(2), ['fileservices','fileorder'])?'class="active"':''); ?>>
 					<a href="javascript:;">
-						<i class="icon-docs"></i>
-						<span class="title">File Service</span>
+						<i class="icon-list"></i>
+						<span class="title">Activity Log</span>
 						<span class="arrow "></span>
 					</a>
 					<ul class="sub-menu">
@@ -194,11 +194,11 @@
 							<i class="icon-doc"></i>
 							Log Aktivitas</a>
 						</li>
-						<li <?php echo($this->uri->segment(2)=='fileorder'?'class="active"':''); ?>>
+						<!-- <li <?php echo($this->uri->segment(2)=='fileorder'?'class="active"':''); ?>>
 							<a href="<?php echo site_url("admin/fileorder"); ?>">
 							<i class="icon-cloud-upload"></i>
 							File Service Orders</a>
-						</li>
+						</li> -->
 					</ul>
 				</li>
 				<li <?php echo( in_array($this->uri->segment(2), ['serverbox','serverservice','serverorder'])?'class="active"':''); ?>>
@@ -260,12 +260,6 @@
 					<a href="<?php echo site_url("admin/payment"); ?>">
 						<i class="fa fa-money"></i>
 						<span class="title">Payment Methods</span>
-					</a>
-				</li>
-				<li <?php echo($this->uri->segment(2)=='log'?'class="active"':''); ?> >
-					<a href="<?php echo site_url("admin/log"); ?>">
-						<i class="fa fa-list"></i>
-						<span class="title">Log Aktivitas</span>
 					</a>
 				</li>
 				<li <?php echo($this->uri->segment(2)=='autoresponder'?'class="active"':''); ?>>
