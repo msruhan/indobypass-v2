@@ -1,9 +1,9 @@
 			<!-- jQuery harus paling atas -->
-				<script src="<?= base_url() ?>/assets/assets_members/js/jquery-3.6.0.js"></script>
-				<!-- Bootstrap JS (jika ada) -->
-				<script src="<?= base_url() ?>/assets/assets_members/js/bootstrap.min.js"></script>
-				<!-- Chart.js -->
-				<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+			<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+			<!-- Bootstrap JS (pastikan path benar, gunakan CDN jika file lokal error) -->
+			<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+			<!-- Chart.js (gunakan CDN saja, hapus duplikasi) -->
+			<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <html>
 	<head>
 		<div class="d-flex align-items-left align-items-md-center flex-column flex-md-row pt-2 pb-4">
@@ -14,7 +14,7 @@
 			<div class="ms-md-auto py-2 py-md-0">
 				<a href="#" class="btn btn-label-info btn-round me-2">Manage</a>
 				<a href="<?= site_url('member/dashboard/addfund') ?>" class="btn btn-primary btn-round"> + Add Fund</a>
-				<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+				   <!-- Hapus duplikasi Chart.js di sini -->
 			</div>
 		</div>
 	</head>
