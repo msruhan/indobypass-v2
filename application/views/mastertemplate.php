@@ -196,7 +196,7 @@
                     <span class="sidebar-mini-icon">
                     <span class="badge bg-warning">Versi v2.0</span>
                     </span>
-                    <h4 class="text-section">Hak Cipta @2024 INDOBYPASS Team</h4>
+                    <h4 class="text-section">Hak Cipta @2025 INDOBYPASS Team</h4>
                 </li>
             </ul>
         </div>

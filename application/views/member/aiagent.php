@@ -1,68 +1,22 @@
 
-
-<!-- AI Agent Chatbox Lebih Besar -->
-<style>
-  .chatbox-big-container {
-	width: 100vw;
-	height: 100vh;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	background: #f4f7fa;
-	margin: 0;
-	padding: 0;
-  }
-  .chatbox-big-card {
-	width: 1400px;
-	max-width: 99vw;
-	height: 1100px;
-	max-height: 98vh;
-	box-shadow: 0 20px 80px rgba(23,125,255,0.25);
-	border-radius: 44px;
-	overflow: hidden;
-	background: #fff;
-	display: flex;
-	flex-direction: column;
-	margin: 0;
-  }
-  /* Responsive */
-  @media (max-width: 1700px) {
-	.chatbox-big-card { width: 99vw; height: 96vh; border-radius: 0; }
-  }
-  /* Responsive khusus mobile */
-  @media (max-width: 600px) {
-  .chatbox-big-container {
-	align-items: flex-start;
-	justify-content: flex-start;
-	padding-top: 0;
-	padding-bottom: 0;
-	background: #f4f7fa;
-	min-height: 100dvh;
-	width: 100vw;
-	overflow: hidden;
-  }
-  .chatbox-big-card {
-	width: 100vw;
-	max-width: 95vw;
-	height: 82vh;
-	max-height: 72vh;
-	border-radius: 12px;
-	box-shadow: 0 4px 24px rgba(23,125,255,0.10);
-	margin: 12px 0 0 0;
-	display: flex;
-	flex-direction: column;
-	overflow: hidden;
-  }
-	.card-body.p-0 {
-	  height: 100%;
-	  min-height: 0;
-	  padding: 0;
-	  overflow-y: auto;
-	  overflow-x: hidden;
-	  box-sizing: border-box;
-	}
-  }
-</style>
+<div class="page-header">
+	<div class="d-flex justify-content-between">
+		<h3 class="fw-bold">AI Agent INDOBYPASS</h3>
+		<ul class="breadcrumbs">
+			<li class="nav-home">
+				<a href="<?= site_url() ?>member/dashboard">
+					<i class="icon-home"></i>
+				</a>
+			</li>
+			<li class="separator">
+				<i class="icon-arrow-right"></i>
+			</li>
+			<li class="nav-item">
+				<a href="#">AI Agent</a>
+			</li>
+		</ul>
+	</div>
+</div>
 <div class="chatbox-big-container">
   <div class="chatbox-big-card">
 	<div class="card-body p-0" style="background:#fff;height:100%;display:flex;flex-direction:column;">
@@ -70,3 +24,107 @@
 	</div>
   </div>
 </div>
+
+
+<!-- AI Agent Chatbox Lebih Besar -->
+<style>
+/* CARD UTAMA CHATBOX */
+.chatbox-big-card {
+  width: 100%;
+  max-width: 420px;       /* batas maksimal */
+  height: 70%;
+  margin: 0 auto;         /* biar center */
+  border-radius: 16px;
+  box-shadow: 0 4px 24px rgba(23,125,255,0.10);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;       /* cegah isi keluar */
+  box-sizing: border-box;
+  background: #fff;
+}
+
+/* HEADER CHATBOX */
+.chatbox-header {
+  background: #1877f2;
+  color: #fff;
+  padding: 10px 15px;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+}
+
+/* AREA PESAN */
+.chatbox-messages {
+  flex: 1;
+  padding: 12px;
+  overflow-y: auto;
+  background: #f8fafc;
+}
+
+/* BALON CHAT */
+.chat-bubble {
+  max-width: 80%;              /* jangan lebih dari 80% lebar card */
+  padding: 10px 14px;
+  margin: 6px 0;
+  border-radius: 12px;
+  font-size: 14px;
+  line-height: 1.4;
+  word-wrap: break-word;       /* pecah kata panjang */
+  overflow-wrap: break-word;
+  box-sizing: border-box;
+}
+
+/* PESAN DARI BOT */
+.chat-bubble.bot {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  align-self: flex-start;
+  color: #111827;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+}
+
+/* PESAN DARI USER */
+.chat-bubble.user {
+  background: #1877f2;
+  color: #fff;
+  align-self: flex-end;
+  border-radius: 12px 12px 0 12px;
+}
+
+/* FOOTER (INPUT) */
+.chatbox-footer {
+  padding: 10px;
+  border-top: 1px solid #e5e7eb;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.chatbox-input {
+  flex: 1;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 8px 12px;
+  font-size: 14px;
+  outline: none;
+}
+
+.chatbox-send-btn {
+  background: #1877f2;
+  border: none;
+  border-radius: 12px;
+  color: #fff;
+  padding: 8px 16px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.chatbox-send-btn:hover {
+  background: #0f5ec0;
+}
+
+
+</style>

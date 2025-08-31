@@ -1,3 +1,9 @@
+			<!-- jQuery harus paling atas -->
+				<script src="<?= base_url() ?>/assets/assets_members/js/jquery-3.6.0.js"></script>
+				<!-- Bootstrap JS (jika ada) -->
+				<script src="<?= base_url() ?>/assets/assets_members/js/bootstrap.min.js"></script>
+				<!-- Chart.js -->
+				<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <html>
 	<head>
 		<div class="d-flex align-items-left align-items-md-center flex-column flex-md-row pt-2 pb-4">
@@ -14,7 +20,6 @@
 	</head>
 	<body>
 		<!-- Card Chart -->
-		<?php $this->load->view('chatbox_tawk'); ?>
 		<div class="row">
 			<div class="col-sm-6 col-md-3">
 				<div class="card card-stats card-primary card-round">
@@ -282,16 +287,6 @@
 								<a href="https://t.me/al1010" target="_blank" class="btn btn-icon btn-sm">
 									<i class="fab fa-telegram"></i>
 								</a>
-							</div>
-						</div>
-					</div>
-				</div>
-					<!-- Chatbox Card -->
-				<div class="row">
-					<div class="col-md-12">
-						<div class="card card-chatbox mb-4" style="box-shadow:0 8px 32px rgba(23,125,255,0.10);border-radius:22px;overflow:hidden;">
-							<div class="card-body p-0" style="background:#fff;">
-								<?php $this->load->view('chatbox_view'); ?>
 							</div>
 						</div>
 					</div>
