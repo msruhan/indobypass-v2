@@ -1,4 +1,5 @@
 
+
 <div class="page-header">
 	<div class="d-flex justify-content-between">
 		<h3 class="fw-bold">AI Agent INDOBYPASS</h3>
@@ -28,11 +29,43 @@
 
 <!-- AI Agent Chatbox Lebih Besar -->
 <style>
+@media (max-width: 600px) {
+  .chatbox-big-card {
+    width: 100vw;
+    max-width: 100vw;
+    height: 100vh;
+    max-height: 100vh;
+    border-radius: 0;
+    box-shadow: 0 4px 24px rgba(23,125,255,0.10);
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+  .card-body.p-0 {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    min-height: 0;
+    padding: 0;
+    overflow: hidden;
+    box-sizing: border-box;
+  }
+  .chatbox-messages {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: auto;
+    background: #f8fafc;
+  }
+  .chatbox-footer {
+    flex-shrink: 0;
+    background: #fff;
+  }
+}
+
 /* CARD UTAMA CHATBOX */
 .chatbox-big-card {
   width: 100%;
-  max-width: 420px;       /* batas maksimal */
-  height: 70%;
   margin: 0 auto;         /* biar center */
   border-radius: 16px;
   box-shadow: 0 4px 24px rgba(23,125,255,0.10);
@@ -41,6 +74,8 @@
   overflow: hidden;       /* cegah isi keluar */
   box-sizing: border-box;
   background: #fff;
+    max-width: 2800px;       /* lebih besar di desktop */
+    height: 1100px;
 }
 
 /* HEADER CHATBOX */
@@ -66,19 +101,17 @@
 /* BALON CHAT */
 .chat-bubble {
   max-width: 80%;              /* jangan lebih dari 80% lebar card */
-  padding: 10px 14px;
-  margin: 6px 0;
-  border-radius: 12px;
-  font-size: 14px;
-  line-height: 1.4;
-  word-wrap: break-word;       /* pecah kata panjang */
-  overflow-wrap: break-word;
-  box-sizing: border-box;
-}
-
-/* PESAN DARI BOT */
-.chat-bubble.bot {
   background: #fff;
+  width: 98vw;
+  max-width: 98vw;
+  height: 340px;
+  max-height: 340px;
+  border-radius: 8px;
+  box-shadow: 0 4px 24px rgba(23,125,255,0.10);
+  margin: 8px 0 0 6vw;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
   border: 1px solid #e5e7eb;
   align-self: flex-start;
   color: #111827;
